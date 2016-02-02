@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-    public GameObject Room;
-    public List<SpawnableObject> ObjectsToPlace;
+    public Spawner SpawnerPrefab;
 
-    private List<SpawnableObject> _placedObjects = new List<SpawnableObject>();
+    private Spawner _spawnerInstance;
 
     private void Start() {
         BeginGame();
@@ -19,39 +17,13 @@ public class GameManager : MonoBehaviour {
     }
 
     private void BeginGame() {
-
-        Vector3 RoomSize = Room.GetComponent<Collider>().bounds.size;
-        Vector3 RoomBoundaries;
-        RoomBoundaries.x = (RoomSize.x / 2f) - 1;
-        RoomBoundaries.y = 0;
-        RoomBoundaries.z = (RoomSize.z / 2f) - 1;
-
-        foreach (var obj in ObjectsToPlace) {
-            SpawnableObject tmp = Instantiate(obj) as SpawnableObject;
-            Vector3 tmpBounds = tmp.GetComponent<Collider>().bounds.size;
-
-            Vector3 tmpPosition =
-                new Vector3(Random.Range(-RoomBoundaries.x, RoomBoundaries.x), tmpBounds.y - tmpBounds.y / 2f, Random.Range(-RoomBoundaries.z, RoomBoundaries.z));
-
-            tmp.transform.position = tmpPosition;
-            tmp.transform.rotation = Quaternion.identity;
-            _placedObjects.Add(tmp);
-        }
+        _spawnerInstance = Instantiate(SpawnerPrefab) as Spawner;
+        StartCoroutine(_spawnerInstance.Spawn());
     }
 
-    public void RemoveDestroyedObject(SpawnableObject sobj) {
-        _placedObjects.Remove(sobj);
-        Debug.LogWarning("Restarting as an object has been deleted");
-        RestartGame();
-    }
-
-    private void RestartGame() {
-
-        foreach (var obj in _placedObjects) {
-            Destroy(obj.gameObject);
-        }
-
-        _placedObjects.Clear();
+    public void RestartGame() {
+        StopAllCoroutines();
+        _spawnerInstance.Reset();
         BeginGame();
     }
 }
