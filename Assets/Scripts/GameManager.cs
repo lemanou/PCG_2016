@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour {
 
     private void BeginGame() {
         _spawnerInstance = Instantiate(SpawnerPrefab) as Spawner;
-        StartCoroutine(_spawnerInstance.Spawn());
+        _spawnerInstance.Spawn();
     }
 
     public void RestartGame() {

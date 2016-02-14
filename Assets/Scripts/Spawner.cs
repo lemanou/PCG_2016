@@ -9,55 +9,64 @@ public class Spawner : MonoBehaviour {
     public float generationStepDelay;
     public List<SpawnableObject> ObjectsToPlace;
 
+    private IntVector2 _size;
+    public SpawningBox SpawningBoxPrefab;
+    private SpawningBox[,] _boxes;
+
     private GameObject _roomInstance;
     private List<SpawnableObject> _placedObjects = new List<SpawnableObject>();
+    private Vector3 _roomSize, _roomBoundaries;
 
-    public IEnumerator Spawn() {
-
-        WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
+    public void Spawn() {
 
         _roomInstance = Instantiate(RoomPrefab) as GameObject;
 
-        Vector3 RoomSize = _roomInstance.GetComponent<Collider>().bounds.size;
-        Vector3 RoomBoundaries;
-        RoomBoundaries.x = (RoomSize.x / 2f) - 1;
-        RoomBoundaries.y = 0;
-        RoomBoundaries.z = (RoomSize.z / 2f) - 1;
-
-        foreach (var obj in ObjectsToPlace) {
-
-            yield return delay;
-
-            SpawnableObject tmp = Instantiate(obj) as SpawnableObject;
-            Vector3 tmpBounds = tmp.GetComponent<Collider>().bounds.size;
-
-            Vector3 tmpPosition =
-                new Vector3(UnityEngine.Random.Range(-RoomBoundaries.x, RoomBoundaries.x), 
-                tmpBounds.y - tmpBounds.y / 2f, UnityEngine.Random.Range(-RoomBoundaries.z, RoomBoundaries.z));
-
-            tmpPosition = CollisionCheck(tmpPosition, obj);
-
-            tmp.transform.position = tmpPosition;
-            tmp.transform.rotation = Quaternion.identity;
-            _placedObjects.Add(tmp);
-        }
-
+        GetRoomBoundariesStepZero();
+        SpawnBoxesStepOne();
+        StartCoroutine(CreateSpawningObjectsStepTwo());
     }
 
-    private Vector3 CollisionCheck(Vector3 tmpPosition, SpawnableObject obj) {
-        Vector3 tmpV = tmpPosition;
-
-        Collider[] hitColliders = Physics.OverlapSphere(tmpPosition, obj.GetComponent<Collider>().bounds.size.x);
-
-        if (hitColliders.Length > 0) {
-            foreach (var col in hitColliders) {
-                Debug.Log("Colliding with: " + col.name);
+    public void SpawnBoxesStepOne() {
+        _boxes = new SpawningBox[_size.x, _size.z];
+        for (int x = 0; x < _size.x; x++) {
+            for (int z = 0; z < _size.z; z++) {
+                CreateBox(new IntVector2(x, z));
             }
         }
-
-        return tmpV;
     }
 
+    private void CreateBox(IntVector2 coordinates) {
+        SpawningBox newBox = Instantiate(SpawningBoxPrefab) as SpawningBox;
+        _boxes[coordinates.x, coordinates.z] = newBox;
+        newBox.LocalCoordinates = coordinates;
+        newBox.name = "Spawned Box " + coordinates.x + ", " + coordinates.z;
+        newBox.transform.parent = transform;
+        newBox.transform.localPosition =
+            new Vector3(coordinates.x - _size.x * 0.5f + 0.5f, 0f, coordinates.z - _size.z * 0.5f + 0.5f);
+    }
+
+    private void GetRoomBoundariesStepZero() {
+        _roomSize = _roomInstance.GetComponent<Collider>().bounds.size;
+        _roomBoundaries.x = (_roomSize.x / 2f) - 1;
+        _roomBoundaries.y = 0;
+        _roomBoundaries.z = (_roomSize.z / 2f) - 1;
+        _size.x = (int)_roomSize.x;
+        _size.z = (int)_roomSize.z;
+    }
+
+    private IEnumerator CreateSpawningObjectsStepTwo() {
+        WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
+
+        foreach (var obj in ObjectsToPlace) {
+            yield return delay;
+            SpawnableObject newObject = Instantiate(obj) as SpawnableObject;
+
+            newObject.CorrectPlacement(_roomBoundaries);
+            
+            _placedObjects.Add(newObject);
+        }
+    }
+    
     public void RemoveDestroyedObject(SpawnableObject sobj) {
         _placedObjects.Remove(sobj);
         Debug.LogWarning("Deleting colliding: " + sobj.name);
