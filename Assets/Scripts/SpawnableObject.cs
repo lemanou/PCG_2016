@@ -22,30 +22,64 @@ public class SpawnableObject : MonoBehaviour {
         West
     }
 
-    public Tag LocalTag = Tag.Short;
-    public Placement LocalPlacement = Placement.NotSet;
-    public Facing LocalFacing = Facing.North;
+    public Tag localTag = Tag.Short;
+    public Placement localPlacement = Placement.NotSet;
+    public Facing localFacing = Facing.North;
 
     public IntVector2 NeededSpaceSize;
-    public int PlacementNumber;
+    public int placementNumber;
 
-    private List<SpawningBox> currentTriggerBoxes = new List<SpawningBox>();
+    public List<SpawningBox> currentTriggerBoxes = new List<SpawningBox>();
 
-    public void CorrectPlacement(Vector3 RoomBoundaries) {
+    private bool _placementCheck = false;
+    private Vector3 _roomBoundaries;
 
-        if ((RoomBoundaries.x - 2) == 0 || (RoomBoundaries.z - 2) == 0 || (-RoomBoundaries.x + 2) == 0 || (-RoomBoundaries.z + 2) == 0) {
-            Debug.LogWarning("Room too small");
+    void Start() {
+
+        //GetComponent<Collider>().isTrigger = true;
+        GetComponent<Rigidbody>().isKinematic = true;
+
+        _roomBoundaries = FindObjectOfType<Spawner>().GetBoundaries();
+
+        if ((_roomBoundaries.x - 2) <= 0 || (_roomBoundaries.z - 2) <= 0 || (-_roomBoundaries.x + 2) >= 0 || (-_roomBoundaries.z + 2) >= 0) {
+            Debug.LogWarning("Room too small for obj: " + gameObject.name + ". Self-Destruction!");
+            Destroy(gameObject);
+        }
+    }
+
+    private void LateUpdate() {
+
+        if (_placementCheck == true)
+            return;
+
+        Checker();
+    }
+
+    private void Checker() {
+
+        StartPlacement();
+        FixApproximates();
+
+        if (!CheckAllBoxes()) {
+            _placementCheck = false;
             return;
         }
 
-        //RandomPlacing(RoomBoundaries);
+        Debug.Log("Finally placed at: " + gameObject.name + " " + transform.position);
+        //GetComponent<Collider>().isTrigger = false;
+        //GetComponent<Rigidbody>().isKinematic = false;
+        _placementCheck = true;
 
-        switch (LocalPlacement) {
+    }
+
+    private void StartPlacement() {
+        switch (localPlacement) {
             case Placement.Middle:
-                PlaceInMidRoom(RoomBoundaries);
+                PlaceInMidRoom();
                 break;
             case Placement.Wall:
-                PlaceNearWall(RoomBoundaries);
+                //PlaceNearWall(RoomBoundaries);
+                Debug.Log("not made yet");
                 break;
             case Placement.NotSet:
                 Debug.LogWarning(gameObject.name + ": Placing not set, please check.");
@@ -53,95 +87,88 @@ public class SpawnableObject : MonoBehaviour {
         }
     }
 
-    private void PlaceInMidRoom(Vector3 RoomBoundaries) {
-        float x = 0f, y = 0f, z = 0f;
-        Vector3 tmpBounds = GetComponent<Collider>().bounds.size;
-        y = tmpBounds.y - tmpBounds.y / 2f;
+    private void PlaceInMidRoom() {
 
-        switch (LocalFacing) {
+        int offset = 2;
+        Vector3 V = new Vector3();
+        Vector3 tmpBounds = GetComponent<Collider>().bounds.size;
+        V.y = tmpBounds.y - tmpBounds.y / 2f;
+
+        switch (localFacing) {
             case Facing.North:
-                x = UnityEngine.Random.Range(-RoomBoundaries.x + 2, RoomBoundaries.x - 2);
-                z = UnityEngine.Random.Range(0, RoomBoundaries.z - 2);
+                V.x = UnityEngine.Random.Range(-_roomBoundaries.x + offset, _roomBoundaries.x - offset);
+                V.z = UnityEngine.Random.Range(0, _roomBoundaries.z - offset);
                 break;
             case Facing.East:
-                x = UnityEngine.Random.Range(0, RoomBoundaries.x - 2);
-                z = UnityEngine.Random.Range(-RoomBoundaries.z + 2, RoomBoundaries.z - 2);
+                V.x = UnityEngine.Random.Range(0, _roomBoundaries.x - offset);
+                V.z = UnityEngine.Random.Range(-_roomBoundaries.z + offset, _roomBoundaries.z - offset);
                 break;
             case Facing.South:
-                x = UnityEngine.Random.Range(-RoomBoundaries.x + 2, RoomBoundaries.x - 2);
-                z = UnityEngine.Random.Range(-RoomBoundaries.z + 2, 0);
+                V.x = UnityEngine.Random.Range(-_roomBoundaries.x + offset, _roomBoundaries.x - offset);
+                V.z = UnityEngine.Random.Range(-_roomBoundaries.z + offset, 0);
                 break;
             case Facing.West:
-                x = UnityEngine.Random.Range(-RoomBoundaries.x + 2, 0);
-                z = UnityEngine.Random.Range(-RoomBoundaries.z + 2, RoomBoundaries.z - 2);
+                V.x = UnityEngine.Random.Range(-_roomBoundaries.x + offset, 0);
+                V.z = UnityEngine.Random.Range(-_roomBoundaries.z + offset, _roomBoundaries.z - offset);
                 break;
         }
 
-        transform.position = new Vector3(x, y, z);
-
-        CheckAllBoxes(RoomBoundaries);
-
-        Debug.Log(gameObject.name + " placed at: " + transform.position);
+        transform.position = new Vector3(V.x, V.y, V.z);
+        Debug.Log("Trying out position: " + transform.position + " for " + gameObject.name);
     }
 
-    private void SetColBox(SpawningBox sbx) {
-        if (LocalTag == Tag.Short)
-            sbx.bc = SpawningBox.BoxCondition.Short;
-        else if (LocalTag == Tag.Tall)
-            sbx.bc = SpawningBox.BoxCondition.Tall;
+    private void FixApproximates() {
+        //float gridSize = (_roomBoundaries.x + 1) * 2;
+        //float offset = 0.5f;
+        //Vector3 V = transform.position;
 
-        sbx.GetComponent<Renderer>().enabled = true;
+        //V -= Vector3.one * offset;
+        //V /= gridSize;
+        //V = new Vector3(Mathf.Round(V.x), Mathf.Round(V.y), Mathf.Round(V.z));
+        //V *= gridSize;
+        //V += Vector3.one * offset;
+
+        //V.y = transform.position.y;
+
+        //transform.position = V;
+        //transform.rotation = Quaternion.identity;
+
+        //if (currentTriggerBoxes.Count > 0) {
+        //    Debug.Log(gameObject.name + ": LtW: " + transform.localToWorldMatrix + " WtL: " + transform.worldToLocalMatrix);
+        //    Debug.Log(currentTriggerBoxes[0].name + ": LtW: " + currentTriggerBoxes[0].transform.localToWorldMatrix + " WtL: " + currentTriggerBoxes[0].transform.worldToLocalMatrix);
+        //}
+
+        // Just align it based on one of the cubes.
+        //if (currentTriggerBoxes.Count > 0) {
+        //    Debug.Log("applying fix");
+        //    Matrix4x4 test = currentTriggerBoxes[0].transform.localToWorldMatrix;
+        //    transform.position = new Vector3(test[0, 3], transform.position.y, test[1, 2]);
+
+        //    CheckAllBoxes();
+        //}
+
+        Vector3 tmpBounds = GetComponent<Collider>().bounds.size;
+        Vector3 currentPos = transform.position;
+        transform.position = new Vector3(Mathf.Round(currentPos.x) + 0.5f, currentPos.y, Mathf.Round(currentPos.z) + tmpBounds.z / 2);
     }
 
-    private void ReSetColBox(SpawningBox sbx) {
-        sbx.bc = SpawningBox.BoxCondition.Free;
-        sbx.GetComponent<Renderer>().enabled = false;
-    }
+    private bool CheckAllBoxes() {
 
-    private void CheckAllBoxes(Vector3 RoomBoundaries) {
+        if (currentTriggerBoxes.Count == 0)
+            return false;
+
+        Debug.Log("checking " + currentTriggerBoxes.Count + " boxes in trigger list for: " + gameObject.name);
+
         foreach (var sbx in currentTriggerBoxes) {
-            if (sbx.bc != SpawningBox.BoxCondition.Free)
-                PlaceInMidRoom(RoomBoundaries); // ToDo Check recursion if works 
+            if (sbx.Father != gameObject.name) {
+                Debug.Log(gameObject.name + ": wrong placement, rechecking position.");
+                return false;
+            }
         }
+        return true;
     }
 
     private void PlaceNearWall(Vector3 RoomBoundaries) {
         throw new NotImplementedException();
-    }
-
-    private void RandomPlacing(Vector3 RoomBoundaries) {
-        Vector3 tmpBounds = GetComponent<Collider>().bounds.size;
-
-        Vector3 tmpPosition =
-            new Vector3(UnityEngine.Random.Range(-RoomBoundaries.x, RoomBoundaries.x),
-            tmpBounds.y - tmpBounds.y / 2f, UnityEngine.Random.Range(-RoomBoundaries.z, RoomBoundaries.z));
-
-        transform.position = tmpPosition;
-        transform.rotation = Quaternion.identity;
-    }
-
-    void OnTriggerEnter(Collider col) {
-        SpawningBox sbx = col.GetComponent<SpawningBox>();
-        if (sbx) {
-            currentTriggerBoxes.Add(sbx);
-            SetColBox(sbx);
-        }
-    }
-
-    void OnTriggerStay(Collider col) {
-        SpawningBox sbx = col.GetComponent<SpawningBox>();
-        if (sbx) {
-            if (!currentTriggerBoxes.Contains(sbx))
-                currentTriggerBoxes.Add(sbx);
-            SetColBox(sbx);
-        }
-    }
-
-    void OnTriggerExit(Collider col) {
-        SpawningBox sbx = col.GetComponent<SpawningBox>();
-        if (sbx) {
-            currentTriggerBoxes.Remove(sbx);
-            ReSetColBox(sbx);
-        }
     }
 }

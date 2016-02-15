@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class SpawningBox : MonoBehaviour {
 
@@ -13,4 +12,48 @@ public class SpawningBox : MonoBehaviour {
     }
 
     public BoxCondition bc = BoxCondition.Free;
+
+    public string Father = "none";
+
+    private void SetColBox(SpawnableObject sObj) {
+        if (Father == "none") {
+            if (sObj.localTag == SpawnableObject.Tag.Short)
+                bc = BoxCondition.Short;
+            else if (sObj.localTag == SpawnableObject.Tag.Tall)
+                bc = BoxCondition.Tall;
+
+            Father = sObj.name;
+        }
+        GetComponent<Renderer>().enabled = true;
+    }
+
+    private void ReSetColBox(SpawnableObject sbx) {
+        bc = BoxCondition.Free;
+        Father = "none";
+        GetComponent<Renderer>().enabled = false;
+    }
+
+    private void OnTriggerEnter(Collider col) {
+        SpawnableObject sObj = col.GetComponent<SpawnableObject>();
+        if (sObj && !sObj.currentTriggerBoxes.Contains(this)) {
+            sObj.currentTriggerBoxes.Add(this);
+            SetColBox(sObj);
+        }
+    }
+
+    private void OnTriggerStay(Collider col) {
+        SpawnableObject sObj = col.GetComponent<SpawnableObject>();
+        if (sObj) {
+            GetComponent<Renderer>().enabled = true;
+            //GetComponent<Renderer>().material.color = sObj.GetComponent<Renderer>().material.color;
+        }
+    }
+
+    private void OnTriggerExit(Collider col) {
+        SpawnableObject sObj = col.GetComponent<SpawnableObject>();
+        if (sObj) {
+            sObj.currentTriggerBoxes.Remove(this);
+            ReSetColBox(sObj);
+        }
+    }
 }

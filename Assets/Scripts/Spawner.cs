@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 
 public class Spawner : MonoBehaviour {
 
@@ -16,6 +15,14 @@ public class Spawner : MonoBehaviour {
     private GameObject _roomInstance;
     private List<SpawnableObject> _placedObjects = new List<SpawnableObject>();
     private Vector3 _roomSize, _roomBoundaries;
+
+    public Vector3 GetBoundaries() {
+        return _roomBoundaries;
+    }
+
+    public Vector3 GetRoomSize() {
+        return _roomSize;
+    }
 
     public void Spawn() {
 
@@ -50,6 +57,8 @@ public class Spawner : MonoBehaviour {
         _roomBoundaries.x = (_roomSize.x / 2f) - 1;
         _roomBoundaries.y = 0;
         _roomBoundaries.z = (_roomSize.z / 2f) - 1;
+
+        // Set the size of the array based on the room size
         _size.x = (int)_roomSize.x;
         _size.z = (int)_roomSize.z;
     }
@@ -59,18 +68,18 @@ public class Spawner : MonoBehaviour {
 
         foreach (var obj in ObjectsToPlace) {
             yield return delay;
-            SpawnableObject newObject = Instantiate(obj) as SpawnableObject;
 
-            newObject.CorrectPlacement(_roomBoundaries);
-            
-            _placedObjects.Add(newObject);
+            if (obj.name == "Table" || obj.name == "Capsule") {
+                SpawnableObject newObject = Instantiate(obj) as SpawnableObject;
+                _placedObjects.Add(newObject);
+            }
         }
     }
-    
+
     public void RemoveDestroyedObject(SpawnableObject sobj) {
         _placedObjects.Remove(sobj);
         Debug.LogWarning("Deleting colliding: " + sobj.name);
-        //RestartGame(); // from GameManager
+        //RestartGame(); 
     }
 
     public void Reset() {
