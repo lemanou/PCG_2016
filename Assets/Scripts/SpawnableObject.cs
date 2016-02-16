@@ -32,14 +32,17 @@ public class SpawnableObject : MonoBehaviour {
     public List<SpawningBox> currentTriggerBoxes = new List<SpawningBox>();
 
     private bool _placementCheck = false;
-    private Vector3 _roomBoundaries;
+    private Vector3 _roomBoundaries, _myBounds;
+    private Renderer _myRenderer;
 
     void Start() {
 
         //GetComponent<Collider>().isTrigger = true;
         GetComponent<Rigidbody>().isKinematic = true;
 
+        _myBounds = GetComponent<Collider>().bounds.size;
         _roomBoundaries = FindObjectOfType<Spawner>().GetBoundaries();
+        _myRenderer = transform.GetComponent<Renderer>();
 
         if ((_roomBoundaries.x - 2) <= 0 || (_roomBoundaries.z - 2) <= 0 || (-_roomBoundaries.x + 2) >= 0 || (-_roomBoundaries.z + 2) >= 0) {
             Debug.LogWarning("Room too small for obj: " + gameObject.name + ". Self-Destruction!");
@@ -59,6 +62,7 @@ public class SpawnableObject : MonoBehaviour {
 
         StartPlacement();
         FixApproximates();
+        FindCollidingSpawnedBoxes();
 
         if (!CheckAllBoxes()) {
             _placementCheck = false;
@@ -66,10 +70,40 @@ public class SpawnableObject : MonoBehaviour {
         }
 
         Debug.Log("Finally placed at: " + gameObject.name + " " + transform.position);
-        //GetComponent<Collider>().isTrigger = false;
-        //GetComponent<Rigidbody>().isKinematic = false;
         _placementCheck = true;
+        //GetComponent<Collider>().isTrigger = false;
+        //GetComponent<Rigidbody>().isKinematic = false;       
+    }
 
+    private void FindCollidingSpawnedBoxes() {
+
+        // First check all colliding spawnedBoxes
+        Vector3 _center = _myRenderer.bounds.center;
+        Vector3 _halfSize = _myRenderer.bounds.size / 2;
+        Collider[] _colliders = Physics.OverlapBox(_center, _halfSize - _halfSize * 0.05f);
+        List<SpawningBox> comparingList = new List<SpawningBox>();
+        
+        foreach (var obj in _colliders) {
+            SpawningBox sbx = obj.GetComponent<SpawningBox>();
+            if (sbx) {
+                currentTriggerBoxes.Add(sbx);
+                comparingList.Add(sbx);
+                sbx.SetColBox(this);
+            }
+        }
+
+        // Then double check and compare when to remove
+        List<SpawningBox> removingList = new List<SpawningBox>();
+        foreach (SpawningBox sbx in currentTriggerBoxes) {            
+            if (!comparingList.Contains(sbx)) {
+                removingList.Add(sbx);
+            }
+        }
+
+        foreach (SpawningBox sbx in removingList) {
+            currentTriggerBoxes.Remove(sbx);
+            sbx.ReSetColBox();
+        }
     }
 
     private void StartPlacement() {
@@ -91,8 +125,7 @@ public class SpawnableObject : MonoBehaviour {
 
         int offset = 2;
         Vector3 V = new Vector3();
-        Vector3 tmpBounds = GetComponent<Collider>().bounds.size;
-        V.y = tmpBounds.y - tmpBounds.y / 2f;
+        V.y = _myBounds.y - _myBounds.y / 2f;
 
         switch (localFacing) {
             case Facing.North:
@@ -147,9 +180,8 @@ public class SpawnableObject : MonoBehaviour {
         //    CheckAllBoxes();
         //}
 
-        Vector3 tmpBounds = GetComponent<Collider>().bounds.size;
-        Vector3 currentPos = transform.position;
-        transform.position = new Vector3(Mathf.Round(currentPos.x) + 0.5f, currentPos.y, Mathf.Round(currentPos.z) + tmpBounds.z / 2);
+        Vector3 targetPos = transform.position;
+        transform.position = new Vector3(Mathf.Round(targetPos.x) + 0.5f, targetPos.y, Mathf.Round(targetPos.z) + _myBounds.z / 2);
     }
 
     private bool CheckAllBoxes() {
@@ -157,14 +189,16 @@ public class SpawnableObject : MonoBehaviour {
         if (currentTriggerBoxes.Count == 0)
             return false;
 
-        Debug.Log("checking " + currentTriggerBoxes.Count + " boxes in trigger list for: " + gameObject.name);
+        Debug.Log("Checking " + currentTriggerBoxes.Count + " boxes in trigger list for: " + gameObject.name);
 
         foreach (var sbx in currentTriggerBoxes) {
             if (sbx.Father != gameObject.name) {
-                Debug.Log(gameObject.name + ": wrong placement, rechecking position.");
+                Debug.Log(gameObject.name + ": wrong placement, need to recheck fixed position: " + transform.position);
                 return false;
             }
         }
+
+        Debug.Log("Accepted position: " + transform.position + " for: " + gameObject.name);
         return true;
     }
 

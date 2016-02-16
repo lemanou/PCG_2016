@@ -21,8 +21,7 @@ public class GameManager : MonoBehaviour {
         _spawnerInstance.Spawn();
     }
 
-    public void RestartGame() {
-        StopAllCoroutines();
+    public void RestartGame() {        
         _spawnerInstance.Reset();
         BeginGame();
     }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Spawner : MonoBehaviour {
 
@@ -33,6 +34,17 @@ public class Spawner : MonoBehaviour {
         StartCoroutine(CreateSpawningObjectsStepTwo());
     }
 
+    private void GetRoomBoundariesStepZero() {
+        _roomSize = _roomInstance.GetComponent<Collider>().bounds.size;
+        _roomBoundaries.x = (_roomSize.x / 2f) - 1;
+        _roomBoundaries.y = 0;
+        _roomBoundaries.z = (_roomSize.z / 2f) - 1;
+
+        // Set the size of the array based on the room size
+        _size.x = (int)_roomSize.x;
+        _size.z = (int)_roomSize.z;
+    }
+
     public void SpawnBoxesStepOne() {
         _boxes = new SpawningBox[_size.x, _size.z];
         for (int x = 0; x < _size.x; x++) {
@@ -52,21 +64,14 @@ public class Spawner : MonoBehaviour {
             new Vector3(coordinates.x - _size.x * 0.5f + 0.5f, 0f, coordinates.z - _size.z * 0.5f + 0.5f);
     }
 
-    private void GetRoomBoundariesStepZero() {
-        _roomSize = _roomInstance.GetComponent<Collider>().bounds.size;
-        _roomBoundaries.x = (_roomSize.x / 2f) - 1;
-        _roomBoundaries.y = 0;
-        _roomBoundaries.z = (_roomSize.z / 2f) - 1;
-
-        // Set the size of the array based on the room size
-        _size.x = (int)_roomSize.x;
-        _size.z = (int)_roomSize.z;
-    }
-
     private IEnumerator CreateSpawningObjectsStepTwo() {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
+        
+        // Sort to start placing by the largest object first
+        List<SpawnableObject> SortedList = ObjectsToPlace.OrderByDescending(o =>
+            o.gameObject.GetComponent<Renderer>().bounds.size.x * o.gameObject.GetComponent<Renderer>().bounds.size.z).ToList();
 
-        foreach (var obj in ObjectsToPlace) {
+        foreach (var obj in SortedList) {
             yield return delay;
 
             if (obj.name == "Table" || obj.name == "Capsule") {
@@ -83,6 +88,8 @@ public class Spawner : MonoBehaviour {
     }
 
     public void Reset() {
+        StopAllCoroutines();
+
         foreach (var obj in _placedObjects) {
             Destroy(obj.gameObject);
         }
