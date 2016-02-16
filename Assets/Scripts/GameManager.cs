@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour {
 
@@ -21,8 +22,18 @@ public class GameManager : MonoBehaviour {
         _spawnerInstance.Spawn();
     }
 
-    public void RestartGame() {        
+    public void RestartGame() {
+        ClearConsole();
         _spawnerInstance.Reset();
         BeginGame();
+    }
+
+    // UsefulShortcuts reflection trick
+    [MenuItem("Tools/Clear Console %#c")] // CMD + SHIFT + C
+    static void ClearConsole() {
+        // This simply does "LogEntries.Clear()" the long way:
+        var logEntries = System.Type.GetType("UnityEditorInternal.LogEntries,UnityEditor.dll");
+        var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+        clearMethod.Invoke(null, null);
     }
 }

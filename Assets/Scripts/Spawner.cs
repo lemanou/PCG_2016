@@ -75,10 +75,10 @@ public class Spawner : MonoBehaviour {
 
             int x = obj.placementNumber;
             while (x > 0) {
-                yield return delay;
                 x--;
                 SpawnableObject newObject = Instantiate(obj) as SpawnableObject;
                 _placedObjects.Add(newObject);
+                yield return delay;
             }
         }
     }

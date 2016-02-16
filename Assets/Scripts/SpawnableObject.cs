@@ -32,9 +32,33 @@ public class SpawnableObject : MonoBehaviour {
 
     public List<SpawningBox> currentTriggerBoxes = new List<SpawningBox>();
 
+    private int _timesCounter = 0;
     private bool _placementCheck = false;
     private Vector3 _roomBoundaries, _myBounds;
     private Renderer _myRenderer;
+
+    public bool GetPlacementCheck() {
+        return _placementCheck;
+    }
+
+    private void ChangeFacing() {
+        switch (localFacing) {
+            case Facing.North:
+                localFacing = Facing.East;
+                break;
+            case Facing.East:
+                localFacing = Facing.South;
+                break;
+            case Facing.South:
+                localFacing = Facing.West;
+                break;
+            case Facing.West:
+                localFacing = Facing.North;
+                break;
+        }
+        _timesCounter = 0;
+        Debug.Log("Changed facing for: " + gameObject.name);
+    }
 
     void Start() {
 
@@ -62,14 +86,20 @@ public class SpawnableObject : MonoBehaviour {
 
     private void Checker() {
 
+        if (_timesCounter > 5) {
+            ChangeFacing();
+        }
+
         StartPlacement();
         FixApproximates();
         FindCollidingSpawnedBoxes();
 
         if (!CheckAllBoxes()) {
+            _timesCounter++;
             _placementCheck = false;
             return;
         }
+
         if (CustomDebug)
             Debug.Log("Finally placed at: " + gameObject.name + " " + transform.position);
         _placementCheck = true;
@@ -104,7 +134,8 @@ public class SpawnableObject : MonoBehaviour {
 
         foreach (SpawningBox sbx in removingList) {
             currentTriggerBoxes.Remove(sbx);
-            sbx.ReSetColBox();
+            if (sbx.Father == gameObject)
+                sbx.ReSetColBox();
         }
     }
 

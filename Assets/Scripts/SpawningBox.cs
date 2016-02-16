@@ -23,6 +23,8 @@ public class SpawningBox : MonoBehaviour {
                 bc = BoxCondition.Tall;
 
             Father = sObj.gameObject;
+        } else {
+            //Debug.Log(gameObject.name + " ~ Cannot set box, used by: " + Father);
         }
         GetComponent<Renderer>().enabled = true;
     }
