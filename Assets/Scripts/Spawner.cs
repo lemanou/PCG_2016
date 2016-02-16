@@ -66,25 +66,21 @@ public class Spawner : MonoBehaviour {
 
     private IEnumerator CreateSpawningObjectsStepTwo() {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
-        
+
         // Sort to start placing by the largest object first
         List<SpawnableObject> SortedList = ObjectsToPlace.OrderByDescending(o =>
             o.gameObject.GetComponent<Renderer>().bounds.size.x * o.gameObject.GetComponent<Renderer>().bounds.size.z).ToList();
 
-        foreach (var obj in SortedList) {
-            yield return delay;
+        foreach (SpawnableObject obj in SortedList) {
 
-            if (obj.name == "Table" || obj.name == "Capsule") {
+            int x = obj.placementNumber;
+            while (x > 0) {
+                yield return delay;
+                x--;
                 SpawnableObject newObject = Instantiate(obj) as SpawnableObject;
                 _placedObjects.Add(newObject);
             }
         }
-    }
-
-    public void RemoveDestroyedObject(SpawnableObject sobj) {
-        _placedObjects.Remove(sobj);
-        Debug.LogWarning("Deleting colliding: " + sobj.name);
-        //RestartGame(); 
     }
 
     public void Reset() {
@@ -97,6 +93,12 @@ public class Spawner : MonoBehaviour {
         _placedObjects.Clear();
 
         Destroy(_roomInstance);
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
+
+    //public void RemoveDestroyedObject(SpawnableObject sobj) {
+    //    _placedObjects.Remove(sobj);
+    //    Debug.LogWarning("Deleting colliding: " + sobj.name);
+    //    //RestartGame(); 
+    //}
 }

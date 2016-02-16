@@ -13,23 +13,23 @@ public class SpawningBox : MonoBehaviour {
 
     public BoxCondition bc = BoxCondition.Free;
 
-    public string Father = "none";
+    public GameObject Father = null;
 
     public void SetColBox(SpawnableObject sObj) {
-        if (Father == "none") {
+        if (Father == null) {
             if (sObj.localTag == SpawnableObject.Tag.Short)
                 bc = BoxCondition.Short;
             else if (sObj.localTag == SpawnableObject.Tag.Tall)
                 bc = BoxCondition.Tall;
 
-            Father = sObj.name;
+            Father = sObj.gameObject;
         }
         GetComponent<Renderer>().enabled = true;
     }
 
     public void ReSetColBox() {
         bc = BoxCondition.Free;
-        Father = "none";
+        Father = null;
         GetComponent<Renderer>().enabled = false;
     }
 

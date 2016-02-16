@@ -22,6 +22,7 @@ public class SpawnableObject : MonoBehaviour {
         West
     }
 
+    public bool CustomDebug = true;
     public Tag localTag = Tag.Short;
     public Placement localPlacement = Placement.NotSet;
     public Facing localFacing = Facing.North;
@@ -45,7 +46,8 @@ public class SpawnableObject : MonoBehaviour {
         _myRenderer = transform.GetComponent<Renderer>();
 
         if ((_roomBoundaries.x - 2) <= 0 || (_roomBoundaries.z - 2) <= 0 || (-_roomBoundaries.x + 2) >= 0 || (-_roomBoundaries.z + 2) >= 0) {
-            Debug.LogWarning("Room too small for obj: " + gameObject.name + ". Self-Destruction!");
+            if (CustomDebug)
+                Debug.LogWarning("Room too small for obj: " + gameObject.name + ". Self-Destruction!");
             Destroy(gameObject);
         }
     }
@@ -68,8 +70,8 @@ public class SpawnableObject : MonoBehaviour {
             _placementCheck = false;
             return;
         }
-
-        Debug.Log("Finally placed at: " + gameObject.name + " " + transform.position);
+        if (CustomDebug)
+            Debug.Log("Finally placed at: " + gameObject.name + " " + transform.position);
         _placementCheck = true;
         //GetComponent<Collider>().isTrigger = false;
         //GetComponent<Rigidbody>().isKinematic = false;       
@@ -82,7 +84,7 @@ public class SpawnableObject : MonoBehaviour {
         Vector3 _halfSize = _myRenderer.bounds.size / 2;
         Collider[] _colliders = Physics.OverlapBox(_center, _halfSize - _halfSize * 0.05f);
         List<SpawningBox> comparingList = new List<SpawningBox>();
-        
+
         foreach (var obj in _colliders) {
             SpawningBox sbx = obj.GetComponent<SpawningBox>();
             if (sbx) {
@@ -94,7 +96,7 @@ public class SpawnableObject : MonoBehaviour {
 
         // Then double check and compare when to remove
         List<SpawningBox> removingList = new List<SpawningBox>();
-        foreach (SpawningBox sbx in currentTriggerBoxes) {            
+        foreach (SpawningBox sbx in currentTriggerBoxes) {
             if (!comparingList.Contains(sbx)) {
                 removingList.Add(sbx);
             }
@@ -112,8 +114,7 @@ public class SpawnableObject : MonoBehaviour {
                 PlaceInMidRoom();
                 break;
             case Placement.Wall:
-                //PlaceNearWall(RoomBoundaries);
-                Debug.Log("not made yet");
+                PlaceNearWall();
                 break;
             case Placement.NotSet:
                 Debug.LogWarning(gameObject.name + ": Placing not set, please check.");
@@ -122,7 +123,6 @@ public class SpawnableObject : MonoBehaviour {
     }
 
     private void PlaceInMidRoom() {
-
         int offset = 2;
         Vector3 V = new Vector3();
         V.y = _myBounds.y - _myBounds.y / 2f;
@@ -147,7 +147,37 @@ public class SpawnableObject : MonoBehaviour {
         }
 
         transform.position = new Vector3(V.x, V.y, V.z);
-        Debug.Log("Trying out position: " + transform.position + " for " + gameObject.name);
+        if (CustomDebug)
+            Debug.Log("Trying out position: " + transform.position + " for " + gameObject.name);
+    }
+
+    private void PlaceNearWall() {
+        int offset = 2;
+        Vector3 V = new Vector3();
+        V.y = _myBounds.y - _myBounds.y / 2f;
+
+        switch (localFacing) {
+            case Facing.North:
+                V.x = UnityEngine.Random.Range(-_roomBoundaries.x + offset, _roomBoundaries.x - offset);
+                V.z = _roomBoundaries.z;
+                break;
+            case Facing.East:
+                V.x = _roomBoundaries.x;
+                V.z = UnityEngine.Random.Range(-_roomBoundaries.z + offset, _roomBoundaries.z - offset);
+                break;
+            case Facing.South:
+                V.x = UnityEngine.Random.Range(-_roomBoundaries.x + offset, _roomBoundaries.x - offset);
+                V.z = -_roomBoundaries.z;
+                break;
+            case Facing.West:
+                V.x = -_roomBoundaries.x;
+                V.z = UnityEngine.Random.Range(-_roomBoundaries.z + offset, _roomBoundaries.z - offset);
+                break;
+        }
+
+        transform.position = new Vector3(V.x, V.y, V.z);
+        if (CustomDebug)
+            Debug.Log("Trying out position: " + transform.position + " for " + gameObject.name);
     }
 
     private void FixApproximates() {
@@ -189,20 +219,18 @@ public class SpawnableObject : MonoBehaviour {
         if (currentTriggerBoxes.Count == 0)
             return false;
 
-        Debug.Log("Checking " + currentTriggerBoxes.Count + " boxes in trigger list for: " + gameObject.name);
+        if (CustomDebug)
+            Debug.Log("Checking " + currentTriggerBoxes.Count + " boxes in trigger list for: " + gameObject.name);
 
         foreach (var sbx in currentTriggerBoxes) {
-            if (sbx.Father != gameObject.name) {
-                Debug.Log(gameObject.name + ": wrong placement, need to recheck fixed position: " + transform.position);
+            if (sbx.Father != gameObject) {
+                if (CustomDebug)
+                    Debug.Log(gameObject.name + ": wrong placement, need to recheck fixed position: " + transform.position);
                 return false;
             }
         }
-
-        Debug.Log("Accepted position: " + transform.position + " for: " + gameObject.name);
+        if (CustomDebug)
+            Debug.Log("Accepted position: " + transform.position + " for: " + gameObject.name);
         return true;
-    }
-
-    private void PlaceNearWall(Vector3 RoomBoundaries) {
-        throw new NotImplementedException();
     }
 }
