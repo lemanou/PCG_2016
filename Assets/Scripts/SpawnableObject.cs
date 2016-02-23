@@ -63,7 +63,7 @@ public class SpawnableObject : MonoBehaviour {
     void Start() {
 
         //GetComponent<Collider>().isTrigger = true;
-        GetComponent<Rigidbody>().isKinematic = true;
+        //GetComponent<Rigidbody>().isKinematic = true;
 
         _myBounds = GetComponent<Collider>().bounds.size;
         _roomBoundaries = FindObjectOfType<Spawner>().GetBoundaries();
@@ -93,6 +93,7 @@ public class SpawnableObject : MonoBehaviour {
         StartPlacement();
         FixApproximates();
         FindCollidingSpawnedBoxes();
+
 
         if (!CheckAllBoxes()) {
             _timesCounter++;
@@ -156,7 +157,8 @@ public class SpawnableObject : MonoBehaviour {
     private void PlaceInMidRoom() {
         int offset = 2;
         Vector3 V = new Vector3();
-        V.y = _myBounds.y - _myBounds.y / 2f;
+        //V.y = _myBounds.y - _myBounds.y / 2f;
+        V.y = transform.position.y;
 
         switch (localFacing) {
             case Facing.North:
@@ -185,7 +187,8 @@ public class SpawnableObject : MonoBehaviour {
     private void PlaceNearWall() {
         int offset = 2;
         Vector3 V = new Vector3();
-        V.y = _myBounds.y - _myBounds.y / 2f;
+        //V.y = _myBounds.y - _myBounds.y / 2f;
+        V.y = transform.position.y;
 
         switch (localFacing) {
             case Facing.North:
@@ -242,7 +245,7 @@ public class SpawnableObject : MonoBehaviour {
         //}
 
         Vector3 targetPos = transform.position;
-        transform.position = new Vector3(Mathf.Round(targetPos.x) + 0.5f, targetPos.y, Mathf.Round(targetPos.z) + _myBounds.z / 2);
+        transform.position = new Vector3(Mathf.Round(targetPos.x) + _myBounds.x / 2, targetPos.y, Mathf.Round(targetPos.z) + _myBounds.z / 2);
     }
 
     private bool CheckAllBoxes() {
