@@ -35,7 +35,7 @@ public class Save : MonoBehaviour, IGazeListener {
 
     void BeginSavin() {
         // Get time stamp for file name
-        _timeStamp = string.Format("{0:yyyy-MM-dd HH-mm-ss}", DateTime.Now);
+        _timeStamp = string.Format("{0:yyyy-MM-dd HH.mm.ss}", DateTime.Now);
         // Initialize the list to hold the gaze data
         _gd = new List<GazeData>();
         // activate C# TET client, default port
@@ -48,16 +48,17 @@ public class Save : MonoBehaviour, IGazeListener {
         string filePath = Application.dataPath + "/SavedFiles/" + _timeStamp + ".csv";
         string delimiter = ",";
 
-        string[][] output = new string[_gd.Count + 2][]; // +1 for the header
+        string[][] output = new string[_gd.Count + 1][]; // +1 for the header
 
-        output[0] = new string[] { "Head Location", "","", "Left Raw", "", "Left Smoothed", "", "Right Raw", "", "Right Smoothed", "",
+        // Header of csv file
+        output[0] = new string[] { "Head Orientation", "","", "Left Raw", "", "Left Smoothed", "", "Right Raw", "", "Right Smoothed", "",
                         "Combined Raw", "","Combined Smoothed", "", "Is Fixated", "State", "TimeStamp"};
 
         for (int i = 0; i < _gd.Count; i++) {
 
             // Head
             Head head = _gd[i].Head;
-            string tmpHeadLoc = head.Location.ToString();
+            string tmpHeadLoc = head.Orientation.ToString();
             
             // Left Eye
             Eye le = _gd[i].LeftEye;
