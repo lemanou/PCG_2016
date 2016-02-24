@@ -73,11 +73,25 @@ public class Spawner : MonoBehaviour {
 
         foreach (SpawnableObject obj in SortedList) {
 
+            foreach (var item in _placedObjects) {
+                if (!item.GetPlacementCheck()) {
+                    //Debug.Log("Skipping one turn to place: " + item.name);
+                    yield return delay;
+                }
+            }
+
+
             int x = obj.placementNumber;
             while (x > 0) {
                 x--;
-                SpawnableObject newObject = Instantiate(obj) as SpawnableObject;
-                _placedObjects.Add(newObject);
+                SpawnableObject newObj = Instantiate(obj);
+
+                foreach (SpawnableObject sitem in _placedObjects) {
+                    if (sitem.name == newObj.name)
+                        newObj.name += 2;
+                }
+
+                _placedObjects.Add(newObj);
                 yield return delay;
             }
         }

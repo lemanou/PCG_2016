@@ -16,6 +16,13 @@ public class SpawningBox : MonoBehaviour {
     public GameObject Father = null;
 
     public void SetColBox(SpawnableObject sObj) {
+
+        if (gameObject.name == "Spawned Box 7, 3" || gameObject.name == "Spawned Box 7, 4") {
+            GetComponent<Renderer>().enabled = true;
+            GetComponent<Renderer>().material.color = Color.red;
+            return;
+        }
+
         if (Father == null) {
             if (sObj.localTag == SpawnableObject.Tag.Short)
                 bc = BoxCondition.Short;
