@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class hideMouseCursor : MonoBehaviour
+public class HideMouseCursor : MonoBehaviour
 {
 	void Start()
 	{
