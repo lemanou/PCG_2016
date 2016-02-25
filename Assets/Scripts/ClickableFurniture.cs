@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 
 public class ClickableFurniture : MonoBehaviour
 {
     public GameObject questItem;
+    public Text DescriptiveText;
     
     private Renderer _renderer;
 
