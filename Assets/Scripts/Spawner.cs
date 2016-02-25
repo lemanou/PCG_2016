@@ -118,8 +118,18 @@ public class Spawner : MonoBehaviour {
         }
 
         if (_placedObjCount >= totalAmountOfFurniture) {
+            bool once = true;
+
+            foreach (var item in _placedObjects) {
+                if (!item.GetPlacementCheck())
+                    once = false;
+            }
+
             // now we have placed all requested objects and we can delete the boxes
-            DeleteAllBoxes();
+            if (once)
+                DeleteAllBoxes();
+        } else {
+            Debug.Log(_placedObjCount);
         }
     }
 
@@ -128,11 +138,11 @@ public class Spawner : MonoBehaviour {
 
         var children = new List<GameObject>();
         foreach (Transform child in transform) children.Add(child.gameObject);
-        children.ForEach(child => Destroy(child));
+        children.ForEach(child => Destroy(child)); // child.GetComponent<Renderer>().enabled = false
     }
 
     public void Reset() {
-        StopAllCoroutines();
+        StopCoroutine(CreateSpawningObjectsStepTwo());
 
         foreach (var obj in _placedObjects) {
             Destroy(obj.gameObject);
