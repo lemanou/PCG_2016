@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SpawnableObject : MonoBehaviour {
 
@@ -60,6 +61,11 @@ public class SpawnableObject : MonoBehaviour {
 
     private void Start() {
 
+        if (SceneManager.GetActiveScene().name != "ScriptTester") {
+            _placementCheck = true;
+            return;
+        }
+
         //GetComponent<Collider>().isTrigger = true;
         //GetComponent<Rigidbody>().isKinematic = true;
 
@@ -115,15 +121,15 @@ public class SpawnableObject : MonoBehaviour {
 
     private void LateUpdate() {
 
+        if (_placementCheck == true)
+            return;
+
         // to counter the worst cast where no box is found and the object is placed at 0,0,0
         if (transform.position == _checkVector) {
             //Debug.LogWarning("Could not find box, restart for: " + gameObject.name);
             _placementCheck = false;
             Checker();
         }
-
-        if (_placementCheck == true)
-            return;
 
         if (_secondCounter > 5) {
             Debug.LogWarning("No space for " + gameObject.name + " disabling.");
@@ -169,7 +175,7 @@ public class SpawnableObject : MonoBehaviour {
             foreach (SpawningBox sbx in _currentTriggerBoxes) {
                 if (sbx.name == "Spawned Box 0, 0") // South
                     transform.position = new Vector3(transform.position.x + 0.07f, transform.position.y, transform.position.z);
-                else if (sbx.name == "Spawned Box 7, 0")
+                else if (sbx.name == "Spawned Box 7, 0" && !gameObject.name.Contains("fireplace"))
                     transform.position = new Vector3(transform.position.x - 0.07f, transform.position.y, transform.position.z);
                 else if (sbx.name == "Spawned Box 0, 7" && !gameObject.name.Contains("fireplace")) // North
                     transform.position = new Vector3(transform.position.x + 0.07f, transform.position.y, transform.position.z);

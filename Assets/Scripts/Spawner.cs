@@ -14,6 +14,7 @@ public class Spawner : MonoBehaviour {
     public SpawningBox SpawningBoxPrefab;
     public List<SpawnableObject> ObjectsToPlace;
 
+    private bool _once = true;
     private int _placedObjCount = 0;
     private IntVector2 _size;
     private SpawningBox[,] _boxes;
@@ -47,6 +48,19 @@ public class Spawner : MonoBehaviour {
         StartCoroutine(CreateSpawningObjectsStepTwo());
     }
 
+    public void Reset() {
+        StopCoroutine(CreateSpawningObjectsStepTwo());
+
+        foreach (var obj in _placedObjects) {
+            Destroy(obj.gameObject);
+        }
+
+        _placedObjects.Clear();
+
+        Destroy(_roomInstance);
+        Destroy(gameObject);
+    }
+
     private void GetRoomBoundariesStepZero() {
         _roomSize = _roomInstance.GetComponent<Collider>().bounds.size;
         _roomBoundaries.x = (_roomSize.x / 2f) - 1;
@@ -58,7 +72,7 @@ public class Spawner : MonoBehaviour {
         _size.z = (int)_roomSize.z;
     }
 
-    public void SpawnBoxesStepOne() {
+    private void SpawnBoxesStepOne() {
         _boxes = new SpawningBox[_size.x, _size.z];
         for (int x = 0; x < _size.x; x++) {
             for (int z = 0; z < _size.z; z++) {
@@ -95,7 +109,7 @@ public class Spawner : MonoBehaviour {
 
         foreach (var item in _placedObjects) {
             if (!item.GetPlacementCheck()) {
-                //Debug.Log("Skipping one turn. Waiting to place: " + item.name);
+                Debug.Log("Skipping one turn. Waiting to place: " + item.name);
                 yield return delay;
             }
         }
@@ -109,27 +123,12 @@ public class Spawner : MonoBehaviour {
 
             // now we place this object, thus we cannot again
             SpawnableObject newSObj = Instantiate(_fullDic[newObjKey]);
-            newSObj.name += " : " + _placedObjCount;
+            newSObj.name += ": " + _placedObjCount;
             _placedObjects.Add(newSObj);
 
             _fullDic.Remove(newObjKey);
             //Debug.Log("Count: " + _placedObjCount + " Left in dictionary: " + _fullDic.Count);
             yield return delay;
-        }
-
-        if (_placedObjCount >= totalAmountOfFurniture) {
-            bool once = true;
-
-            foreach (var item in _placedObjects) {
-                if (!item.GetPlacementCheck())
-                    once = false;
-            }
-
-            // now we have placed all requested objects and we can delete the boxes
-            if (once)
-                DeleteAllBoxes();
-        } else {
-            Debug.Log(_placedObjCount);
         }
     }
 
@@ -141,16 +140,21 @@ public class Spawner : MonoBehaviour {
         children.ForEach(child => Destroy(child)); // child.GetComponent<Renderer>().enabled = false
     }
 
-    public void Reset() {
-        StopCoroutine(CreateSpawningObjectsStepTwo());
-
-        foreach (var obj in _placedObjects) {
-            Destroy(obj.gameObject);
+    private void LateUpdate() {
+        if (_once) {
+            if (_placedObjCount >= totalAmountOfFurniture) {
+                bool tmp = true;
+                foreach (var item in _placedObjects) {
+                    if (!item.GetPlacementCheck()) {
+                        tmp = false;
+                    }
+                }
+                // now we have placed all requested objects and we can delete the boxes
+                if (tmp) {
+                    _once = false;
+                    DeleteAllBoxes();
+                }
+            }
         }
-
-        _placedObjects.Clear();
-
-        Destroy(_roomInstance);
-        Destroy(gameObject);
     }
 }
