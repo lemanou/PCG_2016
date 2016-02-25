@@ -19,56 +19,54 @@ public class SpawnableObject : MonoBehaviour {
     public enum Facing {
         North,
         East,
-        South,
-        West
+        South
     }
 
     public Tag localTag = Tag.Short;
     public Placement localPlacement = Placement.NotSet;
-    public Facing localFacing = Facing.North;
+    public int maxPlacementNum = 1;
 
-    public IntVector2 NeededSpaceSize;
-    public int placementNumber;
-
-    public List<SpawningBox> currentTriggerBoxes = new List<SpawningBox>();
-
-    private int _timesCounter = 0, _secondCounter = 0;
     private bool _placementCheck = false;
-    private Vector3 _roomBoundaries, _myBounds;
+    private int _timesCounter = 0,
+        _secondCounter = 0;
+    private Facing _localFacing = Facing.North;
     private Renderer _myRenderer;
+    private SpawningBox[] _allBoxes;
+    private Vector3 _roomBoundaries,
+        _myBounds,
+        _checkVector;
+    private List<SpawningBox> _currentTriggerBoxes = new List<SpawningBox>();
 
     public bool GetPlacementCheck() {
         return _placementCheck;
     }
 
     private void ChangeFacing() {
-        switch (localFacing) {
+        switch (_localFacing) {
             case Facing.North:
-                localFacing = Facing.East;
+                _localFacing = Facing.East;
                 break;
             case Facing.East:
-                localFacing = Facing.South;
+                _localFacing = Facing.South;
                 break;
             case Facing.South:
-                localFacing = Facing.West;
-                break;
-            case Facing.West:
-                localFacing = Facing.North;
+                _localFacing = Facing.North;
                 break;
         }
         _timesCounter = 0;
         _secondCounter++;
-        Debug.Log("Changed facing for: " + gameObject.name + " to " + localFacing);
+        //Debug.Log("Changed facing for: " + gameObject.name + " to " + localFacing);
     }
 
-    void Start() {
+    private void Start() {
 
         //GetComponent<Collider>().isTrigger = true;
         //GetComponent<Rigidbody>().isKinematic = true;
 
-        _myBounds = GetComponent<Collider>().bounds.size;
         _roomBoundaries = FindObjectOfType<Spawner>().GetBoundaries();
         _myRenderer = transform.GetComponent<Renderer>();
+        _myBounds = _myRenderer.bounds.size;
+        _checkVector = new Vector3(0, 0, 0);
 
         if ((_roomBoundaries.x - 2) <= 0 || (_roomBoundaries.z - 2) <= 0 || (-_roomBoundaries.x + 2) >= 0 || (-_roomBoundaries.z + 2) >= 0) {
             Debug.LogWarning("Room too small for obj: " + gameObject.name + ". Self-Destruction!");
@@ -80,35 +78,77 @@ public class SpawnableObject : MonoBehaviour {
             Destroy(gameObject);
         }
 
-        if (placementNumber == 0) {
+        if (maxPlacementNum == 0) {
             Debug.LogWarning("Missing Placement number, destroying: " + gameObject.name);
             Destroy(gameObject);
         }
 
+        _allBoxes = FindObjectsOfType<SpawningBox>();
+
+        // Get a random starting facing for wall objects
+        if (localPlacement == Placement.Wall) {
+            Array values = Enum.GetValues(typeof(Facing));
+            System.Random random = new System.Random();
+            _localFacing = (Facing)values.GetValue(random.Next(values.Length));
+        }
+    }
+
+    private void ArrayShuffle(SpawningBox[] sbxs) {
+        // Knuth shuffle algorithm :: courtesy of Wikipedia :)
+        for (int t = 0; t < sbxs.Length; t++) {
+            SpawningBox tmp = sbxs[t];
+            int r = UnityEngine.Random.Range(t, sbxs.Length);
+            sbxs[t] = sbxs[r];
+            sbxs[r] = tmp;
+        }
+    }
+
+    private void ListShuffle(List<int> myList) {
+        // Knuth shuffle algorithm :: courtesy of Wikipedia :)
+        for (int t = 0; t < myList.Count; t++) {
+            int tmp = myList[t];
+            int r = UnityEngine.Random.Range(t, myList.Count);
+            myList[t] = myList[r];
+            myList[r] = tmp;
+        }
     }
 
     private void LateUpdate() {
-        
+
+        // to counter the worst cast where no box is found and the object is placed at 0,0,0
+        if (transform.position == _checkVector) {
+            //Debug.LogWarning("Could not find box, restart for: " + gameObject.name);
+            _placementCheck = false;
+            Checker();
+        }
+
         if (_placementCheck == true)
             return;
 
-        Checker();
+        if (_secondCounter > 5) {
+            Debug.LogWarning("No space for " + gameObject.name + " disabling.");
+
+            // First empty the boxes
+            foreach (SpawningBox sbx in _currentTriggerBoxes) {
+                if (sbx.GetFather() == gameObject)
+                    sbx.ReSetColBox();
+            }
+            _placementCheck = true;
+            gameObject.SetActive(false);
+        } else {
+            Checker();
+        }
     }
 
     private void Checker() {
 
-        if (_secondCounter > 4) {
-            Debug.LogWarning("No space for " + gameObject.name + " disabling.");
-            gameObject.SetActive(false);
-        }
-
-        if (_timesCounter > 5) {
+        if (_timesCounter > 6)
             ChangeFacing();
-        }
 
+        ArrayShuffle(_allBoxes);
         StartPlacement();
-        CorrectPlacement();
         FindCollidingSpawnedBoxes();
+        WallCorrections();
 
         if (!CheckAllBoxes()) {
             _timesCounter++;
@@ -123,6 +163,25 @@ public class SpawnableObject : MonoBehaviour {
         //GetComponent<Rigidbody>().isKinematic = false;       
     }
 
+    private void WallCorrections() {
+
+        if (localPlacement == Placement.Wall) {
+            foreach (SpawningBox sbx in _currentTriggerBoxes) {
+                if (sbx.name == "Spawned Box 0, 0") // South
+                    transform.position = new Vector3(transform.position.x + 0.07f, transform.position.y, transform.position.z);
+                else if (sbx.name == "Spawned Box 7, 0")
+                    transform.position = new Vector3(transform.position.x - 0.07f, transform.position.y, transform.position.z);
+                else if (sbx.name == "Spawned Box 0, 7" && !gameObject.name.Contains("fireplace")) // North
+                    transform.position = new Vector3(transform.position.x + 0.07f, transform.position.y, transform.position.z);
+                else if (sbx.name == "Spawned Box 7, 7")
+                    transform.position = new Vector3(transform.position.x - 0.07f, transform.position.y, transform.position.z);
+            }
+
+            // Need to recheck the boxes now
+            FindCollidingSpawnedBoxes();
+        }
+    }
+
     private void FindCollidingSpawnedBoxes() {
 
         // First check all colliding spawnedBoxes
@@ -134,23 +193,23 @@ public class SpawnableObject : MonoBehaviour {
         foreach (var obj in _colliders) {
             SpawningBox sbx = obj.GetComponent<SpawningBox>();
             if (sbx) {
-                currentTriggerBoxes.Add(sbx);
+                _currentTriggerBoxes.Add(sbx);
                 comparingList.Add(sbx);
                 sbx.SetColBox(this);
             }
         }
 
-        // Then double check and compare when to remove
+        // Then double check and compare when to remove, for everytime the object gets moved
         List<SpawningBox> removingList = new List<SpawningBox>();
-        foreach (SpawningBox sbx in currentTriggerBoxes) {
+        foreach (SpawningBox sbx in _currentTriggerBoxes) {
             if (!comparingList.Contains(sbx)) {
                 removingList.Add(sbx);
             }
         }
 
         foreach (SpawningBox sbx in removingList) {
-            currentTriggerBoxes.Remove(sbx);
-            if (sbx.Father == gameObject)
+            _currentTriggerBoxes.Remove(sbx);
+            if (sbx.GetFather() == gameObject)
                 sbx.ReSetColBox();
         }
     }
@@ -158,10 +217,10 @@ public class SpawnableObject : MonoBehaviour {
     private void StartPlacement() {
         switch (localPlacement) {
             case Placement.Middle:
-                PlaceInMidRoom();
+                PlaceInMidRoomVersionTwo();
                 break;
             case Placement.Wall:
-                PlaceNearWall();
+                PlaceNearWallVersionTwo();
                 break;
             case Placement.NotSet:
                 Debug.LogWarning(gameObject.name + ": Placing not set, please check.");
@@ -169,6 +228,7 @@ public class SpawnableObject : MonoBehaviour {
         }
     }
 
+    /*
     private void PlaceInMidRoom() {
         int offset = 2;
         Vector3 V = new Vector3();
@@ -204,7 +264,50 @@ public class SpawnableObject : MonoBehaviour {
         IEnumerable<int> oneRandom = myValues.OrderBy(x => r.Next()).Take(1);
         transform.rotation = Quaternion.Euler(0, oneRandom.First(), 0);
     }
+    */
 
+    private void PlaceInMidRoomVersionTwo() {
+        // Get a random box for placement based on facing
+        // We don't care anymore for mid room facing
+        SpawningBox objToUse = null;
+
+        objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+        if (objToUse == null)
+            _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+
+        if (objToUse != null) {
+            Vector3 V = new Vector3();
+            V.x = objToUse.transform.position.x;
+            //V.y = _myBounds.y - _myBounds.y / 2f;
+            V.y = transform.position.y;
+            V.z = objToUse.transform.position.z;
+
+            transform.position = V;
+            //Debug.Log("Trying out position: " + transform.position + " for " + gameObject.name);
+
+            // Randomize y rotation
+            System.Random r = new System.Random();
+            // Giving an extra 270 for leverage
+            List<int> myValues = new List<int>(new int[] { 0, 90, 180, 270, 270 });
+            ListShuffle(myValues);
+            IEnumerable<int> oneRandom = myValues.OrderBy(x => r.Next()).Take(1);
+            transform.rotation = Quaternion.Euler(0, oneRandom.First(), 0);
+
+            // Allign on Spawning boxes based on bounds and rotation
+            Vector3 targetPos = transform.position;
+            if (transform.rotation.eulerAngles.y == 0) {
+                transform.position = new Vector3(targetPos.x + _myBounds.x, targetPos.y, targetPos.z);
+            } else if (transform.rotation.eulerAngles.y == 90) {
+                transform.position = new Vector3(targetPos.x, targetPos.y, targetPos.z - _myBounds.z);
+            } else if (transform.rotation.eulerAngles.y == 180) {
+                transform.position = new Vector3(targetPos.x - _myBounds.x, targetPos.y, targetPos.z);
+            } else if (transform.rotation.eulerAngles.y == 270) {
+                transform.position = new Vector3(targetPos.x, targetPos.y, targetPos.z + _myBounds.z);
+            }
+        }
+    }
+
+    /*
     private void PlaceNearWall() {
         int offset = 2;
         Vector3 V = new Vector3();
@@ -212,7 +315,7 @@ public class SpawnableObject : MonoBehaviour {
         V.y = transform.position.y;
 
         // Get a random value for placement based on facing
-        switch (localFacing) {
+        switch (_localFacing) {
             case Facing.North:
                 V.x = UnityEngine.Random.Range(-_roomBoundaries.x + offset, _roomBoundaries.x - offset);
                 V.z = _roomBoundaries.z;
@@ -234,38 +337,64 @@ public class SpawnableObject : MonoBehaviour {
         transform.position = new Vector3(V.x, V.y, V.z);
         //Debug.Log("Trying out position: " + transform.position + " for " + gameObject.name);
     }
+    */
 
-    private void CorrectPlacement() {
+    private void PlaceNearWallVersionTwo() {
+        // Get a random box for placement based on facing
+        SpawningBox objToUse = null;
+        switch (_localFacing) {
+            case Facing.North:
+                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.North).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                if (objToUse == null)
+                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.North).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                break;
+            case Facing.East:
+                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.East).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                if (objToUse == null)
+                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.East).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                break;
+            case Facing.South:
+                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.South).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                if (objToUse == null)
+                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.South).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                break;
+        }
 
-        // Allign on Spawning boxes based on bounds
-        Vector3 targetPos = transform.position;
-        transform.position = new Vector3(Mathf.Round(targetPos.x) + _myBounds.x / 2, targetPos.y, Mathf.Round(targetPos.z) + _myBounds.z / 2);
+        if (objToUse != null) {
+            Vector3 V = new Vector3();
+            V.x = objToUse.transform.position.x;
+            //V.y = _myBounds.y - _myBounds.y / 2f;
+            V.y = transform.position.y;
+            V.z = objToUse.transform.position.z;
 
-        // Allign on wall
-        if (localPlacement == Placement.Wall) {
-            switch (localFacing) {
+            transform.position = V;
+            //Debug.Log("Trying out position: " + transform.position + " for " + gameObject.name);
+
+            Vector3 targetPos = transform.position;
+
+            // Placement corrections
+            switch (_localFacing) {
                 case Facing.North:
-                    // Increase z by bounds <and> y rotation 180
-                    transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + _myBounds.z);
+                    // Align to boxes
+                    transform.position = new Vector3(Mathf.Round(targetPos.x) - _myBounds.x / 2, targetPos.y, Mathf.Round(targetPos.z) - _myBounds.z / 2);
+                    // Fix due to wall indent
+                    transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 0.07f);
+                    // Correct facing
                     transform.rotation = Quaternion.Euler(0, 180, 0);
                     break;
                 case Facing.East:
-                    // Decrease x by bounds/10, z by bounds/2 <and> y rotation 270
-                    transform.position = new Vector3(transform.position.x - _myBounds.x / 10, transform.position.y, transform.position.z - _myBounds.z / 2);
+                    // Align to boxes
+                    transform.position = new Vector3(Mathf.Round(targetPos.x) - _myBounds.x / 5, targetPos.y, Mathf.Round(targetPos.z));
+                    // Correct facing
                     transform.rotation = Quaternion.Euler(0, 270, 0);
                     break;
                 case Facing.South:
-                    // Decrease z by 1 SpawningBox <and> y rotation 0
-                    transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1);
+                    // Align to boxes
+                    transform.position = new Vector3(Mathf.Round(targetPos.x) + _myBounds.x / 2, targetPos.y, Mathf.Round(targetPos.z) + _myBounds.z / 2);
+                    // Fix due to wall indent
+                    transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 0.07f);
+                    // Correct facing
                     transform.rotation = Quaternion.Euler(0, 0, 0);
-                    break;
-                case Facing.West:
-                    // position.x = x - 2 + bounds/9, z by bounds/2 <and> y rotation 90
-                    float x = (transform.position.x - 2) + (_myBounds.x / 9);
-                    transform.position = new Vector3(x, transform.position.y, transform.position.z - _myBounds.z / 2);
-                    transform.rotation = Quaternion.Euler(0, 90, 0);
-                    break;
-                default:
                     break;
             }
         }
@@ -273,16 +402,23 @@ public class SpawnableObject : MonoBehaviour {
 
     private bool CheckAllBoxes() {
 
-        if (currentTriggerBoxes.Count == 0)
+        if (_currentTriggerBoxes.Count == 0)
             return false;
 
         //Debug.Log("Checking " + currentTriggerBoxes.Count + " boxes in trigger list for: " + gameObject.name);
 
-        foreach (var sbx in currentTriggerBoxes) {
-            if (sbx.Father != gameObject) {
+        foreach (var sbx in _currentTriggerBoxes) {
+            if (sbx.GetFather() != gameObject) {
                 //Debug.Log(gameObject.name + ": wrong placement, need to recheck fixed position: " + transform.position);
                 return false;
             }
+            if (localPlacement == Placement.Middle) {
+                if (sbx.GetBoxLocation() != SpawningBox.BoxLocation.Middle)
+                    return false;
+            } else if (localPlacement == Placement.Wall)
+                if (sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle)
+                    return false;
+
         }
         //Debug.Log("Accepted position: " + transform.position + " for: " + gameObject.name);
         return true;
