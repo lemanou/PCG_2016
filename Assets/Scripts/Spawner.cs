@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 public class Spawner : MonoBehaviour {
 
@@ -147,10 +146,12 @@ public class Spawner : MonoBehaviour {
             System.Random rand = new System.Random();
             int newObjKey = _fullFurnitureDic.ElementAt(rand.Next(0, _fullFurnitureDic.Count)).Key;
 
+            //if (_fullFurnitureDic[newObjKey].gameObject.name.Contains("tableDinner")) {
             // now we place this object
             SpawnableObject newSObj = Instantiate(_fullFurnitureDic[newObjKey]);
             newSObj.name += ": " + _placedFurnitureCount;
             _placedFurniture.Add(newSObj);
+            //}
             // thus we cannot again
             _fullFurnitureDic.Remove(newObjKey);
             //Debug.Log("Count: " + _placedObjCount + " Left in dictionary: " + _fullDic.Count);
@@ -199,7 +200,7 @@ public class Spawner : MonoBehaviour {
         }
     }
 
-    private void DeleteAllBoxes() {
+    public void DeleteAllBoxes() {
         StopCoroutine(CreateSpawningObjectsStepTwo());
 
         var children = new List<GameObject>();
@@ -228,7 +229,10 @@ public class Spawner : MonoBehaviour {
                 // now we have placed all requested objects and we can delete the boxes
                 if (tmp) {
                     _once = false;
-                    DeleteAllBoxes();
+                    //DeleteAllBoxes(); // The chairs decide the end now
+                    //Debug.Log("E.N.D.");
+                    gameObject.GetComponent<SpawnChairs>().StartChairPlacement();
+                    
                 }
             }
         }

@@ -10,7 +10,8 @@ public class SpawningBox : MonoBehaviour {
         Free,
         Tall,
         Short,
-        Occupied
+        Occupied,
+        ChairSpot
     }
 
     public enum BoxLocation {
@@ -69,7 +70,6 @@ public class SpawningBox : MonoBehaviour {
     }
 
     public void SetFurniture(SpawnableObject sObj) {
-
         if (_boxcond == BoxCondition.Occupied)
             return;
 
@@ -81,7 +81,7 @@ public class SpawningBox : MonoBehaviour {
 
             _furniture = sObj.gameObject;
             GetComponent<Renderer>().enabled = true;
-            GetComponent<Renderer>().material.color = Color.white;
+            GetComponent<Renderer>().material.color = sObj.gameObject.GetComponent<Renderer>().material.color;
         }
     }
 
@@ -93,7 +93,6 @@ public class SpawningBox : MonoBehaviour {
     }
 
     public void SetCarpet(SpawnableObject sObj) {
-
         if (_carpet == null) {
             _carpet = sObj.gameObject;
             GetComponent<Renderer>().enabled = true;
@@ -105,5 +104,26 @@ public class SpawningBox : MonoBehaviour {
         _carpet = null;
         if (_furniture == null)
             GetComponent<Renderer>().enabled = false;
+    }
+
+    public void HoldForChair(SpawnableObject sObj) {
+        if (sObj.gameObject.name.Contains("tableDinner")) {
+            _furniture = sObj.gameObject;
+            _boxcond = BoxCondition.ChairSpot;
+            GetComponent<Renderer>().enabled = true;
+            GetComponent<Renderer>().material.color = sObj.gameObject.GetComponent<Renderer>().material.color;
+        }
+    }
+
+    public void SetChair(SpawnableChair sc) {
+        if (_boxcond == BoxCondition.Occupied)
+            return;
+
+        if (_furniture == null || _furniture.gameObject.name.Contains("tableDinner")) {
+            _boxcond = BoxCondition.Short;
+            _furniture = sc.gameObject;
+            GetComponent<Renderer>().enabled = true;
+            GetComponent<Renderer>().material.color = sc.gameObject.GetComponent<Renderer>().material.color;
+        }
     }
 }
