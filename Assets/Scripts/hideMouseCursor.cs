@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class HideMouseCursor : MonoBehaviour {
+public class hideMouseCursor : MonoBehaviour {
     void Start() {
         Cursor.visible = false;
     }
