@@ -12,7 +12,7 @@ public class Spawner : MonoBehaviour {
     public float generationStepDelay;
     public GameObject RoomPrefab;
     public SpawningBox SpawningBoxPrefab;
-    public List<SpawnableObject> ObjectsToPlace;
+    public List<SpawnableObject> FurnitureToPlace;
 
     private bool _once = true;
     private int _placedObjCount = 0;
@@ -31,7 +31,7 @@ public class Spawner : MonoBehaviour {
 
         int sum = 0;
 
-        foreach (var item in ObjectsToPlace) {
+        foreach (var item in FurnitureToPlace) {
             sum += item.maxPlacementNum;
         }
 
@@ -93,7 +93,7 @@ public class Spawner : MonoBehaviour {
 
     private void CreateFullList() {
         int countKey = 0;
-        foreach (SpawnableObject sbx in ObjectsToPlace) {
+        foreach (SpawnableObject sbx in FurnitureToPlace) {
             int x = sbx.maxPlacementNum;
             while (x > 0) {
                 x--;

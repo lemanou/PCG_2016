@@ -136,7 +136,7 @@ public class SpawnableObject : MonoBehaviour {
 
             // First empty the boxes
             foreach (SpawningBox sbx in _currentTriggerBoxes) {
-                if (sbx.GetFather() == gameObject)
+                if (sbx.GetFurniture() == gameObject)
                     sbx.ReSetColBox();
             }
             _placementCheck = true;
@@ -215,7 +215,7 @@ public class SpawnableObject : MonoBehaviour {
 
         foreach (SpawningBox sbx in removingList) {
             _currentTriggerBoxes.Remove(sbx);
-            if (sbx.GetFather() == gameObject)
+            if (sbx.GetFurniture() == gameObject)
                 sbx.ReSetColBox();
         }
     }
@@ -393,6 +393,10 @@ public class SpawnableObject : MonoBehaviour {
                     transform.position = new Vector3(Mathf.Round(targetPos.x) - _myBounds.x / 5, targetPos.y, Mathf.Round(targetPos.z));
                     // Correct facing
                     transform.rotation = Quaternion.Euler(0, 270, 0);
+                    // Need to move the Dresser a bit
+                    if (gameObject.name.Contains("Dresser")) {
+                        transform.position = new Vector3(transform.position.x - _myBounds.x / 5, transform.position.y, transform.position.z);
+                    }
                     break;
                 case Facing.South:
                     // Align to boxes
@@ -414,7 +418,7 @@ public class SpawnableObject : MonoBehaviour {
         //Debug.Log("Checking " + currentTriggerBoxes.Count + " boxes in trigger list for: " + gameObject.name);
 
         foreach (var sbx in _currentTriggerBoxes) {
-            if (sbx.GetFather() != gameObject) {
+            if (sbx.GetFurniture() != gameObject) {
                 //Debug.Log(gameObject.name + ": wrong placement, need to recheck fixed position: " + transform.position);
                 return false;
             }
