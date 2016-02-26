@@ -71,7 +71,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalAmountOfChairs: 4
   generationStepDelay: 0.1
-  SpawningChairPrefab: {fileID: 11437464, guid: e6f710bbdd13f204b94e12de85d7553d,
+  SpawningChairPrefab: {fileID: 11405678, guid: e6f710bbdd13f204b94e12de85d7553d,
     type: 2}
 --- !u!1001 &100100000
 Prefab:

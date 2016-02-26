@@ -11,6 +11,7 @@ GameObject:
   - 33: {fileID: 3340934}
   - 23: {fileID: 2339842}
   - 65: {fileID: 6589988}
+  - 114: {fileID: 11405678}
   m_Layer: 0
   m_Name: chairDinner
   m_TagString: Untagged
@@ -77,6 +78,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.41999993, y: 0.9299999, z: 0.49}
   m_Center: {x: 0.00000023569795, y: 0.46500012, z: -0.0000004694832}
+--- !u!114 &11405678
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 191138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5087624b1fc1734489112b3017c5ee35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
