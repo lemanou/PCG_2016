@@ -8,7 +8,8 @@ public class SpawnableObject : MonoBehaviour {
 
     public enum Tag {
         Short,
-        Tall
+        Tall,
+        Carpet
     }
 
     public enum Placement {
@@ -128,7 +129,8 @@ public class SpawnableObject : MonoBehaviour {
         if (transform.position == _checkVector) {
             //Debug.LogWarning("Could not find box, restart for: " + gameObject.name);
             _placementCheck = false;
-            Checker();
+            // Now you can try placing again
+            Place();
         }
 
         if (_secondCounter > 5) {
@@ -136,24 +138,53 @@ public class SpawnableObject : MonoBehaviour {
 
             // First empty the boxes
             foreach (SpawningBox sbx in _currentTriggerBoxes) {
-                if (sbx.GetFather() == gameObject)
-                    sbx.ReSetColBox();
+                Resetter(sbx);
             }
-            _placementCheck = true;
+            _placementCheck = true; // used to determine when we are done with each piece of furniture
             gameObject.SetActive(false);
         } else {
-            Checker();
+            // Now you can place
+            Place();
+        }
+
+
+    }
+
+    private void Place() {
+        // Now you can place
+        if (localTag == Tag.Carpet) {
+            FindLocationToPlaceCarpet();
+        } else if (localTag == Tag.Short || localTag == Tag.Tall) {
+            FindLocationToPlaceFurniture();
         }
     }
 
-    private void Checker() {
+    private void FindLocationToPlaceCarpet() {
+
+        if (_timesCounter > 4)
+            ChangeFacing();
+
+        ArrayShuffle(_allBoxes);
+        PlaceInMidRoomVersionTwo(GetMidRoomBox());
+        FindAllCollidingBoxes();
+
+        if (!CheckAllBoxes()) {
+            _timesCounter++;
+            _placementCheck = false;
+            return;
+        }
+
+        _placementCheck = true;
+    }
+
+    private void FindLocationToPlaceFurniture() {
 
         if (_timesCounter > 6)
             ChangeFacing();
 
         ArrayShuffle(_allBoxes);
         StartPlacement();
-        FindCollidingSpawnedBoxes();
+        FindAllCollidingBoxes();
         WallCorrections();
 
         if (!CheckAllBoxes()) {
@@ -184,16 +215,17 @@ public class SpawnableObject : MonoBehaviour {
             }
 
             // Need to recheck the boxes now
-            FindCollidingSpawnedBoxes();
+            FindAllCollidingBoxes();
         }
     }
 
-    private void FindCollidingSpawnedBoxes() {
+    private void FindAllCollidingBoxes() {
 
         // First check all colliding spawnedBoxes
         Vector3 _center = _myRenderer.bounds.center;
         Vector3 _halfSize = _myRenderer.bounds.size / 2;
         Collider[] _colliders = Physics.OverlapBox(_center, _halfSize - _halfSize * 0.05f);
+
         List<SpawningBox> comparingList = new List<SpawningBox>();
 
         foreach (var obj in _colliders) {
@@ -201,7 +233,11 @@ public class SpawnableObject : MonoBehaviour {
             if (sbx) {
                 _currentTriggerBoxes.Add(sbx);
                 comparingList.Add(sbx);
-                sbx.SetColBox(this);
+
+                if (localTag == Tag.Carpet)
+                    sbx.SetCarpet(this);
+                else if (localTag == Tag.Tall || localTag == Tag.Short)
+                    sbx.SetFurniture(this);
             }
         }
 
@@ -215,15 +251,21 @@ public class SpawnableObject : MonoBehaviour {
 
         foreach (SpawningBox sbx in removingList) {
             _currentTriggerBoxes.Remove(sbx);
-            if (sbx.GetFather() == gameObject)
-                sbx.ReSetColBox();
+            Resetter(sbx);
         }
+    }
+
+    private void Resetter(SpawningBox sbx) {
+        if (sbx.GetFurniture() == gameObject)
+            sbx.ReSetFurniture();
+        else if (sbx.GetCarpet() == gameObject)
+            sbx.ReSetCarpet();
     }
 
     private void StartPlacement() {
         switch (localPlacement) {
             case Placement.Middle:
-                PlaceInMidRoomVersionTwo();
+                PlaceInMidRoomVersionTwo(GetMidRoomBox());
                 break;
             case Placement.Wall:
                 PlaceNearWallVersionTwo();
@@ -272,14 +314,24 @@ public class SpawnableObject : MonoBehaviour {
     }
     */
 
-    private void PlaceInMidRoomVersionTwo() {
-        // Get a random box for placement based on facing
+    private SpawningBox GetMidRoomBox() {
+        // Get a random box for placement 
         // We don't care anymore for mid room facing
         SpawningBox objToUse = null;
 
-        objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
-        if (objToUse == null)
-            _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+        if (localTag == Tag.Carpet) {
+            objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).FirstOrDefault();
+            if (objToUse == null)
+                _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).LastOrDefault();
+        } else {
+            objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+            if (objToUse == null)
+                _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+        }
+        return objToUse;
+    }
+
+    private void PlaceInMidRoomVersionTwo(SpawningBox objToUse) {
 
         if (objToUse != null) {
             Vector3 V = new Vector3();
@@ -289,7 +341,6 @@ public class SpawnableObject : MonoBehaviour {
             V.z = objToUse.transform.position.z;
 
             transform.position = V;
-            //Debug.Log("Trying out position: " + transform.position + " for " + gameObject.name);
 
             // Randomize y rotation
             System.Random r = new System.Random();
@@ -393,6 +444,10 @@ public class SpawnableObject : MonoBehaviour {
                     transform.position = new Vector3(Mathf.Round(targetPos.x) - _myBounds.x / 5, targetPos.y, Mathf.Round(targetPos.z));
                     // Correct facing
                     transform.rotation = Quaternion.Euler(0, 270, 0);
+                    // Need to move the Dresser a bit
+                    if (gameObject.name.Contains("Dresser")) {
+                        transform.position = new Vector3(transform.position.x - _myBounds.x / 5, transform.position.y, transform.position.z);
+                    }
                     break;
                 case Facing.South:
                     // Align to boxes
@@ -414,17 +469,25 @@ public class SpawnableObject : MonoBehaviour {
         //Debug.Log("Checking " + currentTriggerBoxes.Count + " boxes in trigger list for: " + gameObject.name);
 
         foreach (var sbx in _currentTriggerBoxes) {
-            if (sbx.GetFather() != gameObject) {
-                //Debug.Log(gameObject.name + ": wrong placement, need to recheck fixed position: " + transform.position);
-                return false;
+
+            if (localTag == Tag.Carpet) {
+                if (sbx.GetCarpet() != gameObject) {
+                    //Debug.Log(gameObject.name + ": wrong placement, recheck fixed position box: " + sbx.name);
+                    return false;
+                }
+            } else if (localTag == Tag.Short || localTag == Tag.Tall) {
+                if (sbx.GetFurniture() != gameObject) {
+                    //Debug.Log(gameObject.name + ": wrong placement, need to recheck fixed position: " + transform.position);
+                    return false;
+                }
             }
+            // Check if we are using a different type of box
             if (localPlacement == Placement.Middle) {
                 if (sbx.GetBoxLocation() != SpawningBox.BoxLocation.Middle)
                     return false;
             } else if (localPlacement == Placement.Wall)
                 if (sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle)
                     return false;
-
         }
         //Debug.Log("Accepted position: " + transform.position + " for: " + gameObject.name);
         return true;

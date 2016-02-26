@@ -22,15 +22,16 @@ public class SpawningBox : MonoBehaviour {
         NotSet
     }
 
-    public BoxLocation _boxloc = BoxLocation.NotSet;
-    public BoxCondition _boxcond = BoxCondition.Free;
-    public GameObject _father = null;
+    private BoxLocation _boxloc = BoxLocation.NotSet;
+    private BoxCondition _boxcond = BoxCondition.Free;
+    private GameObject _furniture = null,
+        _carpet = null;
     private List<string> OccupiedBoxes = new List<string>(new string[] { "Spawned Box 0, 1", "Spawned Box 0, 2", "Spawned Box 0, 3", "Spawned Box 0, 4",
                                                                         "Spawned Box 0, 5", "Spawned Box 0, 6", "Spawned Box 7, 3", "Spawned Box 7, 4" });
     private void Start() {
         if (OccupiedBoxes.Contains(gameObject.name)) {
             _boxcond = BoxCondition.Occupied;
-            _father = gameObject;
+            _furniture = gameObject;
             GetComponent<Renderer>().enabled = true;
             GetComponent<Renderer>().material.color = Color.red;
         }
@@ -59,32 +60,50 @@ public class SpawningBox : MonoBehaviour {
         return _boxloc;
     }
 
-    public GameObject GetFather() {
-        return _father;
+    public GameObject GetFurniture() {
+        return _furniture;
     }
 
-    public void SetColBox(SpawnableObject sObj) {
+    public GameObject GetCarpet() {
+        return _carpet;
+    }
+
+    public void SetFurniture(SpawnableObject sObj) {
 
         if (_boxcond == BoxCondition.Occupied)
             return;
 
-        if (_father == null) {
+        if (_furniture == null) {
             if (sObj.localTag == SpawnableObject.Tag.Short)
                 _boxcond = BoxCondition.Short;
             else if (sObj.localTag == SpawnableObject.Tag.Tall)
                 _boxcond = BoxCondition.Tall;
 
-            _father = sObj.gameObject;
-        } else {
-            //Debug.Log(gameObject.name + " ~ Cannot set box, used by: " + Father);
+            _furniture = sObj.gameObject;
+            GetComponent<Renderer>().enabled = true;
+            GetComponent<Renderer>().material.color = Color.white;
         }
-        GetComponent<Renderer>().enabled = true;
-        GetComponent<Renderer>().material.color = Color.white;
     }
 
-    public void ReSetColBox() {
+    public void ReSetFurniture() {
         _boxcond = BoxCondition.Free;
-        _father = null;
-        GetComponent<Renderer>().enabled = false;
+        _furniture = null;
+        if (_carpet == null)
+            GetComponent<Renderer>().enabled = false;
+    }
+
+    public void SetCarpet(SpawnableObject sObj) {
+
+        if (_carpet == null) {
+            _carpet = sObj.gameObject;
+            GetComponent<Renderer>().enabled = true;
+            GetComponent<Renderer>().material.color = sObj.gameObject.GetComponent<Renderer>().material.color;
+        }
+    }
+
+    public void ReSetCarpet() {
+        _carpet = null;
+        if (_furniture == null)
+            GetComponent<Renderer>().enabled = false;
     }
 }
