@@ -146,8 +146,6 @@ public class SpawnableObject : MonoBehaviour {
             // Now you can place
             Place();
         }
-
-
     }
 
     private void Place() {
@@ -193,11 +191,30 @@ public class SpawnableObject : MonoBehaviour {
             return;
         }
 
-        //Debug.Log("Finally placed at: " + gameObject.name + " " + transform.position);
         _placementCheck = true;
+        if (gameObject.name.Contains("tableDinner")) {
+            HoldSpaceForChairs();
+        }
 
         //GetComponent<Collider>().isTrigger = false;
-        //GetComponent<Rigidbody>().isKinematic = false;       
+        //GetComponent<Rigidbody>().isKinematic = false;   
+        //Debug.Log("Finally placed at: " + gameObject.name + " " + transform.position);    
+    }
+
+    private void HoldSpaceForChairs() {
+        // First check all colliding spawnedBoxes - a bit larger this time though
+        Collider[] _colliders = Physics.OverlapSphere(transform.position, 1.0f);
+
+        foreach (var obj in _colliders) {
+            SpawningBox sbx = obj.GetComponent<SpawningBox>();
+            if (sbx)
+                if (sbx.transform.position.x != gameObject.transform.position.x && sbx.transform.position.z != gameObject.transform.position.z) {
+                    if (sbx.GetFurniture() == gameObject || sbx.GetFurniture() == null) {
+                        _currentTriggerBoxes.Add(sbx);
+                        sbx.HoldForChair(this);
+                    }
+                }
+        }
     }
 
     private void WallCorrections() {

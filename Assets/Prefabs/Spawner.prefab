@@ -9,6 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 416870}
   - 114: {fileID: 11404090}
+  - 114: {fileID: 11490454}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -57,6 +58,21 @@ MonoBehaviour:
   - {fileID: 11486946, guid: c5f71a3b61dab4149bc8243044f66f0c, type: 2}
   - {fileID: 11425858, guid: 9a9e1e7e9d45b2047995d5b5fe0f9d4f, type: 2}
   - {fileID: 11490944, guid: 8ee2101bfe3c6cb42adb29476da1ad09, type: 2}
+--- !u!114 &11490454
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 160714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c663df43181ba944bd676dcc972216f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalAmountOfChairs: 4
+  generationStepDelay: 0.1
+  SpawningChairPrefab: {fileID: 11437464, guid: e6f710bbdd13f204b94e12de85d7553d,
+    type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -154,6 +170,11 @@ Prefab:
       propertyPath: totalAmountOfCarpets
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: SpawningChairPrefab
+      value: 
+      objectReference: {fileID: 11437464, guid: e6f710bbdd13f204b94e12de85d7553d,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 160714}
