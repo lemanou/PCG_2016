@@ -64,7 +64,11 @@ public class SpawningBox : MonoBehaviour {
         return _furniture;
     }
 
-    public void SetColBox(SpawnableObject sObj) {
+    public GameObject GetCarpet() {
+        return _carpet;
+    }
+
+    public void SetFurniture(SpawnableObject sObj) {
 
         if (_boxcond == BoxCondition.Occupied)
             return;
@@ -76,16 +80,30 @@ public class SpawningBox : MonoBehaviour {
                 _boxcond = BoxCondition.Tall;
 
             _furniture = sObj.gameObject;
-        } else {
-            //Debug.Log(gameObject.name + " ~ Cannot set box, used by: " + Father);
+            GetComponent<Renderer>().enabled = true;
+            GetComponent<Renderer>().material.color = Color.white;
         }
-        GetComponent<Renderer>().enabled = true;
-        GetComponent<Renderer>().material.color = Color.white;
     }
 
-    public void ReSetColBox() {
+    public void ReSetFurniture() {
         _boxcond = BoxCondition.Free;
         _furniture = null;
-        GetComponent<Renderer>().enabled = false;
+        if (_carpet == null)
+            GetComponent<Renderer>().enabled = false;
+    }
+
+    public void SetCarpet(SpawnableObject sObj) {
+
+        if (_carpet == null) {
+            _carpet = sObj.gameObject;
+            GetComponent<Renderer>().enabled = true;
+            GetComponent<Renderer>().material.color = sObj.gameObject.GetComponent<Renderer>().material.color;
+        }
+    }
+
+    public void ReSetCarpet() {
+        _carpet = null;
+        if (_furniture == null)
+            GetComponent<Renderer>().enabled = false;
     }
 }
