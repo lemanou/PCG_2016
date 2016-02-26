@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class RayFromCrosshair : MonoBehaviour
 {
-    public static GameObject GOHitByRay;
+    public static ClickableFurniture GOHitByRay;
     public Transform _cameraTransform;
 
     private RaycastHit rayhit = new RaycastHit();
@@ -19,7 +18,7 @@ public class RayFromCrosshair : MonoBehaviour
 
         if (Physics.Raycast(mRay, out rayhit, 2f))
         {
-            GOHitByRay = rayhit.collider.gameObject;
+            GOHitByRay = rayhit.collider.gameObject.GetComponent<ClickableFurniture>();
             //print(GOHitByRay.name);
         }
     }

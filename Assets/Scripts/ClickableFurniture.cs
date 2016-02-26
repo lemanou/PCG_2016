@@ -1,25 +1,25 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 public class ClickableFurniture : MonoBehaviour
 {
-    public GameObject questItem;
-    public Text DescriptiveText;
+    public static bool questItemAlreadyFound, questItemNotFound;
+    public GameObject gotQuestItem;
+    public string text;
     
-    private Renderer _renderer;
+    //private Renderer _renderer;
 
     void Start()
     {
-        _renderer = GetComponent<Renderer>();
+        /*_renderer = GetComponent<Renderer>();
         for (int i = 0; i < _renderer.materials.Length; i++)
         {
             _renderer.materials[i].color = Color.white;
-        }
+        */
     }
 
     void FixedUpdate()
     {
-        if (RayFromCrosshair.GOHitByRay == this.gameObject)
+        /*if (RayFromCrosshair.GOHitByRay == this.gameObject && _renderer != null)
         {
             for (int i = 0; i < _renderer.materials.Length; i++)
             {
@@ -32,6 +32,6 @@ public class ClickableFurniture : MonoBehaviour
             {
                 _renderer.materials[i].color = Color.white;
             }
-        }
+        }*/
     }
 }
