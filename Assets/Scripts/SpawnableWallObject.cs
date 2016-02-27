@@ -90,7 +90,7 @@ public class SpawnableWallObject : MonoBehaviour {
 
             SpawnableBox extraSpotToUse = FindCollidingFreeBoxes(objToUse);
 
-            if (extraSpotToUse != this) {
+            if (extraSpotToUse != objToUse) {
                 _swo.RemoveSpot(extraSpotToUse);
                 extraSpotToUse.SetWallObject(this);
                 _swo.RemoveSpot(objToUse);
@@ -107,26 +107,29 @@ public class SpawnableWallObject : MonoBehaviour {
     private void CorrectPositionBasedOnNewSpot(SpawnableBox objToUse, SpawnableBox extraSpotToUse) {
         Vector3 placedPos = objToUse.transform.position;
         Vector3 targetPos = extraSpotToUse.transform.position;
-
+        float offset = 0.46f;
         SpawnableBox.BoxLocation loc = objToUse.GetBoxLocation();
         switch (loc) {
             case SpawnableBox.BoxLocation.North:
                 if (targetPos.x > placedPos.x)
-                    transform.position = new Vector3(transform.position.x - 0.45f, transform.position.y, transform.position.z);
-                else
-                    transform.position = new Vector3(transform.position.x + 0.45f, transform.position.y, transform.position.z);
+                    transform.position = new Vector3(transform.position.x + offset, transform.position.y, transform.position.z);
+                else if (targetPos.x < placedPos.x)
+                    transform.position = new Vector3(transform.position.x - offset, transform.position.y, transform.position.z);
                 break;
             case SpawnableBox.BoxLocation.East:
-
+                if (targetPos.z > placedPos.z)
+                    transform.position = new Vector3(transform.position.x , transform.position.y, transform.position.z + offset);
+                else if (targetPos.x < placedPos.x)
+                    transform.position = new Vector3(transform.position.x , transform.position.y, transform.position.z - offset);
                 break;
             case SpawnableBox.BoxLocation.South:
                 if (targetPos.x > placedPos.x)
-                    transform.position = new Vector3(transform.position.x + 0.45f, transform.position.y, transform.position.z);
-                else
-                    transform.position = new Vector3(transform.position.x - 0.45f, transform.position.y, transform.position.z);
+                    transform.position = new Vector3(transform.position.x + offset, transform.position.y, transform.position.z);
+                else if (targetPos.x < placedPos.x)
+                    transform.position = new Vector3(transform.position.x - offset, transform.position.y, transform.position.z);
                 break;
             case SpawnableBox.BoxLocation.West:
-
+                Debug.LogWarning("West wall too occupied for large paining. Error in correcting placement for: " + gameObject.name);
                 break;
             default:
                 Debug.LogWarning("Error in correcting placement for: " + gameObject.name);
@@ -143,17 +146,18 @@ public class SpawnableWallObject : MonoBehaviour {
                 SpawnableBox sbx = obj.GetComponent<SpawnableBox>();
                 if (sbx) {
                     //Debug.Log(box.name + " collides with: " + sbx.name);
-                    if (sbx.name != box.name && sbx.GetBoxLocation() == box.GetBoxLocation() && box.GetWallObject() == null && box.GetBoxCondition() != SpawnableBox.BoxCondition.Occupied) {
-                        Debug.Log(box.name + " found possible placement: " + sbx.name);
+                    if (sbx.name != box.name && sbx.GetBoxLocation() == box.GetBoxLocation() && sbx.GetWallObject() == null && sbx.GetBoxCondition() != SpawnableBox.BoxCondition.Occupied && sbx.GetBoxCondition() != SpawnableBox.BoxCondition.Tall) {
+                        //Debug.Log(box.name + " found possible placement: " + sbx.name);
                         return sbx; // return 2 spots only everytime
-                    } else {
-                        Debug.Log(box.name + " used or middle: " + sbx.name);
-                    }
+                    } 
+                    //else {
+                    //    Debug.Log(box.name + " found USED/MIDDLE/IGNORED: " + sbx.name);
+                    //}
                 }
             }
         }
 
-        return box; // or one if not found any free neighbors
+        return box;
     }
 
     public bool GetPlacementCheck() {

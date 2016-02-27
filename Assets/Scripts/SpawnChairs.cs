@@ -73,7 +73,7 @@ public class SpawnChairs : MonoBehaviour {
                 if (tmp) {
                     _check = false;
                     Spawner sp = FindObjectOfType<Spawner>();
-                    //sp.DeleteAllBoxes();
+                    sp.DeleteAllBoxes();
                     //Debug.Log("E.N.D.");
                 }
             }

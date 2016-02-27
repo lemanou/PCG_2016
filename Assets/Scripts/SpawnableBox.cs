@@ -25,7 +25,7 @@ public class SpawnableBox : MonoBehaviour {
     }
 
     public BoxLocation _boxloc = BoxLocation.NotSet;
-    private BoxCondition _boxcond = BoxCondition.Free;
+    public BoxCondition _boxcond = BoxCondition.Free;
     public GameObject _furniture = null,
         _carpet = null,
         _wallObj = null;
