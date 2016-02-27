@@ -131,11 +131,6 @@ Prefab:
       propertyPath: text
       value: A sturdy built dinner table.
       objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: SpawningChairPrefab
-      value: 
-      objectReference: {fileID: 11437464, guid: e6f710bbdd13f204b94e12de85d7553d,
-        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 147902}
