@@ -24,6 +24,12 @@ public class GameManager : MonoBehaviour {
 
     public void RestartGame() {
         ClearConsole();
+
+        SpawnObjectsOnMe[] sooma = FindObjectsOfType<SpawnObjectsOnMe>();
+        foreach (var item in sooma) {
+            item.Reset();
+        }
+
         _spawnerInstance.gameObject.GetComponent<SpawnChairs>().Reset();
         _spawnerInstance.gameObject.GetComponent<SpawnWallObjects>().Reset();
         _spawnerInstance.Reset();

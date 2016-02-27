@@ -2,13 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 public class SpawnWallObjects : MonoBehaviour {
 
     [Range(0, 10)]
     public int totalAmountOfWO = 6;
-
     public float generationStepDelay;
     public List<SpawnableWallObject> WallObjsToPlace;
 
@@ -17,6 +15,7 @@ public class SpawnWallObjects : MonoBehaviour {
     private List<SpawnableBox> _possibleSpots = new List<SpawnableBox>();
     private List<SpawnableWallObject> _placedObjs = new List<SpawnableWallObject>();
     private Dictionary<int, SpawnableWallObject> _fullObjDic = new Dictionary<int, SpawnableWallObject>();
+    private System.Random randW = new System.Random();
 
     private bool CheckPossibleBoxes() {
         // Check for available spots
@@ -66,8 +65,7 @@ public class SpawnWallObjects : MonoBehaviour {
 
             _placedNumOfObjs++;
             // Get random key from Dictionary
-            System.Random rand = new System.Random();
-            int newObjKey = _fullObjDic.ElementAt(rand.Next(0, _fullObjDic.Count)).Key;
+            int newObjKey = _fullObjDic.ElementAt(randW.Next(0, _fullObjDic.Count)).Key;
 
             // now we place this object
             SpawnableWallObject newSObj = Instantiate(_fullObjDic[newObjKey]);

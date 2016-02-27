@@ -1,48 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &167322
+--- !u!1 &160098
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 422516}
-  - 33: {fileID: 3307674}
-  - 23: {fileID: 2393580}
-  - 114: {fileID: 11409878}
-  - 64: {fileID: 6403758}
-  - 114: {fileID: 11421944}
+  - 4: {fileID: 446688}
+  - 33: {fileID: 3302750}
+  - 23: {fileID: 2323078}
+  - 95: {fileID: 9519756}
+  - 114: {fileID: 11477922}
+  - 64: {fileID: 6474954}
   m_Layer: 0
-  m_Name: tableClothA
+  m_Name: fork
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &422516
+--- !u!4 &446688
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 167322}
+  m_GameObject: {fileID: 160098}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.01, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!23 &2393580
+--- !u!23 &2323078
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 167322}
+  m_GameObject: {fileID: 160098}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_Materials:
-  - {fileID: 2100000, guid: b77895148af906141ac412fb358d92ff, type: 2}
+  - {fileID: 2100000, guid: 4d3b76b0339226c4b9d6c8833d0886f7, type: 2}
+  - {fileID: 2100000, guid: 4fecd0ee45a63ac40ac1335c0e12505a, type: 2}
+  - {fileID: 2100000, guid: 4fecd0ee45a63ac40ac1335c0e12505a, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 1
@@ -58,86 +60,62 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
---- !u!33 &3307674
+--- !u!33 &3302750
 MeshFilter:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 167322}
-  m_Mesh: {fileID: 4300000, guid: f35b8b6a31254d14c8e8eec13faffbb6, type: 3}
---- !u!64 &6403758
+  m_GameObject: {fileID: 160098}
+  m_Mesh: {fileID: 4300000, guid: afd9a5a1661edf74a8eec0e2434ea616, type: 3}
+--- !u!64 &6474954
 MeshCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 167322}
+  m_GameObject: {fileID: 160098}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Convex: 0
-  m_Mesh: {fileID: 4300000, guid: f35b8b6a31254d14c8e8eec13faffbb6, type: 3}
---- !u!114 &11409878
-MonoBehaviour:
+  m_Mesh: {fileID: 4300000, guid: afd9a5a1661edf74a8eec0e2434ea616, type: 3}
+--- !u!95 &9519756
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 167322}
+  m_GameObject: {fileID: 160098}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gotQuestItem: {fileID: 0}
-  text: An intricately crocheted table cloth.
---- !u!114 &11421944
+  m_Avatar: {fileID: 9000000, guid: afd9a5a1661edf74a8eec0e2434ea616, type: 3}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &11477922
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 167322}
+  m_GameObject: {fileID: 160098}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11ba7aadf513f9a48891ab56e6e3246b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPlacementNum: 1
+  maxPlacementNum: 3
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: text
-      value: An intricately crocheted table cloth.
-      objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: maxPlacementNum
-      value: 1
-      objectReference: {fileID: 0}
+    m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 167322}
+  m_RootGameObject: {fileID: 160098}
   m_IsPrefabParent: 1

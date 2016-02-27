@@ -38,7 +38,6 @@ public class SpawnableObject : MonoBehaviour {
         _myBounds,
         _checkVector;
     private List<SpawnableBox> _currentTriggerBoxes = new List<SpawnableBox>();
-
     private static System.Random _rndO = new System.Random(); // so that all objects share the same
 
     public bool GetPlacementCheck() {

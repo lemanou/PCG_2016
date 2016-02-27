@@ -32,8 +32,7 @@ public class SpawnableChair : MonoBehaviour {
             }
             _placed = true;
         }
-
-        Debug.DrawRay(transform.position, transform.forward, Color.red);
+        //Debug.DrawRay(transform.position, transform.forward, Color.red);
     }
 
     public bool GetPlacementCheck() {
