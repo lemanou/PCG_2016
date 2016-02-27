@@ -12,6 +12,7 @@ GameObject:
   - 23: {fileID: 2362608}
   - 114: {fileID: 11468872}
   - 65: {fileID: 6596328}
+  - 114: {fileID: 11494424}
   m_Layer: 0
   m_Name: paintingB
   m_TagString: Untagged
@@ -90,6 +91,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gotQuestItem: {fileID: 0}
   text: A painting depicting Queen Elizabeth.
+--- !u!114 &11494424
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 194156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05b273a85a2c100439738d579e0256f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxPlacementNum: 2
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -120,6 +133,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: text
       value: A painting depicting Queen Elizabeth.
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: maxPlacementNum
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

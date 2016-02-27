@@ -6,7 +6,7 @@ public class SpawnableChair : MonoBehaviour {
 
     private bool _placed = false;
     private GameObject _target = null;
-    private SpawningBox[] _allBoxes;
+    private SpawnableBox[] _allBoxes;
     private Quaternion _lookRotation;
     private Vector3 _direction;
 
@@ -15,12 +15,12 @@ public class SpawnableChair : MonoBehaviour {
             _placed = true;
             return;
         }
-        _allBoxes = FindObjectsOfType<SpawningBox>();
+        _allBoxes = FindObjectsOfType<SpawnableBox>();
     }
 
     void Update() {
         if (!_placed) {
-            SpawningBox objToUse = _allBoxes.Where(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.ChairSpot).FirstOrDefault();
+            SpawnableBox objToUse = _allBoxes.Where(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.ChairSpot).FirstOrDefault();
             if (objToUse != null) {
                 _target = objToUse.GetFurniture();
                 objToUse.SetChair(this);

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawningBox : MonoBehaviour {
+public class SpawnableBox : MonoBehaviour {
 
     [HideInInspector]
     public IntVector2 LocalCoordinates;
@@ -11,7 +11,8 @@ public class SpawningBox : MonoBehaviour {
         Tall,
         Short,
         Occupied,
-        ChairSpot
+        ChairSpot,
+        OnWall
     }
 
     public enum BoxLocation {
@@ -23,10 +24,11 @@ public class SpawningBox : MonoBehaviour {
         NotSet
     }
 
-    private BoxLocation _boxloc = BoxLocation.NotSet;
+    public BoxLocation _boxloc = BoxLocation.NotSet;
     private BoxCondition _boxcond = BoxCondition.Free;
-    private GameObject _furniture = null,
-        _carpet = null;
+    public GameObject _furniture = null,
+        _carpet = null,
+        _wallObj = null;
     private List<string> OccupiedBoxes = new List<string>(new string[] { "Spawned Box 0, 1", "Spawned Box 0, 2", "Spawned Box 0, 3", "Spawned Box 0, 4",
                                                                         "Spawned Box 0, 5", "Spawned Box 0, 6", "Spawned Box 7, 3", "Spawned Box 7, 4" });
     private void Start() {
@@ -69,6 +71,18 @@ public class SpawningBox : MonoBehaviour {
         return _carpet;
     }
 
+    public GameObject GetWallObject() {
+        return _wallObj;
+    }
+
+    private void ChangeColor(GameObject sObj) {
+        if (GetComponent<Renderer>().material.color == Color.blue || GetComponent<Renderer>().material.color == Color.red)
+            return;
+
+        GetComponent<Renderer>().enabled = true;
+        GetComponent<Renderer>().material.color = sObj.gameObject.GetComponent<Renderer>().material.color;
+    }
+
     public void SetFurniture(SpawnableObject sObj) {
         if (_boxcond == BoxCondition.Occupied)
             return;
@@ -80,8 +94,7 @@ public class SpawningBox : MonoBehaviour {
                 _boxcond = BoxCondition.Tall;
 
             _furniture = sObj.gameObject;
-            GetComponent<Renderer>().enabled = true;
-            GetComponent<Renderer>().material.color = sObj.gameObject.GetComponent<Renderer>().material.color;
+            ChangeColor(_furniture);
         }
     }
 
@@ -95,8 +108,7 @@ public class SpawningBox : MonoBehaviour {
     public void SetCarpet(SpawnableObject sObj) {
         if (_carpet == null) {
             _carpet = sObj.gameObject;
-            GetComponent<Renderer>().enabled = true;
-            GetComponent<Renderer>().material.color = sObj.gameObject.GetComponent<Renderer>().material.color;
+            ChangeColor(_carpet);
         }
     }
 
@@ -108,10 +120,9 @@ public class SpawningBox : MonoBehaviour {
 
     public void HoldForChair(SpawnableObject sObj) {
         if (sObj.gameObject.name.Contains("tableDinner")) {
-            _furniture = sObj.gameObject;
             _boxcond = BoxCondition.ChairSpot;
-            GetComponent<Renderer>().enabled = true;
-            GetComponent<Renderer>().material.color = sObj.gameObject.GetComponent<Renderer>().material.color;
+            _furniture = sObj.gameObject;
+            ChangeColor(_furniture);
         }
     }
 
@@ -122,8 +133,18 @@ public class SpawningBox : MonoBehaviour {
         if (_furniture == null || _furniture.gameObject.name.Contains("tableDinner")) {
             _boxcond = BoxCondition.Short;
             _furniture = sc.gameObject;
-            GetComponent<Renderer>().enabled = true;
-            GetComponent<Renderer>().material.color = sc.gameObject.GetComponent<Renderer>().material.color;
+            ChangeColor(_furniture);
+        }
+    }
+
+    public void SetWallObject(SpawnableWallObject swo) {
+        if (_boxcond == BoxCondition.Occupied)
+            return;
+
+        if (_wallObj == null) {
+            _boxcond = BoxCondition.OnWall;
+            _wallObj = swo.gameObject;
+            ChangeColor(_wallObj);
         }
     }
 }

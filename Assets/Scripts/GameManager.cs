@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour {
     public void RestartGame() {
         ClearConsole();
         _spawnerInstance.gameObject.GetComponent<SpawnChairs>().Reset();
+        _spawnerInstance.gameObject.GetComponent<SpawnWallObjects>().Reset();
         _spawnerInstance.Reset();
         BeginGame();
     }

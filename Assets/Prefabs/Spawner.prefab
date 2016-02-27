@@ -10,6 +10,7 @@ GameObject:
   - 4: {fileID: 416870}
   - 114: {fileID: 11404090}
   - 114: {fileID: 11490454}
+  - 114: {fileID: 11444726}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -42,7 +43,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalAmountOfFurniture: 12
   totalAmountOfCarpets: 4
-  generationStepDelay: 0.1
+  generationStepDelay: 0.05
   RoomPrefab: {fileID: 139052, guid: 47f2d4664718aa1469e4c90676750abe, type: 2}
   SpawningBoxPrefab: {fileID: 11408406, guid: 1def135dff973d140929f7a2e74cb6a3, type: 2}
   FurnitureToPlace:
@@ -58,6 +59,27 @@ MonoBehaviour:
   - {fileID: 11486946, guid: c5f71a3b61dab4149bc8243044f66f0c, type: 2}
   - {fileID: 11425858, guid: 9a9e1e7e9d45b2047995d5b5fe0f9d4f, type: 2}
   - {fileID: 11490944, guid: 8ee2101bfe3c6cb42adb29476da1ad09, type: 2}
+--- !u!114 &11444726
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 160714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 643e5ab9a643d594eb1bcd90303926bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalAmountOfWO: 8
+  generationStepDelay: 0.05
+  WallObjsToPlace:
+  - {fileID: 11416538, guid: 49e6958dc5fa4f54695da5602c42fe55, type: 2}
+  - {fileID: 11494424, guid: 47abe38f7eb4a16498a00bae59b2a6bd, type: 2}
+  - {fileID: 11471324, guid: 500fd64f4a6431246b138adb69109582, type: 2}
+  - {fileID: 11485766, guid: b1410ca9c081227438e0d2d2b95f43f2, type: 2}
+  - {fileID: 11491964, guid: db539af433cfd0a4cae41be8e34696d4, type: 2}
+  - {fileID: 11491386, guid: 04d3a735e85c1d746b4b874bb05cd765, type: 2}
+  - {fileID: 11455294, guid: 78705c8f009f1164281d7fe19a495389, type: 2}
 --- !u!114 &11490454
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -70,7 +92,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalAmountOfChairs: 4
-  generationStepDelay: 0.1
+  generationStepDelay: 0.05
   SpawningChairPrefab: {fileID: 11437464, guid: e6f710bbdd13f204b94e12de85d7553d,
     type: 2}
 --- !u!1001 &100100000
@@ -85,12 +107,16 @@ Prefab:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 0}
+      propertyPath: WallObjsToPlace.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
       propertyPath: FurnitureToPlace.Array.size
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: generationStepDelay
-      value: 0.1
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: totalAmountOfFurniture
@@ -174,6 +200,45 @@ Prefab:
       propertyPath: SpawningChairPrefab
       value: 
       objectReference: {fileID: 11437464, guid: e6f710bbdd13f204b94e12de85d7553d,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: WallObjsToPlace.Array.data[0]
+      value: 
+      objectReference: {fileID: 11416538, guid: 49e6958dc5fa4f54695da5602c42fe55,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: WallObjsToPlace.Array.data[1]
+      value: 
+      objectReference: {fileID: 11494424, guid: 47abe38f7eb4a16498a00bae59b2a6bd,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: WallObjsToPlace.Array.data[2]
+      value: 
+      objectReference: {fileID: 11471324, guid: 500fd64f4a6431246b138adb69109582,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: WallObjsToPlace.Array.data[3]
+      value: 
+      objectReference: {fileID: 11485766, guid: b1410ca9c081227438e0d2d2b95f43f2,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: WallObjsToPlace.Array.data[4]
+      value: 
+      objectReference: {fileID: 11491964, guid: db539af433cfd0a4cae41be8e34696d4,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: WallObjsToPlace.Array.data[5]
+      value: 
+      objectReference: {fileID: 11491386, guid: 04d3a735e85c1d746b4b874bb05cd765,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: totalAmountOfWO
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: WallObjsToPlace.Array.data[6]
+      value: 
+      objectReference: {fileID: 11455294, guid: 78705c8f009f1164281d7fe19a495389,
         type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
