@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+//using UnityEditor;
 
 public class GameManager : MonoBehaviour {
 
@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour {
     }
 
     // UsefulShortcuts reflection trick
-    [MenuItem("Tools/Clear Console %#c")] // CMD + SHIFT + C
+    //[MenuItem("Tools/Clear Console %#c")] // CMD + SHIFT + C
     static void ClearConsole() {
         // This simply does "LogEntries.Clear()" the long way:
         var logEntries = System.Type.GetType("UnityEditorInternal.LogEntries,UnityEditor.dll");

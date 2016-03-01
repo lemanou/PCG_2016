@@ -39,5 +39,40 @@ public class tmp : MonoBehaviour
         if state normalDescription...
         if state foundHiddenNote...
         if state nothingOfInterest...
+
+
+    if mouse down
+        if found paper already
+            remove paper gameObject
+            if hovering
+                show normal description
+            else
+                show empty description
+        else if hovering something
+            set currentGO
+            if paper not found, but there is quest
+                set quest
+                show paper
+            else if no quest
+                set no quest
+    else
+        if hovering something
+            if you haven't clicked already
+                show normal description
+            else if you're hovering new furniture
+                show normal description
+        else
+            if not show paper
+                show empty
+
+
+
+
+
+
+
+
+
+
     */
 }
