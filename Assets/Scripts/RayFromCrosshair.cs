@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 
+/*
+    This script shoots a ray 2 meters ahead of the camera to check for possible mouse interaction.
+    It returns the gameobject GOHitByRay.
+*/
 public class RayFromCrosshair : MonoBehaviour
 {
     public static ClickableFurniture GOHitByRay;

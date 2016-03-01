@@ -1,63 +1,130 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+/*
+    This script is placed on BlackBorderText and allows for descriptive subtitles to pop up.
+*/
 public class DescriptiveTextScript : MonoBehaviour
 {
     Text BlackBorderText;
 
-    private GameObject currentGO;
+    private GameObject currentGO, currentQuestItemGO;
+
+    private enum State
+    {
+        empty,
+        normalDescription,
+        foundHiddenNote,
+        nothingOfInterest
+    }
+
+    private State currentState = State.empty;
+
+    private State CurrentState
+    {
+        get { return currentState; }
+        set { currentState = value; }
+    }
 
     void Start()
     {
         BlackBorderText = GetComponent<Text>();
+        currentGO = currentQuestItemGO = null;
     }
 
     void FixedUpdate()
     {
-        if (RayFromCrosshair.GOHitByRay != null)
+        print("state: " + currentState);
+        // If we're clicking
+        if (Input.GetMouseButtonDown(0))
         {
-            BlackBorderText.text = RayFromCrosshair.GOHitByRay.text;
+            //print("mouse pressed");
+            // If a quest item is shown already, use the mouse click to deactivate it.
+            if (currentState == State.foundHiddenNote)
+            {
+                //print("already had paper");
+                currentQuestItemGO.SetActive(false);
+                currentQuestItemGO = null;
 
-            if (Input.GetMouseButtonDown(0))
+                if (RayFromCrosshair.GOHitByRay != null)
+                {
+                    //print("hovering furniture after paper was removed");
+                    currentState = State.normalDescription;
+                }
+                else
+                {
+                    //print("not hovering furniture after paper was removed");
+                    currentState = State.empty;
+                }
+            }
+            // If we hit anything, show a descriptive text.
+            else if (RayFromCrosshair.GOHitByRay != null)
             {
+                //print("mouse pressed while hovering");
                 currentGO = RayFromCrosshair.GOHitByRay.gameObject;
-                if (RayFromCrosshair.GOHitByRay.gotQuestItem != null && !ClickableFurniture.questItemAlreadyFound)
+                // Has the player clicked furniture with a quest item attached?
+                if (RayFromCrosshair.GOHitByRay.questItemAttached != null && currentState != State.foundHiddenNote)
                 {
-                    ClickableFurniture.questItemAlreadyFound = true;
+                    //print("found quest item");
+                    currentQuestItemGO = RayFromCrosshair.GOHitByRay.questItemAttached;
+                    currentState = State.foundHiddenNote;
+                    currentQuestItemGO.SetActive(true);
                 }
-                else if (RayFromCrosshair.GOHitByRay.gotQuestItem == null)
+                else if (RayFromCrosshair.GOHitByRay.questItemAttached == null)
                 {
-                    ClickableFurniture.questItemNotFound = true;
+                    //print("found no quest item");
+                    currentState = State.nothingOfInterest;
                 }
-            }
-            if (ClickableFurniture.questItemAlreadyFound)
-            {
-                BlackBorderText.text = "You have found a hidden note.";
-            }
-            else if (ClickableFurniture.questItemNotFound)
-            {
-                BlackBorderText.text = "You have found nothing of interest.";
             }
         }
+        // If we're not clicking
         else
         {
-            ClickableFurniture.questItemAlreadyFound = false;
-            ClickableFurniture.questItemNotFound = false;
+            // We're hovering something
+            if (RayFromCrosshair.GOHitByRay != null)
+            {
+                //print("hovering something");
+                if (currentState != State.foundHiddenNote || currentState != State.nothingOfInterest)
+                {
+                    //print("hovering something without having checked for quest item");
+                    currentState = State.normalDescription;
+                    // If we go directly from hitting one to hitting another, reset any quest item text, to allow for descriptive text.  
+                }
+                if (RayFromCrosshair.GOHitByRay != null && currentGO != null && currentGO != RayFromCrosshair.GOHitByRay.gameObject)
+                {
+                    //print("changing hover from one item directly to the next");
+                    currentState = State.normalDescription;
+                }
+            }
+            // We're not hovering anything
+            else
+            {
+                //print("not hovering anything");
+                if (currentState != State.foundHiddenNote)
+                {
+                    currentState = State.empty;
+                }
+            }
+        }
+        // Set the descriptive text.
+        if (currentState == State.foundHiddenNote)
+        {
+            BlackBorderText.text = "You have found a hidden note.";
+        }
+        if (currentState == State.nothingOfInterest)
+        {
+            BlackBorderText.text = "You have found nothing of interest.";
+        }
+        if (currentState == State.normalDescription)
+        {
+            if (RayFromCrosshair.GOHitByRay != null)
+            {
+                BlackBorderText.text = RayFromCrosshair.GOHitByRay.text;
+            }
+        }
+        if (currentState == State.empty)
+        {
             BlackBorderText.text = "";
-        }
-        if (RayFromCrosshair.GOHitByRay != null && currentGO != null && currentGO != RayFromCrosshair.GOHitByRay.gameObject)
-        {
-            ClickableFurniture.questItemAlreadyFound = false;
-            ClickableFurniture.questItemNotFound = false;
-        }
-
-
-        // For testing purposes only.
-        if (Input.GetKeyDown("space"))
-        {
-            ClickableFurniture.questItemAlreadyFound = false;
-            ClickableFurniture.questItemNotFound = false;
-            print("quest item reset");
         }
     }
 }

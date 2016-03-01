@@ -87,8 +87,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gotQuestItem: {fileID: 0}
-  text: A curious piece of paper.
+  questItemAttached: {fileID: 0}
+  text: A lonely piece of paper.
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -126,7 +126,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: text
-      value: A curious piece of paper.
+      value: A lonely piece of paper.
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
