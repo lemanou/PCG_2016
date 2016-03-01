@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+[RequireComponent(typeof(SpawnableChair))]
+[RequireComponent(typeof(SpawnWallObjects))]
+
 public class Spawner : MonoBehaviour {
 
     [Range(1, 20)]
@@ -12,7 +15,7 @@ public class Spawner : MonoBehaviour {
 
     public float generationStepDelay;
     public GameObject RoomPrefab;
-    public SpawningBox SpawningBoxPrefab;
+    public SpawnableBox SpawningBoxPrefab;
     public List<SpawnableObject> FurnitureToPlace,
         CarpetsToPlace;
 
@@ -20,13 +23,14 @@ public class Spawner : MonoBehaviour {
     private int _placedFurnitureCount = 0,
         _placedCarpetsCount = 0;
     private IntVector2 _size;
-    private SpawningBox[,] _boxes;
+    private SpawnableBox[,] _boxes;
     private GameObject _roomInstance;
     private List<SpawnableObject> _placedFurniture = new List<SpawnableObject>(),
         _placedCarpets = new List<SpawnableObject>();
     private Dictionary<int, SpawnableObject> _fullFurnitureDic = new Dictionary<int, SpawnableObject>(),
         _fullCarpetsDic = new Dictionary<int, SpawnableObject>();
     private Vector3 _roomSize, _roomBoundaries;
+    private static System.Random rand = new System.Random();
 
     public Vector3 GetBoundaries() {
         return _roomBoundaries;
@@ -98,7 +102,7 @@ public class Spawner : MonoBehaviour {
     }
 
     private void SpawnBoxesStepOne() {
-        _boxes = new SpawningBox[_size.x, _size.z];
+        _boxes = new SpawnableBox[_size.x, _size.z];
         for (int x = 0; x < _size.x; x++) {
             for (int z = 0; z < _size.z; z++) {
                 CreateBox(new IntVector2(x, z));
@@ -107,7 +111,7 @@ public class Spawner : MonoBehaviour {
     }
 
     private void CreateBox(IntVector2 coordinates) {
-        SpawningBox newBox = Instantiate(SpawningBoxPrefab) as SpawningBox;
+        SpawnableBox newBox = Instantiate(SpawningBoxPrefab) as SpawnableBox;
         _boxes[coordinates.x, coordinates.z] = newBox;
         newBox.LocalCoordinates = coordinates;
         newBox.name = "Spawned Box " + coordinates.x + ", " + coordinates.z;
@@ -143,7 +147,6 @@ public class Spawner : MonoBehaviour {
 
             _placedFurnitureCount++;
             // Get random key from Dictionary
-            System.Random rand = new System.Random();
             int newObjKey = _fullFurnitureDic.ElementAt(rand.Next(0, _fullFurnitureDic.Count)).Key;
 
             //if (_fullFurnitureDic[newObjKey].gameObject.name.Contains("tableDinner")) {
@@ -186,7 +189,6 @@ public class Spawner : MonoBehaviour {
 
             _placedCarpetsCount++;
             // Get random key from Dictionary
-            System.Random rand = new System.Random();
             int newObjKey = _fullCarpetsDic.ElementAt(rand.Next(0, _fullCarpetsDic.Count)).Key;
 
             // now we place this object
@@ -205,7 +207,7 @@ public class Spawner : MonoBehaviour {
 
         var children = new List<GameObject>();
         foreach (Transform child in transform) children.Add(child.gameObject);
-        children.ForEach(child => Destroy(child)); // child.GetComponent<Renderer>().enabled = false
+        children.ForEach(child => child.GetComponent<Renderer>().enabled = false); //  Destroy(child)); 
     }
 
     private void LateUpdate() {
@@ -226,13 +228,13 @@ public class Spawner : MonoBehaviour {
                     }
                 }
 
-                // now we have placed all requested objects and we can delete the boxes
+                // now we have placed all requested furniture and we can delete the boxes
                 if (tmp) {
                     _once = false;
                     //DeleteAllBoxes(); // The chairs decide the end now
                     //Debug.Log("E.N.D.");
+                    gameObject.GetComponent<SpawnWallObjects>().StartPlacement();
                     gameObject.GetComponent<SpawnChairs>().StartChairPlacement();
-                    
                 }
             }
         }

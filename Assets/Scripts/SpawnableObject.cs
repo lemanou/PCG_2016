@@ -33,11 +33,12 @@ public class SpawnableObject : MonoBehaviour {
         _secondCounter = 0;
     private Facing _localFacing = Facing.North;
     private Renderer _myRenderer;
-    private SpawningBox[] _allBoxes;
+    private SpawnableBox[] _allBoxes;
     private Vector3 _roomBoundaries,
         _myBounds,
         _checkVector;
-    private List<SpawningBox> _currentTriggerBoxes = new List<SpawningBox>();
+    private List<SpawnableBox> _currentTriggerBoxes = new List<SpawnableBox>();
+    private static System.Random _rndO = new System.Random(); // so that all objects share the same
 
     public bool GetPlacementCheck() {
         return _placementCheck;
@@ -90,20 +91,19 @@ public class SpawnableObject : MonoBehaviour {
             Destroy(gameObject);
         }
 
-        _allBoxes = FindObjectsOfType<SpawningBox>();
+        _allBoxes = FindObjectsOfType<SpawnableBox>();
 
         // Get a random starting facing for wall objects
         if (localPlacement == Placement.Wall) {
             Array values = Enum.GetValues(typeof(Facing));
-            System.Random random = new System.Random();
-            _localFacing = (Facing)values.GetValue(random.Next(values.Length));
+            _localFacing = (Facing)values.GetValue(_rndO.Next(values.Length));
         }
     }
 
-    private void ArrayShuffle(SpawningBox[] sbxs) {
+    private void ArrayShuffle(SpawnableBox[] sbxs) {
         // Knuth shuffle algorithm :: courtesy of Wikipedia :)
         for (int t = 0; t < sbxs.Length; t++) {
-            SpawningBox tmp = sbxs[t];
+            SpawnableBox tmp = sbxs[t];
             int r = UnityEngine.Random.Range(t, sbxs.Length);
             sbxs[t] = sbxs[r];
             sbxs[r] = tmp;
@@ -137,7 +137,7 @@ public class SpawnableObject : MonoBehaviour {
             Debug.LogWarning("No space for " + gameObject.name + " disabling.");
 
             // First empty the boxes
-            foreach (SpawningBox sbx in _currentTriggerBoxes) {
+            foreach (SpawnableBox sbx in _currentTriggerBoxes) {
                 Resetter(sbx);
             }
             _placementCheck = true; // used to determine when we are done with each piece of furniture
@@ -206,7 +206,7 @@ public class SpawnableObject : MonoBehaviour {
         Collider[] _colliders = Physics.OverlapSphere(transform.position, 1.0f);
 
         foreach (var obj in _colliders) {
-            SpawningBox sbx = obj.GetComponent<SpawningBox>();
+            SpawnableBox sbx = obj.GetComponent<SpawnableBox>();
             if (sbx)
                 if (sbx.transform.position.x != gameObject.transform.position.x && sbx.transform.position.z != gameObject.transform.position.z) {
                     if (sbx.GetFurniture() == gameObject || sbx.GetFurniture() == null) {
@@ -220,7 +220,7 @@ public class SpawnableObject : MonoBehaviour {
     private void WallCorrections() {
 
         if (localPlacement == Placement.Wall) {
-            foreach (SpawningBox sbx in _currentTriggerBoxes) {
+            foreach (SpawnableBox sbx in _currentTriggerBoxes) {
                 if (sbx.name == "Spawned Box 0, 0") // South
                     transform.position = new Vector3(transform.position.x + 0.07f, transform.position.y, transform.position.z);
                 else if (sbx.name == "Spawned Box 7, 0" && !gameObject.name.Contains("fireplace"))
@@ -243,10 +243,10 @@ public class SpawnableObject : MonoBehaviour {
         Vector3 _halfSize = _myRenderer.bounds.size / 2;
         Collider[] _colliders = Physics.OverlapBox(_center, _halfSize - _halfSize * 0.05f);
 
-        List<SpawningBox> comparingList = new List<SpawningBox>();
+        List<SpawnableBox> comparingList = new List<SpawnableBox>();
 
         foreach (var obj in _colliders) {
-            SpawningBox sbx = obj.GetComponent<SpawningBox>();
+            SpawnableBox sbx = obj.GetComponent<SpawnableBox>();
             if (sbx) {
                 _currentTriggerBoxes.Add(sbx);
                 comparingList.Add(sbx);
@@ -259,20 +259,20 @@ public class SpawnableObject : MonoBehaviour {
         }
 
         // Then double check and compare when to remove, for everytime the object gets moved
-        List<SpawningBox> removingList = new List<SpawningBox>();
-        foreach (SpawningBox sbx in _currentTriggerBoxes) {
+        List<SpawnableBox> removingList = new List<SpawnableBox>();
+        foreach (SpawnableBox sbx in _currentTriggerBoxes) {
             if (!comparingList.Contains(sbx)) {
                 removingList.Add(sbx);
             }
         }
 
-        foreach (SpawningBox sbx in removingList) {
+        foreach (SpawnableBox sbx in removingList) {
             _currentTriggerBoxes.Remove(sbx);
             Resetter(sbx);
         }
     }
 
-    private void Resetter(SpawningBox sbx) {
+    private void Resetter(SpawnableBox sbx) {
         if (sbx.GetFurniture() == gameObject)
             sbx.ReSetFurniture();
         else if (sbx.GetCarpet() == gameObject)
@@ -331,24 +331,24 @@ public class SpawnableObject : MonoBehaviour {
     }
     */
 
-    private SpawningBox GetMidRoomBox() {
+    private SpawnableBox GetMidRoomBox() {
         // Get a random box for placement 
         // We don't care anymore for mid room facing
-        SpawningBox objToUse = null;
+        SpawnableBox objToUse = null;
 
         if (localTag == Tag.Carpet) {
-            objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).FirstOrDefault();
+            objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.Middle).FirstOrDefault();
             if (objToUse == null)
-                _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).LastOrDefault();
+                _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.Middle).LastOrDefault();
         } else {
-            objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+            objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.Middle).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
             if (objToUse == null)
-                _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.Middle).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
         }
         return objToUse;
     }
 
-    private void PlaceInMidRoomVersionTwo(SpawningBox objToUse) {
+    private void PlaceInMidRoomVersionTwo(SpawnableBox objToUse) {
 
         if (objToUse != null) {
             Vector3 V = new Vector3();
@@ -360,11 +360,10 @@ public class SpawnableObject : MonoBehaviour {
             transform.position = V;
 
             // Randomize y rotation
-            System.Random r = new System.Random();
             // Giving an extra 270 for leverage
             List<int> myValues = new List<int>(new int[] { 0, 90, 180, 270, 270 });
             ListShuffle(myValues);
-            IEnumerable<int> oneRandom = myValues.OrderBy(x => r.Next()).Take(1);
+            IEnumerable<int> oneRandom = myValues.OrderBy(x => _rndO.Next()).Take(1);
             transform.rotation = Quaternion.Euler(0, oneRandom.First(), 0);
 
             // Allign on Spawning boxes based on bounds and rotation
@@ -415,22 +414,22 @@ public class SpawnableObject : MonoBehaviour {
 
     private void PlaceNearWallVersionTwo() {
         // Get a random box for placement based on facing
-        SpawningBox objToUse = null;
+        SpawnableBox objToUse = null;
         switch (_localFacing) {
             case Facing.North:
-                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.North).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.North).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 if (objToUse == null)
-                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.North).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.North).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 break;
             case Facing.East:
-                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.East).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.East).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 if (objToUse == null)
-                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.East).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.East).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 break;
             case Facing.South:
-                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.South).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.South).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 if (objToUse == null)
-                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawningBox.BoxLocation.South).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawningBox.BoxCondition.Free);
+                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.South).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 break;
         }
 
@@ -500,10 +499,10 @@ public class SpawnableObject : MonoBehaviour {
             }
             // Check if we are using a different type of box
             if (localPlacement == Placement.Middle) {
-                if (sbx.GetBoxLocation() != SpawningBox.BoxLocation.Middle)
+                if (sbx.GetBoxLocation() != SpawnableBox.BoxLocation.Middle)
                     return false;
             } else if (localPlacement == Placement.Wall)
-                if (sbx.GetBoxLocation() == SpawningBox.BoxLocation.Middle)
+                if (sbx.GetBoxLocation() == SpawnableBox.BoxLocation.Middle)
                     return false;
         }
         //Debug.Log("Accepted position: " + transform.position + " for: " + gameObject.name);

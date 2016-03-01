@@ -13,6 +13,7 @@ GameObject:
   - 65: {fileID: 6564562}
   - 114: {fileID: 11488414}
   - 114: {fileID: 11413060}
+  - 114: {fileID: 11497750}
   m_Layer: 0
   m_Name: tableDinner
   m_TagString: Untagged
@@ -88,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gotQuestItem: {fileID: 0}
+  questItemAttached: {fileID: 0}
   text: A sturdy built dinner table.
 --- !u!114 &11488414
 MonoBehaviour:
@@ -104,6 +105,26 @@ MonoBehaviour:
   localTag: 0
   localPlacement: 1
   maxPlacementNum: 1
+--- !u!114 &11497750
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 147902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalAmountOfMiniObjects: 10
+  generationStepDelay: 0.1
+  MiniObjectsToPlace:
+  - {fileID: 11407828, guid: 1b8025c7cfbc3c345bb1ec7caa9b34b6, type: 2}
+  - {fileID: 11487310, guid: e95f3ee5b5bc76e4ea85cd0dc1b80851, type: 2}
+  - {fileID: 11467480, guid: 7c199fd9ccf68bf49afc65020b426c96, type: 2}
+  - {fileID: 11477922, guid: 8e9fb5fd668f2ef4aa51c19027739074, type: 2}
+  - {fileID: 11413856, guid: 24f5478870a4dd242a185dc77c9153fc, type: 2}
+  - {fileID: 11486956, guid: 657b148eddc705c45b408f3e6c262297, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -131,6 +152,11 @@ Prefab:
       propertyPath: text
       value: A sturdy built dinner table.
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: MiniObjectsToPlace.Array.data[1]
+      value: 
+      objectReference: {fileID: 11487310, guid: e95f3ee5b5bc76e4ea85cd0dc1b80851,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 147902}

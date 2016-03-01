@@ -11,6 +11,8 @@ GameObject:
   - 33: {fileID: 3311756}
   - 23: {fileID: 2325386}
   - 114: {fileID: 11468314}
+  - 114: {fileID: 11467480}
+  - 64: {fileID: 6457078}
   m_Layer: 0
   m_Name: plateDinner
   m_TagString: Untagged
@@ -63,6 +65,30 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 166228}
   m_Mesh: {fileID: 4300000, guid: c0c1593c48e640448aa26bcd8254ec6b, type: 3}
+--- !u!64 &6457078
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 166228}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Convex: 0
+  m_Mesh: {fileID: 4300000, guid: c0c1593c48e640448aa26bcd8254ec6b, type: 3}
+--- !u!114 &11467480
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 166228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ba7aadf513f9a48891ab56e6e3246b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxPlacementNum: 2
 --- !u!114 &11468314
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -106,6 +132,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: text
       value: A fine dinner plate.
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: maxPlacementNum
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

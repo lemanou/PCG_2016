@@ -12,17 +12,17 @@ public class SpawnChairs : MonoBehaviour {
 
     private bool _check = true;
     private int _placedNumOfChairs = 0;
-    private SpawningBox[] _allBoxes;
+    private SpawnableBox[] _allBoxes;
     private List<SpawnableChair> _placedChairs = new List<SpawnableChair>();
 
     void Start() {
-        _allBoxes = FindObjectsOfType<SpawningBox>();
+        _allBoxes = FindObjectsOfType<SpawnableBox>();
     }
 
     private bool CheckPossibleBoxes() {
         // Check for available spots
         foreach (var box in _allBoxes) {
-            if (box.GetBoxCondition() == SpawningBox.BoxCondition.ChairSpot)
+            if (box.GetBoxCondition() == SpawnableBox.BoxCondition.ChairSpot)
                 return true;
         }
         return false;

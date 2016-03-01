@@ -12,6 +12,7 @@ GameObject:
   - 23: {fileID: 2387882}
   - 114: {fileID: 11476310}
   - 64: {fileID: 6495684}
+  - 114: {fileID: 11487310}
   m_Layer: 0
   m_Name: paper
   m_TagString: Untagged
@@ -89,6 +90,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questItemAttached: {fileID: 0}
   text: A lonely piece of paper.
+--- !u!114 &11487310
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ba7aadf513f9a48891ab56e6e3246b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxPlacementNum: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -127,6 +140,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: text
       value: A lonely piece of paper.
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: maxPlacementNum
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
