@@ -7,7 +7,8 @@
 public class ClickableFurniture : MonoBehaviour
 {
     public static bool questItemFound, questItemNotFound;   // We do need both, since we have 3 states: not clicked, not found and found
-    public GameObject questItemAttached;
+    public QuestItemScript questItemAttached;
+    public GameObject numberDialAttached;
     public string text;
     
     /* If the renderer and all comments are uncommented, furniture will light up when hovered.
