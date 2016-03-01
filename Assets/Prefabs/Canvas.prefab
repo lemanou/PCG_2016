@@ -720,6 +720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75bee9dea040005468c22017cf34ce89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  questNumber: -1
 --- !u!114 &11484510
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -779,6 +780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75bee9dea040005468c22017cf34ce89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  questNumber: 1
 --- !u!114 &11497062
 MonoBehaviour:
   m_ObjectHideFlags: 1

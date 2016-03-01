@@ -2,16 +2,10 @@
 
 public class QuestItemScript : MonoBehaviour
 {
+    public int questNumber;
 
-    // Use this for initialization
     void Start()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        if(questNumber != -1) NumberDialScript.trueNumbers.Add(this);
     }
 }
