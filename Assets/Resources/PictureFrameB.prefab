@@ -26,7 +26,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138912}
-  m_LocalRotation: {x: 0.13052621, y: 0, z: 0, w: 0.9914449}
+  m_LocalRotation: {x: -0.13052621, y: 0, z: 0, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questItemAttached: {fileID: 0}
+  numberDialAttached: {fileID: 0}
   text: A photography of a girl in a silver frame.
 --- !u!114 &11462140
 MonoBehaviour:
@@ -113,7 +114,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 0}
       propertyPath: m_LocalRotation.x
-      value: 0.13052621
+      value: -0.13052621
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalRotation.y
