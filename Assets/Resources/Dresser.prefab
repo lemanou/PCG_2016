@@ -20,6 +20,64 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &134094
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 408972}
+  - 114: {fileID: 11410778}
+  - 65: {fileID: 6575326}
+  m_Layer: 2
+  m_Name: SPD1 (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &163446
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 430962}
+  - 114: {fileID: 11467064}
+  - 65: {fileID: 6578626}
+  m_Layer: 2
+  m_Name: SPD1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &408972
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 134094}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.231, y: 0.759, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 454680}
+  m_RootOrder: 1
+--- !u!4 &430962
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 163446}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.209, y: 0.759, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 454680}
+  m_RootOrder: 0
 --- !u!4 &454680
 Transform:
   m_ObjectHideFlags: 1
@@ -29,7 +87,9 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 430962}
+  - {fileID: 408972}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!23 &2300062
@@ -78,6 +138,45 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.94999987, y: 0.74, z: 0.5600019}
   m_Center: {x: -0.0049999948, y: 0.370004, z: 0.0000009983777}
+--- !u!65 &6575326
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 134094}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.3, y: 0.1, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &6578626
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 163446}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.3, y: 0.1, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &11410778
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 134094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generationStepDelay: 0.1
+  MiniObjectsToPlace:
+  - {fileID: 11406394, guid: d11b1c7c1d096304ca796f9eb6e8c8df, type: 2}
+  - {fileID: 11450138, guid: 2d66d483a82fab44d8facfc1aabdb2dc, type: 2}
 --- !u!114 &11464362
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -89,8 +188,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gotQuestItem: {fileID: 0}
+  questItemAttached: {fileID: 0}
   text: A finely crafted dresser.
+--- !u!114 &11467064
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 163446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generationStepDelay: 0.1
+  MiniObjectsToPlace:
+  - {fileID: 11407828, guid: 1b8025c7cfbc3c345bb1ec7caa9b34b6, type: 2}
+  - {fileID: 11487310, guid: e95f3ee5b5bc76e4ea85cd0dc1b80851, type: 2}
 --- !u!114 &11478648
 MonoBehaviour:
   m_ObjectHideFlags: 1

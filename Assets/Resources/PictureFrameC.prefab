@@ -12,6 +12,7 @@ GameObject:
   - 23: {fileID: 2379638}
   - 114: {fileID: 11467364}
   - 64: {fileID: 6462536}
+  - 114: {fileID: 11428726}
   m_Layer: 0
   m_Name: PictureFrameC
   m_TagString: Untagged
@@ -78,6 +79,18 @@ MeshCollider:
   serializedVersion: 2
   m_Convex: 0
   m_Mesh: {fileID: 4300000, guid: 4cb2ab9b6e60c4c4c8d9cb0c57cfcbfc, type: 3}
+--- !u!114 &11428726
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 135522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ba7aadf513f9a48891ab56e6e3246b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxPlacementNum: 2
 --- !u!114 &11467364
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -89,7 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gotQuestItem: {fileID: 0}
+  questItemAttached: {fileID: 0}
   text: A photography of a woman in a gold frame.
 --- !u!1001 &100100000
 Prefab:
@@ -137,6 +150,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: text
       value: A photography of a woman in a gold frame.
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: maxPlacementNum
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

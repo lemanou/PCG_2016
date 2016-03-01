@@ -12,6 +12,7 @@ GameObject:
   - 23: {fileID: 2362716}
   - 114: {fileID: 11496070}
   - 65: {fileID: 6583680}
+  - 114: {fileID: 11406394}
   m_Layer: 0
   m_Name: bookSingle
   m_TagString: Untagged
@@ -77,6 +78,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.049999993, y: 0.22999997, z: 0.15}
   m_Center: {x: 0, y: 0.11499999, z: 0}
+--- !u!114 &11406394
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 160272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ba7aadf513f9a48891ab56e6e3246b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxPlacementNum: 2
 --- !u!114 &11496070
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -88,7 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gotQuestItem: {fileID: 0}
+  questItemAttached: {fileID: 0}
   text: A curious antique book.
 --- !u!1001 &100100000
 Prefab:
@@ -132,6 +145,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: text
       value: A curious antique book.
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: maxPlacementNum
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

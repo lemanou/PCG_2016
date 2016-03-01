@@ -6,17 +6,20 @@ using UnityEngine.SceneManagement;
 
 public class SpawnObjectsOnMe : MonoBehaviour {
 
-    [Range(1, 10)]
-    public int totalAmountOfMiniObjects = 6;
+    //[Range(1, 10)]
+    private int totalAmountOfMiniObjects = 1;
+
     public float generationStepDelay;
     public List<SpawnableMiniObject> MiniObjectsToPlace;
 
+    private bool _placed = false;
     private int _placedMiniObjsCount = 0;
     private SpawnableBox[] _allBoxes;
-    private List<SpawnableBox> _possibleSpots = new List<SpawnableBox>();
+    //private List<SpawnableBox> _possibleSpots = new List<SpawnableBox>();
     private List<SpawnableMiniObject> _placedMiniObjects = new List<SpawnableMiniObject>();
     private Dictionary<int, SpawnableMiniObject> _fullMiniObjsDict = new Dictionary<int, SpawnableMiniObject>();
     private static System.Random randM = new System.Random();
+    private SpawnableObject _papa;
 
     private void CreateFullDict() {
         int countKey = 0;
@@ -47,7 +50,9 @@ public class SpawnObjectsOnMe : MonoBehaviour {
             int newObjKey = _fullMiniObjsDict.ElementAt(randM.Next(0, _fullMiniObjsDict.Count)).Key;
 
             // now we place this object
-            SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], transform.position, Quaternion.identity) as SpawnableMiniObject;
+            float tempY = transform.parent.GetComponent<Renderer>().bounds.max.y;
+            Vector3 tmpV = new Vector3(transform.position.x, tempY, transform.position.z);
+            SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], tmpV, transform.rotation) as SpawnableMiniObject;
             newSObj.name += ": " + _placedMiniObjsCount;
             newSObj.transform.SetParent(gameObject.transform);
             _placedMiniObjects.Add(newSObj);
@@ -59,8 +64,15 @@ public class SpawnObjectsOnMe : MonoBehaviour {
     }
 
     private void Start() {
-
         if (SceneManager.GetActiveScene().name != "ScriptTester") {
+            _placed = true;
+            return;
+        }
+
+        _papa = gameObject.transform.parent.GetComponent<SpawnableObject>();
+        if (_papa == null) {
+            Debug.LogWarning("Father is not a SpawnableObject. " + gameObject.name);
+            _placed = true;
             return;
         }
 
@@ -72,12 +84,18 @@ public class SpawnObjectsOnMe : MonoBehaviour {
 
         if (totalAmountOfMiniObjects > objSum) {
             Debug.LogWarning("Sum of mini objects lower than the number asked to place. Exiting. " + gameObject.name);
+            _placed = true;
             return;
         }
+    }
 
-        CreateFullDict();
-        StartCoroutine(MiniObjectSpawning());
-    }    
+    void LateUpdate() {
+        if (_papa.GetPlacementCheck() && !_placed) {
+            CreateFullDict();
+            StartCoroutine(MiniObjectSpawning());
+            _placed = true;
+        }
+    }
 
     public void Reset() {
         StopCoroutine(MiniObjectSpawning());
