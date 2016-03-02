@@ -47,35 +47,64 @@ public class SpawnObjectsOnMe : MonoBehaviour {
         while (_placedMiniObjsCount < totalAmountOfMiniObjects) {
 
             _placedMiniObjsCount++;
-            // Get random key from Dictionary
-            int newObjKey = _fullMiniObjsDict.ElementAt(randM.Next(0, _fullMiniObjsDict.Count)).Key;
 
-            // now we place this object
-            float tempY = transform.parent.GetComponent<Renderer>().bounds.max.y;
-            Vector3 tmpV = new Vector3(transform.position.x, tempY, transform.position.z);
-
-            //Quaternion tmpR = _fullMiniObjsDict[newObjKey].transform.rotation;
-            //tmpR = Quaternion.Euler(0, transform.rotation.y, 0);
-
-            SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], tmpV, transform.rotation) as SpawnableMiniObject;
-            newSObj.name += ": " + _placedMiniObjsCount;
-            newSObj.transform.SetParent(gameObject.transform);
-
-            if (newSObj.gameObject.name.Contains("PictureFrame"))
-                transform.eulerAngles = new Vector3(-15, transform.eulerAngles.y, transform.eulerAngles.z);
-            else if (newSObj.gameObject.name.Contains("book")) {
-                tmpV = new Vector3(transform.position.x, tempY + 0.03f, transform.position.z);
-                transform.position = tmpV;
-                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, -90);
-            } else if (newSObj.gameObject.name.Contains("paper"))
-                transform.eulerAngles = new Vector3(transform.eulerAngles.x, Random.Range(0, 359), transform.eulerAngles.z);
-
-            _placedMiniObjects.Add(newSObj);
-            // thus we cannot again
-            _fullMiniObjsDict.Remove(newObjKey);
+            if (_papa.gameObject.name.Contains("armoire"))
+                PlaceInArmoire();
+            else
+                PlaceDifferent();
 
             yield return delay;
         }
+    }
+
+    private void PlaceInArmoire() {
+        // Get random key from Dictionary
+        int newObjKey = _fullMiniObjsDict.ElementAt(randM.Next(0, _fullMiniObjsDict.Count)).Key;
+
+        SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], transform.position, transform.rotation) as SpawnableMiniObject;
+        newSObj.name += ": " + _placedMiniObjsCount;
+        newSObj.transform.SetParent(gameObject.transform);
+
+        //if (newSObj.gameObject.name.Contains("PictureFrame"))
+        //    transform.eulerAngles = new Vector3(-15, transform.eulerAngles.y, transform.eulerAngles.z);
+        //else if (newSObj.gameObject.name.Contains("book")) {
+        //    tmpV = new Vector3(transform.position.x, tempY + 0.03f, transform.position.z);
+        //    transform.position = tmpV;
+        //    transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, -90);
+        //} else if (newSObj.gameObject.name.Contains("paper"))
+        //    transform.eulerAngles = new Vector3(transform.eulerAngles.x, Random.Range(0, 359), transform.eulerAngles.z);
+
+        _placedMiniObjects.Add(newSObj);
+        // thus we cannot again
+        _fullMiniObjsDict.Remove(newObjKey);
+    }
+
+    private void PlaceDifferent() {
+        // Get random key from Dictionary
+        int newObjKey = _fullMiniObjsDict.ElementAt(randM.Next(0, _fullMiniObjsDict.Count)).Key;
+        // now we place this object
+        float tempY = transform.parent.GetComponent<Renderer>().bounds.max.y;
+        Vector3 tmpV = new Vector3(transform.position.x, tempY, transform.position.z);
+
+        //Quaternion tmpR = _fullMiniObjsDict[newObjKey].transform.rotation;
+        //tmpR = Quaternion.Euler(0, transform.rotation.y, 0);
+
+        SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], tmpV, transform.rotation) as SpawnableMiniObject;
+        newSObj.name += ": " + _placedMiniObjsCount;
+        newSObj.transform.SetParent(gameObject.transform);
+
+        if (newSObj.gameObject.name.Contains("PictureFrame"))
+            transform.eulerAngles = new Vector3(-15, transform.eulerAngles.y, transform.eulerAngles.z);
+        else if (newSObj.gameObject.name.Contains("book")) {
+            tmpV = new Vector3(transform.position.x, tempY + 0.03f, transform.position.z);
+            transform.position = tmpV;
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, -90);
+        } else if (newSObj.gameObject.name.Contains("paper"))
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, Random.Range(0, 359), transform.eulerAngles.z);
+
+        _placedMiniObjects.Add(newSObj);
+        // thus we cannot again
+        _fullMiniObjsDict.Remove(newObjKey);
     }
 
     private IEnumerator MiniObjectShelfSpawning() {
@@ -132,6 +161,11 @@ public class SpawnObjectsOnMe : MonoBehaviour {
     }
 
     void LateUpdate() {
+        if (_papa == null) {
+            Debug.Log("Check father: " + gameObject.name);
+            return;
+        }
+
         if (_papa.GetPlacementCheck() && !_placed) {
             CreateFullDict();
             if (iAmOnShelf)
