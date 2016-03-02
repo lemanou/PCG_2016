@@ -1,98 +1,95 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+/*
+    This script is placed on the number dial gameobject.
+    Is allows the player to turn the individual dials and compares the current numbers to the list of true numbers.
+*/
 public class NumberDialScript : MonoBehaviour
 {
-    public GameObject dial1, dial2, dial3;
-    public static List<QuestItemScript> trueNumbers = new List<QuestItemScript>();
+    public GameObject
+        dialObject1,
+        dialObject2,
+        dialObject3;
+    public static List<int> trueNumbers = new List<int>();
 
     Quaternion dialRotationZero;
 
-    private List<GameObject> dials = new List<GameObject>();
+    private List<GameObject> dialObjects = new List<GameObject>();
     private List<int> dialNumbers = new List<int>();
+    private List<int> availableNumbers = new List<int>();
+    private List<int> takenNumbers = new List<int>();
 
-    //private int questNumber1, questNumber2, questNumber3;
-    private int dialNumber1, dialNumber2, dialNumber3;
+    private int correctDialNumbers;
 
     void Start()
     {
-        dials.Add(dial1);
-        dials.Add(dial2);
-        dials.Add(dial3);
-        dialRotationZero = dial1.transform.rotation;
-        dialNumbers.Add(dialNumber1);
-        dialNumbers.Add(dialNumber2);
-        dialNumbers.Add(dialNumber3);
+        dialObjects.Add(dialObject1);
+        dialObjects.Add(dialObject2);
+        dialObjects.Add(dialObject3);
+        dialRotationZero = dialObject1.transform.rotation;
+        dialNumbers.Add(0);
+        dialNumbers.Add(0);
+        dialNumbers.Add(0);
+        availableNumbers.Add(trueNumbers[0]);
+        availableNumbers.Add(trueNumbers[1]);
+        availableNumbers.Add(trueNumbers[2]);
     }
 
     void Update()
     {
-        print("dial roation= " + dialRotationZero);
+        // Starting at 0, incrementing the dial's value by 1, for each 36 degrees turned.
+        // We turn each dial individually.
         if (Input.GetKeyDown("1"))
         {
-            Quaternion rot = dials[0].transform.rotation;
-            dials[0].transform.rotation = dialRotationZero;
-            dials[0].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
+            Quaternion rot = dialObjects[0].transform.rotation;
+            dialObjects[0].transform.rotation = dialRotationZero;
+            dialObjects[0].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
+            if (dialNumbers[0] == 9) dialNumbers[0] = 0;
+            else dialNumbers[0]++;
         }
         if (Input.GetKeyDown("2"))
         {
-            Quaternion rot = dials[1].transform.rotation;
-            dials[1].transform.rotation = dialRotationZero;
-            dials[1].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
+            Quaternion rot = dialObjects[1].transform.rotation;
+            dialObjects[1].transform.rotation = dialRotationZero;
+            dialObjects[1].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
+            if (dialNumbers[1] == 9) dialNumbers[1] = 0;
+            else dialNumbers[1]++;
         }
         if (Input.GetKeyDown("3"))
         {
-            Quaternion rot = dials[2].transform.rotation;
-            dials[2].transform.rotation = dialRotationZero;
-            dials[2].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
+            Quaternion rot = dialObjects[2].transform.rotation;
+            dialObjects[2].transform.rotation = dialRotationZero;
+            dialObjects[2].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
+            if (dialNumbers[2] == 9) dialNumbers[2] = 0;
+            else dialNumbers[2]++;
         }
-        for (int i = 0; i < dials.Count; i++)
-        {
-            if (dials[i].transform.rotation.x == 0)
-            {
-                dialNumbers[i] = 0;
-            }
-            else if (dials[i].transform.rotation.x == -36)
-            {
-                dialNumbers[i] = 1;
-            }
-            else if (dials[i].transform.rotation.x == -72)
-            {
-                dialNumbers[i] = 2;
-            }
-            else if (dials[i].transform.rotation.x == -108)
-            {
-                dialNumbers[i] = 3;
-            }
-            else if (dials[i].transform.rotation.x == -144)
-            {
-                dialNumbers[i] = 4;
-            }
-            else if (dials[i].transform.rotation.x == -180)
-            {
-                dialNumbers[i] = 5;
-            }
-            else if (dials[i].transform.rotation.x == -216)
-            {
-                dialNumbers[i] = 6;
-            }
-            else if (dials[i].transform.rotation.x == -252)
-            {
-                dialNumbers[i] = 7;
-            }
-            else if (dials[i].transform.rotation.x == -288)
-            {
-                dialNumbers[i] = 8;
-            }
-            else if (dials[i].transform.rotation.x == -324)
-            {
-                dialNumbers[i] = 9;
-            }
-        }
-        for (int i = 0; i < dialNumbers.Count; i++)
-        {
-            //compare dialNumbers to trueNumbers
 
+        // We reset the available numbers each frame, so the taken numbers get reset to the current dials.
+        for (int i = 0; i < trueNumbers.Count; i++)
+        {
+            availableNumbers[i] = trueNumbers[i];
+        }
+        correctDialNumbers = 0;
+
+        // We compare dialNumbers to availableNumbers
+        for (int i = 0; i < dialNumbers.Count;)
+        {
+            for (int j = 0; j < availableNumbers.Count;)
+            {
+                if (dialNumbers[i] == availableNumbers[j])
+                {
+                    availableNumbers[j] = -1;
+                    correctDialNumbers++;
+                    j = availableNumbers.Count;
+                }
+                else j++;
+            }
+            i++;
+        }
+        if (correctDialNumbers == 3)
+        {
+            DescriptiveTextScript.currentState = DescriptiveTextScript.State.completed;
         }
     }
 }
