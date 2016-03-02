@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class SpawnableMiniObject : MonoBehaviour {
 
-    public int maxPlacementNum;
+    public int maxPlacementNum = 2;
 
     private bool _placed = true; //false;
     //private Renderer _myRenderer;

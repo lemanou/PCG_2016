@@ -1,73 +1,76 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &181094
+--- !u!1 &184340
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 430410}
-  - 114: {fileID: 11494690}
-  - 65: {fileID: 6513078}
+  - 4: {fileID: 495414}
+  - 114: {fileID: 11453046}
+  - 65: {fileID: 6506738}
   m_Layer: 2
-  m_Name: SPFP1
+  m_Name: SP3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &430410
+--- !u!4 &495414
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 181094}
+  m_GameObject: {fileID: 184340}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.7, y: 0.592, z: -0.534}
+  m_LocalPosition: {x: 0.822, y: 0.8, z: -0.243}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!65 &6513078
+--- !u!65 &6506738
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 181094}
+  m_GameObject: {fileID: 184340}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.3, y: 0.1, z: 0.3}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &11494690
+--- !u!114 &11453046
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 181094}
+  m_GameObject: {fileID: 184340}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iAmOnShelf: 0
   generationStepDelay: 0.1
   MiniObjectsToPlace:
-  - {fileID: 11407828, guid: 1b8025c7cfbc3c345bb1ec7caa9b34b6, type: 2}
+  - {fileID: 11411048, guid: 5552354a3af962c48aed2d06e45087eb, type: 2}
   - {fileID: 11487310, guid: e95f3ee5b5bc76e4ea85cd0dc1b80851, type: 2}
-  - {fileID: 11465582, guid: 8934e214ea996f448ae123969d687097, type: 2}
-  - {fileID: 11462140, guid: 01c8278cd54159c44b13094121ac88db, type: 2}
-  - {fileID: 11428726, guid: e52ed2a63eb30c64f919ed8efce7af65, type: 2}
-  - {fileID: 11450138, guid: 2d66d483a82fab44d8facfc1aabdb2dc, type: 2}
+  - {fileID: 11407828, guid: 1b8025c7cfbc3c345bb1ec7caa9b34b6, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: MiniObjectsToPlace.Array.data[2]
+      value: 
+      objectReference: {fileID: 11407828, guid: 1b8025c7cfbc3c345bb1ec7caa9b34b6,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 181094}
+  m_RootGameObject: {fileID: 184340}
   m_IsPrefabParent: 1

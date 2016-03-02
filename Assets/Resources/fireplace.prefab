@@ -852,11 +852,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iAmOnShelf: 0
   generationStepDelay: 0.1
   MiniObjectsToPlace:
-  - {fileID: 11407828, guid: 1b8025c7cfbc3c345bb1ec7caa9b34b6, type: 2}
-  - {fileID: 11487310, guid: e95f3ee5b5bc76e4ea85cd0dc1b80851, type: 2}
   - {fileID: 11465582, guid: 8934e214ea996f448ae123969d687097, type: 2}
+  - {fileID: 11487310, guid: e95f3ee5b5bc76e4ea85cd0dc1b80851, type: 2}
+  - {fileID: 11492872, guid: d93744c0baacf7b4d9b4a35ea4eb5e9b, type: 2}
 --- !u!114 &11456342
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -868,6 +869,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iAmOnShelf: 0
   generationStepDelay: 0.1
   MiniObjectsToPlace:
   - {fileID: 11428726, guid: e52ed2a63eb30c64f919ed8efce7af65, type: 2}
@@ -885,6 +887,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questItemAttached: {fileID: 0}
+  numberDialAttached: {fileID: 0}
   text: The heat of the fireplace draws you ever closer.
 --- !u!198 &19815530
 ParticleSystem:
@@ -11573,6 +11576,16 @@ Prefab:
       propertyPath: text
       value: The heat oh the heat
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: MiniObjectsToPlace.Array.data[0]
+      value: 
+      objectReference: {fileID: 11465582, guid: 8934e214ea996f448ae123969d687097,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: MiniObjectsToPlace.Array.data[2]
+      value: 
+      objectReference: {fileID: 11492872, guid: d93744c0baacf7b4d9b4a35ea4eb5e9b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 181288}
