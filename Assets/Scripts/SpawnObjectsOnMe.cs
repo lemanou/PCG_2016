@@ -9,6 +9,7 @@ public class SpawnObjectsOnMe : MonoBehaviour {
     //[Range(1, 10)]
     private int totalAmountOfMiniObjects = 1;
 
+    public bool iAmOnShelf = false;
     public float generationStepDelay;
     public List<SpawnableMiniObject> MiniObjectsToPlace;
 
@@ -46,29 +47,87 @@ public class SpawnObjectsOnMe : MonoBehaviour {
         while (_placedMiniObjsCount < totalAmountOfMiniObjects) {
 
             _placedMiniObjsCount++;
+
+            if (_papa.gameObject.name.Contains("armoire"))
+                PlaceInArmoire();
+            else
+                PlaceDifferent();
+
+            yield return delay;
+        }
+    }
+
+    private void PlaceInArmoire() {
+        // Get random key from Dictionary
+        int newObjKey = _fullMiniObjsDict.ElementAt(randM.Next(0, _fullMiniObjsDict.Count)).Key;
+
+        SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], transform.position, transform.rotation) as SpawnableMiniObject;
+        newSObj.name += ": " + _placedMiniObjsCount;
+        newSObj.transform.SetParent(gameObject.transform);
+
+        //if (newSObj.gameObject.name.Contains("PictureFrame"))
+        //    transform.eulerAngles = new Vector3(-15, transform.eulerAngles.y, transform.eulerAngles.z);
+        //else if (newSObj.gameObject.name.Contains("book")) {
+        //    tmpV = new Vector3(transform.position.x, tempY + 0.03f, transform.position.z);
+        //    transform.position = tmpV;
+        //    transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, -90);
+        //} else if (newSObj.gameObject.name.Contains("paper"))
+        //    transform.eulerAngles = new Vector3(transform.eulerAngles.x, Random.Range(0, 359), transform.eulerAngles.z);
+
+        _placedMiniObjects.Add(newSObj);
+        // thus we cannot again
+        _fullMiniObjsDict.Remove(newObjKey);
+    }
+
+    private void PlaceDifferent() {
+        // Get random key from Dictionary
+        int newObjKey = _fullMiniObjsDict.ElementAt(randM.Next(0, _fullMiniObjsDict.Count)).Key;
+        // now we place this object
+        float tempY = transform.parent.GetComponent<Renderer>().bounds.max.y;
+        Vector3 tmpV = new Vector3(transform.position.x, tempY, transform.position.z);
+
+        //Quaternion tmpR = _fullMiniObjsDict[newObjKey].transform.rotation;
+        //tmpR = Quaternion.Euler(0, transform.rotation.y, 0);
+
+        SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], tmpV, transform.rotation) as SpawnableMiniObject;
+        newSObj.name += ": " + _placedMiniObjsCount;
+        newSObj.transform.SetParent(gameObject.transform);
+
+        if (newSObj.gameObject.name.Contains("PictureFrame"))
+            transform.eulerAngles = new Vector3(-15, transform.eulerAngles.y, transform.eulerAngles.z);
+        else if (newSObj.gameObject.name.Contains("book")) {
+            tmpV = new Vector3(transform.position.x, tempY + 0.03f, transform.position.z);
+            transform.position = tmpV;
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, -90);
+        } else if (newSObj.gameObject.name.Contains("paper"))
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, Random.Range(0, 359), transform.eulerAngles.z);
+
+        _placedMiniObjects.Add(newSObj);
+        // thus we cannot again
+        _fullMiniObjsDict.Remove(newObjKey);
+    }
+
+    private IEnumerator MiniObjectShelfSpawning() {
+        WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
+
+        foreach (var item in _placedMiniObjects) {
+            if (!item.GetPlacementCheck()) {
+                Debug.Log("Skipping one turn. Waiting to place: " + item.name);
+                yield return delay;
+            }
+        }
+
+        while (_placedMiniObjsCount < totalAmountOfMiniObjects) {
+
+            _placedMiniObjsCount++;
             // Get random key from Dictionary
             int newObjKey = _fullMiniObjsDict.ElementAt(randM.Next(0, _fullMiniObjsDict.Count)).Key;
 
-            // now we place this object
-            float tempY = transform.parent.GetComponent<Renderer>().bounds.max.y;
-            Vector3 tmpV = new Vector3(transform.position.x, tempY, transform.position.z);
+            // now we place this object            
 
-            //Quaternion tmpR = _fullMiniObjsDict[newObjKey].transform.rotation;
-            //tmpR = Quaternion.Euler(0, transform.rotation.y, 0);
-
-            SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], tmpV, transform.rotation) as SpawnableMiniObject;
+            SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], transform.position, transform.rotation * _fullMiniObjsDict[newObjKey].transform.rotation) as SpawnableMiniObject;
             newSObj.name += ": " + _placedMiniObjsCount;
             newSObj.transform.SetParent(gameObject.transform);
-
-            if (newSObj.gameObject.name.Contains("PictureFrame"))
-                transform.eulerAngles = new Vector3(-15, transform.eulerAngles.y, transform.eulerAngles.z);
-            else if (newSObj.gameObject.name.Contains("book")) {
-                tmpV = new Vector3(transform.position.x, tempY + 0.03f, transform.position.z);
-                transform.position = tmpV;
-                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, -90);
-            } else if (newSObj.gameObject.name.Contains("paper"))
-                transform.eulerAngles = new Vector3(transform.eulerAngles.x, Random.Range(0, 359), transform.eulerAngles.z);
-
             _placedMiniObjects.Add(newSObj);
             // thus we cannot again
             _fullMiniObjsDict.Remove(newObjKey);
@@ -83,12 +142,10 @@ public class SpawnObjectsOnMe : MonoBehaviour {
             return;
         }
 
-        _papa = gameObject.transform.parent.GetComponent<SpawnableObject>();
-        if (_papa == null) {
-            Debug.LogWarning("Father is not a SpawnableObject. " + gameObject.name);
-            _placed = true;
-            return;
-        }
+        if (iAmOnShelf)
+            _papa = gameObject.transform.parent.transform.parent.GetComponent<SpawnableObject>();
+        else
+            _papa = gameObject.transform.parent.GetComponent<SpawnableObject>();
 
         int objSum = 0;
 
@@ -104,15 +161,26 @@ public class SpawnObjectsOnMe : MonoBehaviour {
     }
 
     void LateUpdate() {
+        if (_papa == null) {
+            Debug.Log("Check father: " + gameObject.name);
+            return;
+        }
+
         if (_papa.GetPlacementCheck() && !_placed) {
             CreateFullDict();
-            StartCoroutine(MiniObjectSpawning());
+            if (iAmOnShelf)
+                StartCoroutine(MiniObjectShelfSpawning());
+            else
+                StartCoroutine(MiniObjectSpawning());
             _placed = true;
         }
     }
 
     public void Reset() {
-        StopCoroutine(MiniObjectSpawning());
+        if (iAmOnShelf)
+            StopCoroutine(MiniObjectShelfSpawning());
+        else
+            StopCoroutine(MiniObjectSpawning());
 
         foreach (var obj in _placedMiniObjects) {
             Destroy(obj.gameObject);
