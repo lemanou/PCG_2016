@@ -52,6 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iAmOnShelf: 0
   generationStepDelay: 0.1
   MiniObjectsToPlace:
   - {fileID: 11407828, guid: 1b8025c7cfbc3c345bb1ec7caa9b34b6, type: 2}
