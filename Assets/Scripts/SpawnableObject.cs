@@ -192,7 +192,7 @@ public class SpawnableObject : MonoBehaviour {
         }
 
         _placementCheck = true;
-        if (gameObject.name.Contains("tableDinner")) {
+        if (gameObject.name.Contains("tableDinner") || gameObject.name.Contains("DeskWithDrawers")) {
             HoldSpaceForChairs();
         }
 

@@ -173,6 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iAmOnShelf: 0
   generationStepDelay: 0.1
   MiniObjectsToPlace:
   - {fileID: 11406394, guid: d11b1c7c1d096304ca796f9eb6e8c8df, type: 2}
@@ -202,10 +203,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9945bd58a9b89694b806fc34ffa5658c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iAmOnShelf: 0
   generationStepDelay: 0.1
   MiniObjectsToPlace:
   - {fileID: 11407828, guid: 1b8025c7cfbc3c345bb1ec7caa9b34b6, type: 2}
   - {fileID: 11487310, guid: e95f3ee5b5bc76e4ea85cd0dc1b80851, type: 2}
+  - {fileID: 11405246, guid: f3618090b7bba1946b2cc69e76b1af8c, type: 2}
 --- !u!114 &11478648
 MonoBehaviour:
   m_ObjectHideFlags: 1

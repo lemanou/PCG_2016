@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c663df43181ba944bd676dcc972216f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalAmountOfChairs: 4
+  totalAmountOfChairs: 5
   generationStepDelay: 0.1
   SpawningChairPrefab: {fileID: 11405678, guid: e6f710bbdd13f204b94e12de85d7553d,
     type: 2}
@@ -236,6 +236,10 @@ Prefab:
       value: 
       objectReference: {fileID: 11455294, guid: 78705c8f009f1164281d7fe19a495389,
         type: 2}
+    - target: {fileID: 0}
+      propertyPath: totalAmountOfChairs
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 160714}

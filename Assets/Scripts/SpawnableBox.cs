@@ -119,7 +119,7 @@ public class SpawnableBox : MonoBehaviour {
     }
 
     public void HoldForChair(SpawnableObject sObj) {
-        if (sObj.gameObject.name.Contains("tableDinner")) {
+        if (sObj.gameObject.name.Contains("tableDinner") || sObj.gameObject.name.Contains("DeskWithDrawers")) {
             _boxcond = BoxCondition.ChairSpot;
             _furniture = sObj.gameObject;
             ChangeColor(_furniture);

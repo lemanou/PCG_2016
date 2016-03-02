@@ -65,15 +65,6 @@ public class SpawnObjectsOnMe : MonoBehaviour {
         newSObj.name += ": " + _placedMiniObjsCount;
         newSObj.transform.SetParent(gameObject.transform);
 
-        //if (newSObj.gameObject.name.Contains("PictureFrame"))
-        //    transform.eulerAngles = new Vector3(-15, transform.eulerAngles.y, transform.eulerAngles.z);
-        //else if (newSObj.gameObject.name.Contains("book")) {
-        //    tmpV = new Vector3(transform.position.x, tempY + 0.03f, transform.position.z);
-        //    transform.position = tmpV;
-        //    transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, -90);
-        //} else if (newSObj.gameObject.name.Contains("paper"))
-        //    transform.eulerAngles = new Vector3(transform.eulerAngles.x, Random.Range(0, 359), transform.eulerAngles.z);
-
         _placedMiniObjects.Add(newSObj);
         // thus we cannot again
         _fullMiniObjsDict.Remove(newObjKey);
@@ -93,14 +84,19 @@ public class SpawnObjectsOnMe : MonoBehaviour {
         newSObj.name += ": " + _placedMiniObjsCount;
         newSObj.transform.SetParent(gameObject.transform);
 
-        if (newSObj.gameObject.name.Contains("PictureFrame"))
+        if (newSObj.gameObject.name.Contains("PictureFrame")) {
             transform.eulerAngles = new Vector3(-15, transform.eulerAngles.y, transform.eulerAngles.z);
-        else if (newSObj.gameObject.name.Contains("book")) {
+        } else if (newSObj.gameObject.name.Contains("book")) {
             tmpV = new Vector3(transform.position.x, tempY + 0.03f, transform.position.z);
             transform.position = tmpV;
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, -90);
-        } else if (newSObj.gameObject.name.Contains("paper"))
+        } else if (newSObj.gameObject.name.Contains("paper")) {
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, Random.Range(0, 359), transform.eulerAngles.z);
+        } else if (newSObj.gameObject.name.Contains("Cloth")) {
+            transform.localPosition = new Vector3(transform.localPosition.x, 0.83f, transform.localPosition.z);
+        }
+        if (gameObject.transform.parent.name.Contains("tableDinner"))
+            transform.position = new Vector3(transform.position.x, 0.81f, transform.position.z);
 
         _placedMiniObjects.Add(newSObj);
         // thus we cannot again
@@ -131,6 +127,10 @@ public class SpawnObjectsOnMe : MonoBehaviour {
             _placedMiniObjects.Add(newSObj);
             // thus we cannot again
             _fullMiniObjsDict.Remove(newObjKey);
+
+            if (newSObj.gameObject.name.Contains("paper")) {
+                transform.localPosition = new Vector3(transform.localPosition.x, 0.001f, transform.localPosition.z);
+            }
 
             yield return delay;
         }

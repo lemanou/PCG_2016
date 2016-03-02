@@ -20,6 +20,9 @@ public class DisableOnOfMyChildren : MonoBehaviour {
         if (numToDisable > count)
             numToDisable = count;
 
+        if (numToDisable > 1)
+            numToDisable = Random.Range(1, numToDisable);
+
         for (int i = 0; i < numToDisable;) {
             int random = Random.Range(-1, goList.Count - 1);
             if (random > -1) {
