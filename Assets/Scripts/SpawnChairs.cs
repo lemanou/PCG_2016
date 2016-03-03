@@ -69,12 +69,11 @@ public class SpawnChairs : MonoBehaviour {
                     if (!chair.GetPlacementCheck())
                         tmp = false;
 
-                // now we have placed all requested objects and we can delete the boxes
                 if (tmp) {
                     _check = false;
+                    // now we have placed all requested furniture and we can delete the boxes
                     Spawner sp = FindObjectOfType<Spawner>();
                     sp.DeleteAllBoxes();
-                    //Debug.Log("E.N.D.");
                 }
             }
         }
