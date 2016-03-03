@@ -95,13 +95,13 @@ MonoBehaviour:
   totalAmountOfSets: 2
   generationStepDelay: 0.1
   validQAs:
-  - {fileID: 11405780, guid: 7dcb8883b1f03ba48b4c2ac315dafc6c, type: 2}
-  - {fileID: 11494054, guid: a6adcbbf5d2b7d44fbda85d22c0b4956, type: 2}
-  - {fileID: 11427164, guid: f3b824a682b9f1c4d98c942066ef2380, type: 2}
+  - {fileID: 11499220, guid: 7dcb8883b1f03ba48b4c2ac315dafc6c, type: 2}
+  - {fileID: 11430820, guid: a6adcbbf5d2b7d44fbda85d22c0b4956, type: 2}
+  - {fileID: 11436018, guid: f3b824a682b9f1c4d98c942066ef2380, type: 2}
   fakeQAs:
-  - {fileID: 11405780, guid: 7dcb8883b1f03ba48b4c2ac315dafc6c, type: 2}
-  - {fileID: 11494054, guid: a6adcbbf5d2b7d44fbda85d22c0b4956, type: 2}
-  - {fileID: 11427164, guid: f3b824a682b9f1c4d98c942066ef2380, type: 2}
+  - {fileID: 11440608, guid: 8f5605708dc9e2b499cb6f7cf9f1e20b, type: 2}
+  - {fileID: 11420114, guid: 206d1eacb3e032c428cc47097d5dcc3b, type: 2}
+  - {fileID: 11403622, guid: ffda2628dad76d9479382e7d3a5ecfed, type: 2}
 --- !u!114 &11490454
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -262,6 +262,36 @@ Prefab:
       propertyPath: totalAmountOfChairs
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: validQAs.Array.data[0]
+      value: 
+      objectReference: {fileID: 11499220, guid: 7dcb8883b1f03ba48b4c2ac315dafc6c,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: validQAs.Array.data[1]
+      value: 
+      objectReference: {fileID: 11430820, guid: a6adcbbf5d2b7d44fbda85d22c0b4956,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: validQAs.Array.data[2]
+      value: 
+      objectReference: {fileID: 11436018, guid: f3b824a682b9f1c4d98c942066ef2380,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: fakeQAs.Array.data[0]
+      value: 
+      objectReference: {fileID: 11440608, guid: 8f5605708dc9e2b499cb6f7cf9f1e20b,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: fakeQAs.Array.data[1]
+      value: 
+      objectReference: {fileID: 11420114, guid: 206d1eacb3e032c428cc47097d5dcc3b,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: fakeQAs.Array.data[2]
+      value: 
+      objectReference: {fileID: 11403622, guid: ffda2628dad76d9479382e7d3a5ecfed,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 160714}
