@@ -13,7 +13,7 @@ public class Spawner : MonoBehaviour {
     [Range(0, 8)]
     public int totalAmountOfCarpets = 4;
 
-    public float generationStepDelay;
+    public float generationStepDelay = 0.1f;
     public GameObject RoomPrefab;
     public SpawnableBox SpawningBoxPrefab;
     public List<SpawnableObject> FurnitureToPlace,
@@ -208,6 +208,11 @@ public class Spawner : MonoBehaviour {
         var children = new List<GameObject>();
         foreach (Transform child in transform) children.Add(child.gameObject);
         children.ForEach(child => child.GetComponent<Renderer>().enabled = false); //  Destroy(child)); 
+
+        // After finishing with all object placement we can start placing quests
+        SpawnQuests qc = FindObjectOfType<SpawnQuests>();
+        qc.StartPlacingQuests();
+        //Debug.Log("E.N.D.");
     }
 
     private void LateUpdate() {
@@ -228,11 +233,9 @@ public class Spawner : MonoBehaviour {
                     }
                 }
 
-                // now we have placed all requested furniture and we can delete the boxes
                 if (tmp) {
                     _once = false;
-                    //DeleteAllBoxes(); // The chairs decide the end now
-                    //Debug.Log("E.N.D.");
+                    // The chairs are the last furniture to spawn
                     gameObject.GetComponent<SpawnWallObjects>().StartPlacement();
                     gameObject.GetComponent<SpawnChairs>().StartChairPlacement();
                 }

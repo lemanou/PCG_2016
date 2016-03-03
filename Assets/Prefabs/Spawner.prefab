@@ -11,6 +11,7 @@ GameObject:
   - 114: {fileID: 11404090}
   - 114: {fileID: 11490454}
   - 114: {fileID: 11425638}
+  - 114: {fileID: 11461950}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -80,6 +81,27 @@ MonoBehaviour:
   - {fileID: 11491964, guid: db539af433cfd0a4cae41be8e34696d4, type: 2}
   - {fileID: 11491386, guid: 04d3a735e85c1d746b4b874bb05cd765, type: 2}
   - {fileID: 11455294, guid: 78705c8f009f1164281d7fe19a495389, type: 2}
+--- !u!114 &11461950
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 160714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9364135456e7b746ac47f459e9f4cea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalAmountOfSets: 2
+  generationStepDelay: 0.1
+  validQAs:
+  - {fileID: 11405780, guid: 7dcb8883b1f03ba48b4c2ac315dafc6c, type: 2}
+  - {fileID: 11494054, guid: a6adcbbf5d2b7d44fbda85d22c0b4956, type: 2}
+  - {fileID: 11427164, guid: f3b824a682b9f1c4d98c942066ef2380, type: 2}
+  fakeQAs:
+  - {fileID: 11405780, guid: 7dcb8883b1f03ba48b4c2ac315dafc6c, type: 2}
+  - {fileID: 11494054, guid: a6adcbbf5d2b7d44fbda85d22c0b4956, type: 2}
+  - {fileID: 11427164, guid: f3b824a682b9f1c4d98c942066ef2380, type: 2}
 --- !u!114 &11490454
 MonoBehaviour:
   m_ObjectHideFlags: 1
