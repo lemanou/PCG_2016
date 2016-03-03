@@ -1,16 +1,16 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &166388
+--- !u!1 &196138
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
   m_Component:
-  - 224: {fileID: 22477628}
-  - 222: {fileID: 22279380}
-  - 114: {fileID: 11487766}
-  - 114: {fileID: 11427164}
+  - 224: {fileID: 22488442}
+  - 222: {fileID: 22223916}
+  - 114: {fileID: 11429712}
+  - 114: {fileID: 11436018}
   m_Layer: 5
   m_Name: QuestA3
   m_TagString: Untagged
@@ -18,25 +18,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &11427164
+--- !u!114 &11429712
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 166388}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75bee9dea040005468c22017cf34ce89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questNumber: 3
-  alreadyAdded: 0
---- !u!114 &11487766
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 166388}
+  m_GameObject: {fileID: 196138}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
@@ -50,7 +37,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: f4fa5177958686d44bbfbc732a027d09, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8223b4c6b8cc6f245996aa963427e2e6, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -58,18 +45,31 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!222 &22279380
+--- !u!114 &11436018
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 196138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75bee9dea040005468c22017cf34ce89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questNumber: 7
+  alreadyAdded: 0
+--- !u!222 &22223916
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 166388}
---- !u!224 &22477628
+  m_GameObject: {fileID: 196138}
+--- !u!224 &22488442
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 166388}
+  m_GameObject: {fileID: 196138}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -90,5 +90,5 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 166388}
+  m_RootGameObject: {fileID: 196138}
   m_IsPrefabParent: 1

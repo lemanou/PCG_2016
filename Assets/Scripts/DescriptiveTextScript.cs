@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class DescriptiveTextScript : MonoBehaviour
 {
     Text BlackBorderText;
-
+    public GameObject tutorialPaper;
     private GameObject currentGO, currentQuestItemGO;
     private GameObject currentDialNumberGO;
     private float lastSuccessfulMouseClick, mouseDelay;
@@ -23,7 +23,7 @@ public class DescriptiveTextScript : MonoBehaviour
         completed
     }
 
-    public static State currentState = State.empty;
+    public static State currentState = State.foundHiddenNote;
 
     public State CurrentState
     {
@@ -34,7 +34,8 @@ public class DescriptiveTextScript : MonoBehaviour
     void Start()
     {
         BlackBorderText = GetComponent<Text>();
-        currentGO = currentQuestItemGO = null;
+        currentGO = null;
+        currentQuestItemGO = tutorialPaper;
         mouseDelay = 0.2f;
     }
 
@@ -138,7 +139,8 @@ public class DescriptiveTextScript : MonoBehaviour
         // Set the descriptive text.
         if (currentState == State.foundHiddenNote)
         {
-            BlackBorderText.text = "You have found a hidden note.";
+            if(currentQuestItemGO == tutorialPaper) BlackBorderText.text = "Hints will be written here. Press the left mouse button when you have finished reading the paper.";
+            else BlackBorderText.text = "You have found a hidden note.";
         }
         if (currentState == State.nothingOfInterest)
         {
