@@ -44,6 +44,7 @@ public class NumberDialScript : MonoBehaviour
         availableNumbers.Add(trueNumbers[0]);
         availableNumbers.Add(trueNumbers[1]);
         availableNumbers.Add(trueNumbers[2]);
+        if (trueNumbers.Count > 3) Debug.LogError("There are more than 3 true quest papers in the scene.");
     }
 
     void Update()
@@ -100,6 +101,7 @@ public class NumberDialScript : MonoBehaviour
             {
                 availableNumbers[i] = trueNumbers[i];
             }
+
             correctDialNumbers = 0;
 
             // We compare dialNumbers to availableNumbers
