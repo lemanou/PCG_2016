@@ -28,7 +28,6 @@ public class NumberDialScript : MonoBehaviour
     private List<GameObject> dialObjects = new List<GameObject>();
     private List<int> dialNumbers = new List<int>();
     private List<int> availableNumbers = new List<int>();
-    private List<int> takenNumbers = new List<int>();
 
     private int correctDialNumbers;
 
@@ -120,6 +119,7 @@ public class NumberDialScript : MonoBehaviour
                 i++;
             }
         }
+        // We lock the interaction is the player wins the game.
         else if (DescriptiveTextScript.currentState != DescriptiveTextScript.State.completed)
         {
             _audiosource1.clip = dialUnlockingMechanism;

@@ -9,7 +9,7 @@ public class QuestItemScript : MonoBehaviour {
 
     private string _char = null;
 
-    private void Start() {
+    private void Awake() {  // This must be Awake and not Start, to make sure that the list is created before NumberDialScript use the list on Start.
         if (!alreadyAdded) {
             alreadyAdded = true;
             if (questNumber != -1) NumberDialScript.trueNumbers.Add(questNumber);

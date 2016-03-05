@@ -31,11 +31,12 @@ public class DescriptiveTextScript : MonoBehaviour
         set { currentState = value; }
     }
 
-    void Start()
+    void Awake()
     {
         BlackBorderText = GetComponent<Text>();
         currentGO = null;
         currentQuestItemGO = tutorialPaper;
+        currentState = State.foundHiddenNote;
         mouseDelay = 0.2f;
     }
 
