@@ -137,7 +137,7 @@ public class SpawnObjectsOnMe : MonoBehaviour {
     }
 
     private void Start() {
-        if (SceneManager.GetActiveScene().name != "ScriptTester") {
+        if (SceneManager.GetActiveScene().name != "PCG") {
             _placed = true;
             return;
         }

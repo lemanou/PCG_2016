@@ -16,7 +16,7 @@ public class SpawnableWallObject : MonoBehaviour {
     private List<SpawnableBox> _possibleSpots = new List<SpawnableBox>();
 
     void Start() {
-        if (SceneManager.GetActiveScene().name != "ScriptTester") {
+        if (SceneManager.GetActiveScene().name != "PCG") {
             _placed = true;
             return;
         }
@@ -53,7 +53,7 @@ public class SpawnableWallObject : MonoBehaviour {
             objToUse.SetWallObject(this);
             AlignOnCorrectWall(objToUse);
         } else {
-            Debug.LogWarning("No space for: " + gameObject.name + " disabling.");
+            //Debug.LogWarning("No space for: " + gameObject.name + " disabling.");
             gameObject.SetActive(false);
         }
     }
@@ -97,7 +97,7 @@ public class SpawnableWallObject : MonoBehaviour {
                 AlignOnCorrectWall(objToUse);
                 CorrectPositionBasedOnNewSpot(objToUse, extraSpotToUse);
             } else {
-                Debug.LogWarning("No space for: " + gameObject.name + " disabling.");
+                //Debug.LogWarning("No space for: " + gameObject.name + " disabling.");
                 gameObject.SetActive(false);
             }
         }
