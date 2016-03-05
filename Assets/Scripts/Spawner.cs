@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityStandardAssets.Characters.FirstPerson;
 
+[RequireComponent(typeof(SpawnQuests))]
 [RequireComponent(typeof(SpawnableChair))]
 [RequireComponent(typeof(SpawnWallObjects))]
 
@@ -23,6 +25,8 @@ public class Spawner : MonoBehaviour {
     private int _placedFurnitureCount = 0,
         _placedCarpetsCount = 0;
     private IntVector2 _size;
+    private Canvas _canvas;
+    private FirstPersonController _player;
     private SpawnableBox[,] _boxes;
     private GameObject _roomInstance;
     private List<SpawnableObject> _placedFurniture = new List<SpawnableObject>(),
@@ -86,7 +90,12 @@ public class Spawner : MonoBehaviour {
 
         _placedCarpets.Clear();
 
-        Destroy(_roomInstance);
+        if (_player != null)
+            Destroy(_player.gameObject);
+        if (_canvas != null)
+            Destroy(_canvas.gameObject);
+        if (_roomInstance != null)
+            Destroy(_roomInstance);
         Destroy(gameObject);
     }
 
@@ -207,11 +216,21 @@ public class Spawner : MonoBehaviour {
 
         var children = new List<GameObject>();
         foreach (Transform child in transform) children.Add(child.gameObject);
-        children.ForEach(child => child.GetComponent<Renderer>().enabled = false); //  Destroy(child)); 
+        children.ForEach(child => Destroy(child)); //  child.GetComponent<Renderer>().enabled = false
 
         // After finishing with all object placement we can start placing quests
-        SpawnQuests qc = FindObjectOfType<SpawnQuests>();
+        SpawnQuests qc = GetComponent<SpawnQuests>();
         qc.StartPlacingQuests();
+
+        StartGame();
+    }
+
+    private void StartGame() {
+        _player = Instantiate(Resources.Load("Player", typeof(FirstPersonController)), new Vector3(3.5f, 1.0f, 0.0f), Quaternion.identity) as FirstPersonController;
+        _canvas = Instantiate(Resources.Load("Canvas", typeof(Canvas)), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as Canvas;
+        Camera _cam = _player.gameObject.GetComponent<Transform>().GetChild(0).GetComponent<Camera>();
+        _canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        _canvas.worldCamera = _cam;
         //Debug.Log("E.N.D.");
     }
 

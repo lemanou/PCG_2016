@@ -63,7 +63,7 @@ public class SpawnableObject : MonoBehaviour {
 
     private void Start() {
 
-        if (SceneManager.GetActiveScene().name != "ScriptTester") {
+        if (SceneManager.GetActiveScene().name != "PCG") {
             _placementCheck = true;
             return;
         }
@@ -134,7 +134,7 @@ public class SpawnableObject : MonoBehaviour {
         }
 
         if (_secondCounter > 5) {
-            Debug.LogWarning("No space for " + gameObject.name + " disabling.");
+            //Debug.LogWarning("No space for " + gameObject.name + " disabling.");
 
             // First empty the boxes
             foreach (SpawnableBox sbx in _currentTriggerBoxes) {

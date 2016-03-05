@@ -11,7 +11,7 @@ public class SpawnableChair : MonoBehaviour {
     private Vector3 _direction;
 
     void Start() {
-        if (SceneManager.GetActiveScene().name != "ScriptTester") {
+        if (SceneManager.GetActiveScene().name != "PCG") {
             _placed = true;
             return;
         }
