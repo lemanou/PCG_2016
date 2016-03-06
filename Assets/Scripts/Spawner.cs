@@ -158,12 +158,10 @@ public class Spawner : MonoBehaviour {
             // Get random key from Dictionary
             int newObjKey = _fullFurnitureDic.ElementAt(rand.Next(0, _fullFurnitureDic.Count)).Key;
 
-            //if (_fullFurnitureDic[newObjKey].gameObject.name.Contains("tableDinner")) {
             // now we place this object
             SpawnableObject newSObj = Instantiate(_fullFurnitureDic[newObjKey]);
             newSObj.name += ": " + _placedFurnitureCount;
             _placedFurniture.Add(newSObj);
-            //}
             // thus we cannot again
             _fullFurnitureDic.Remove(newObjKey);
             //Debug.Log("Count: " + _placedObjCount + " Left in dictionary: " + _fullDic.Count);
@@ -218,6 +216,10 @@ public class Spawner : MonoBehaviour {
         foreach (Transform child in transform) children.Add(child.gameObject);
         children.ForEach(child => Destroy(child)); //  child.GetComponent<Renderer>().enabled = false
 
+
+        // we have to spawn the canvas early to use it for the quest spawning
+        _canvas = Instantiate(Resources.Load("Canvas", typeof(Canvas)), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as Canvas;
+
         // After finishing with all object placement we can start placing quests
         SpawnQuests qc = GetComponent<SpawnQuests>();
         qc.StartPlacingQuests();
@@ -226,8 +228,15 @@ public class Spawner : MonoBehaviour {
     }
 
     private void StartGame() {
-        _player = Instantiate(Resources.Load("Player", typeof(FirstPersonController)), new Vector3(3.5f, 1.0f, 0.0f), Quaternion.identity) as FirstPersonController;
-        _canvas = Instantiate(Resources.Load("Canvas", typeof(Canvas)), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as Canvas;
+        _player = Instantiate(Resources.Load("FPSController", typeof(FirstPersonController)), new Vector3(3.5f, 1.0f, 0.0f), Quaternion.identity) as FirstPersonController;
+        NumberDialScript tmpDial = _player.transform.GetChild(0).GetComponentInChildren<NumberDialScript>();
+        tmpDial.gameObject.SetActive(false);
+        ClickableFurniture[] _allCF = FindObjectsOfType<ClickableFurniture>();
+        foreach (var item in _allCF) {
+            if (item.gameObject.name == "door")
+                item.numberDialAttached = tmpDial.gameObject;
+        }
+
         Camera _cam = _player.gameObject.GetComponent<Transform>().GetChild(0).GetComponent<Camera>();
         _canvas.renderMode = RenderMode.ScreenSpaceCamera;
         _canvas.worldCamera = _cam;

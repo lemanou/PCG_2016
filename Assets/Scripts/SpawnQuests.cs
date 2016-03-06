@@ -2,15 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class SpawnQuests : MonoBehaviour {
 
-    [Range(1, 10)]
+    [Range(1, 5)]
     public int totalAmountOfSets = 2;
     public float generationStepDelay = 0.1f;
 
     private int _placedQuestCount = 0;
     private static System.Random rand = new System.Random();
+    private Canvas _canvas;
     private ClickableFurniture[] _allPossibleTargets;
     private QuestItemScript[] _allQuests;
     private List<QuestItemScript> _fakeQAs = new List<QuestItemScript>();
@@ -69,6 +71,8 @@ public class SpawnQuests : MonoBehaviour {
             }
         }
 
+        _canvas = FindObjectOfType<Canvas>();
+
         StartCoroutine(TimeToPlace());
     }
 
@@ -81,8 +85,7 @@ public class SpawnQuests : MonoBehaviour {
             else
                 _fakeQAs.Add(quest);
         }
-
-        Debug.Log("Found a total of : " + _allQuests.Length + " quests, of which " + _validQAs.Count + " valid, and " + _fakeQAs.Count + " fake.");
+        //Debug.Log("Found a total of : " + _allQuests.Length + " quests, of which " + _validQAs.Count + " valid, and " + _fakeQAs.Count + " fake.");
     }
 
     private IEnumerator TimeToPlace() {
@@ -101,18 +104,21 @@ public class SpawnQuests : MonoBehaviour {
 
     private void PlaceFake() {
         // Get random key from Dictionary
-        string testKey = _fullFakeDic.ElementAt(rand.Next(0, _fullValidDic.Count)).Key;
+        string testKey = _fullFakeDic.ElementAt(rand.Next(0, _fullFakeDic.Count)).Key;
 
         // now we set these already instantiated object
-        foreach (var q in _fakeQAs) {
+        foreach (QuestItemScript q in _fakeQAs) {
             if (q.GetNameChar() == testKey) {
                 ClickableFurniture tmp = _allPossibleTargets.Where(cf => cf.questItemAttached == null).FirstOrDefault();
                 if (tmp != null) {
-                    Debug.Log("Placing fake " + q.name + " to " + tmp.name);
-                    q.transform.SetParent(tmp.transform);
+                    //Debug.Log("Placing fake " + q.name + " to " + tmp.name);
+                    q.transform.SetParent(_canvas.transform.FindChild("QuestItemHolder").transform);
+                    q.transform.localScale = new Vector3(1, 1, 1);
                     tmp.questItemAttached = q;
                     _placedQuests.Add(q);
                     q.gameObject.SetActive(true);
+                    if (_fullFakeDic.ContainsKey(testKey))
+                        _fullFakeDic.Remove(testKey);
                 } else {
                     Debug.LogWarning("Problem when placing: " + q.name);
                 }
@@ -123,22 +129,33 @@ public class SpawnQuests : MonoBehaviour {
     private void PlaceValid() {
         // Get random key from Dictionary
         string testKey = _fullValidDic.ElementAt(rand.Next(0, _fullValidDic.Count)).Key;
+        List<QuestItemScript> tmpLQSs = new List<QuestItemScript>();
 
         // now we set these already instantiated object
-        foreach (var q in _validQAs) {
+        foreach (QuestItemScript q in _validQAs) {
             if (q.GetNameChar() == testKey) {
                 ClickableFurniture tmp = _allPossibleTargets.Where(cf => cf.questItemAttached == null).FirstOrDefault();
                 if (tmp != null) {
-                    Debug.Log("Placing valid " + q.name + " to " + tmp.name);
-                    q.transform.SetParent(tmp.transform);
+                    //Debug.Log("Placing valid " + q.name + " to " + tmp.name);
+                    q.transform.SetParent(_canvas.transform.FindChild("QuestItemHolder").transform);
+                    q.transform.localScale = new Vector3(1, 1, 1);
                     tmp.questItemAttached = q;
                     _placedQuests.Add(q);
                     q.gameObject.SetActive(true);
+                    q.AddQuestNumber();
                 } else {
                     Debug.LogWarning("Problem when placing: " + q.name);
                 }
+            } else {
+                tmpLQSs.Add(q);
             }
         }
+
+        foreach (var item in tmpLQSs) {
+            _validQAs.Remove(item);
+        }
+
+        tmpLQSs.ForEach(nq => Destroy(nq.gameObject));
     }
 
     public void Reset() {
