@@ -211,6 +211,7 @@ public class Spawner : MonoBehaviour {
 
     public void DeleteAllBoxes() {
         StopCoroutine(CreateSpawningObjectsStepTwo());
+        StopCoroutine(CreateSpawningCarpetsStepThree());
 
         var children = new List<GameObject>();
         foreach (Transform child in transform) children.Add(child.gameObject);

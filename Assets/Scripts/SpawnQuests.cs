@@ -96,8 +96,8 @@ public class SpawnQuests : MonoBehaviour {
 
         while (_placedQuestCount < totalAmountOfSets) {
 
-            _placedQuestCount++;
             PlaceFake();
+            _placedQuestCount++;
             yield return delay;
         }
     }
@@ -142,7 +142,7 @@ public class SpawnQuests : MonoBehaviour {
                     tmp.questItemAttached = q;
                     _placedQuests.Add(q);
                     q.gameObject.SetActive(true);
-                    q.AddQuestNumber();
+                    //q.AddQuestNumber();
                 } else {
                     Debug.LogWarning("Problem when placing: " + q.name);
                 }

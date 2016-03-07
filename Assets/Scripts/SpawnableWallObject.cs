@@ -39,6 +39,11 @@ public class SpawnableWallObject : MonoBehaviour {
                 FindLargeSpot();
             }
             _placed = true;
+        } else {
+            if (transform.position == new Vector3(0, 0, 0)) {
+                Debug.LogWarning(gameObject.name + " was stuck mid room. Disabling.");
+                gameObject.SetActive(false);
+            }
         }
     }
 
@@ -117,9 +122,9 @@ public class SpawnableWallObject : MonoBehaviour {
                 break;
             case SpawnableBox.BoxLocation.East:
                 if (targetPos.z > placedPos.z)
-                    transform.position = new Vector3(transform.position.x , transform.position.y, transform.position.z + offset);
+                    transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + offset);
                 else if (targetPos.x < placedPos.x)
-                    transform.position = new Vector3(transform.position.x , transform.position.y, transform.position.z - offset);
+                    transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - offset);
                 break;
             case SpawnableBox.BoxLocation.South:
                 if (targetPos.x > placedPos.x)
@@ -148,7 +153,7 @@ public class SpawnableWallObject : MonoBehaviour {
                     if (sbx.name != box.name && sbx.GetBoxLocation() == box.GetBoxLocation() && sbx.GetWallObject() == null && sbx.GetBoxCondition() != SpawnableBox.BoxCondition.Occupied && sbx.GetBoxCondition() != SpawnableBox.BoxCondition.Tall) {
                         //Debug.Log(box.name + " found possible placement: " + sbx.name);
                         return sbx; // return 2 spots only everytime
-                    } 
+                    }
                     //else {
                     //    Debug.Log(box.name + " found USED/MIDDLE/IGNORED: " + sbx.name);
                     //}
