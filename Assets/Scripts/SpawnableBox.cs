@@ -35,8 +35,8 @@ public class SpawnableBox : MonoBehaviour {
         if (OccupiedBoxes.Contains(gameObject.name)) {
             _boxcond = BoxCondition.Occupied;
             _furniture = gameObject;
-            GetComponent<Renderer>().enabled = true;
-            GetComponent<Renderer>().material.color = Color.red;
+            //GetComponent<Renderer>().enabled = true;
+            //GetComponent<Renderer>().material.color = Color.red;
         }
 
         if (gameObject.name.Contains(", 0")) {
@@ -94,35 +94,35 @@ public class SpawnableBox : MonoBehaviour {
                 _boxcond = BoxCondition.Tall;
 
             _furniture = sObj.gameObject;
-            ChangeColor(_furniture);
+            //ChangeColor(_furniture);
         }
     }
 
     public void ReSetFurniture() {
         _boxcond = BoxCondition.Free;
         _furniture = null;
-        if (_carpet == null)
-            GetComponent<Renderer>().enabled = false;
+        //if (_carpet == null)
+        //  GetComponent<Renderer>().enabled = false;
     }
 
     public void SetCarpet(SpawnableObject sObj) {
         if (_carpet == null) {
             _carpet = sObj.gameObject;
-            ChangeColor(_carpet);
+            //ChangeColor(_carpet);
         }
     }
 
     public void ReSetCarpet() {
         _carpet = null;
-        if (_furniture == null)
-            GetComponent<Renderer>().enabled = false;
+        //if (_furniture == null)
+        //  GetComponent<Renderer>().enabled = false;
     }
 
     public void HoldForChair(SpawnableObject sObj) {
         if (sObj.gameObject.name.Contains("tableDinner") || sObj.gameObject.name.Contains("DeskWithDrawers")) {
             _boxcond = BoxCondition.ChairSpot;
             _furniture = sObj.gameObject;
-            ChangeColor(_furniture);
+            //ChangeColor(_furniture);
         }
     }
 
@@ -133,7 +133,7 @@ public class SpawnableBox : MonoBehaviour {
         if (_furniture == null || _furniture.gameObject.name.Contains("tableDinner")) {
             _boxcond = BoxCondition.Short;
             _furniture = sc.gameObject;
-            ChangeColor(_furniture);
+            //ChangeColor(_furniture);
         }
     }
 
@@ -144,7 +144,7 @@ public class SpawnableBox : MonoBehaviour {
         if (_wallObj == null) {
             _boxcond = BoxCondition.OnWall;
             _wallObj = swo.gameObject;
-            ChangeColor(_wallObj);
+            //ChangeColor(_wallObj);
         }
     }
 }

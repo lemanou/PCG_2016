@@ -229,6 +229,9 @@ public class Spawner : MonoBehaviour {
     }
 
     private void StartGame() {
+        Camera _cam = FindObjectOfType<Camera>();
+        _cam.gameObject.SetActive(false);
+
         _player = Instantiate(Resources.Load("FPSController", typeof(FirstPersonController)), new Vector3(3.5f, 1.0f, 0.0f), Quaternion.identity) as FirstPersonController;
         NumberDialScript tmpDial = _player.transform.GetChild(0).GetComponentInChildren<NumberDialScript>();
         tmpDial.gameObject.SetActive(false);
@@ -238,7 +241,7 @@ public class Spawner : MonoBehaviour {
                 item.numberDialAttached = tmpDial.gameObject;
         }
 
-        Camera _cam = _player.gameObject.GetComponent<Transform>().GetChild(0).GetComponent<Camera>();
+        _cam = _player.gameObject.GetComponent<Transform>().GetChild(0).GetComponent<Camera>();
         _canvas.renderMode = RenderMode.ScreenSpaceCamera;
         _canvas.worldCamera = _cam;
         //Debug.Log("E.N.D.");

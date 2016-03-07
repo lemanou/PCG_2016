@@ -25,8 +25,8 @@ public class SpawnWallObjects : MonoBehaviour {
                 || box.GetBoxLocation() == SpawnableBox.BoxLocation.West)) {
 
                 _possibleSpots.Add(box);
-                box.GetComponent<Renderer>().enabled = true;
-                box.GetComponent<Renderer>().material.color = Color.blue;
+                //box.GetComponent<Renderer>().enabled = true;
+                //box.GetComponent<Renderer>().material.color = Color.blue;
             }
 
         }
