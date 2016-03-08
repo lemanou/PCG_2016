@@ -35,6 +35,7 @@ public class Spawner : MonoBehaviour {
         _fullCarpetsDic = new Dictionary<int, SpawnableObject>();
     private Vector3 _roomSize, _roomBoundaries;
     private static System.Random rand = new System.Random();
+    private Camera _firstCam;
 
     public Vector3 GetBoundaries() {
         return _roomBoundaries;
@@ -89,6 +90,9 @@ public class Spawner : MonoBehaviour {
         }
 
         _placedCarpets.Clear();
+
+        if (_firstCam != null)
+            _firstCam.gameObject.SetActive(true);
 
         if (_player != null)
             Destroy(_player.gameObject);
@@ -229,8 +233,8 @@ public class Spawner : MonoBehaviour {
     }
 
     private void StartGame() {
-        Camera _cam = FindObjectOfType<Camera>();
-        _cam.gameObject.SetActive(false);
+        _firstCam = FindObjectOfType<Camera>();
+        _firstCam.gameObject.SetActive(false);
 
         _player = Instantiate(Resources.Load("FPSController", typeof(FirstPersonController)), new Vector3(3.5f, 1.0f, 0.0f), Quaternion.identity) as FirstPersonController;
         NumberDialScript tmpDial = _player.transform.GetChild(0).GetComponentInChildren<NumberDialScript>();
@@ -241,8 +245,8 @@ public class Spawner : MonoBehaviour {
                 item.numberDialAttached = tmpDial.gameObject;
         }
 
-        _cam = _player.gameObject.GetComponent<Transform>().GetChild(0).GetComponent<Camera>();
-        _canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        Camera _cam = _player.gameObject.GetComponent<Transform>().GetChild(0).GetComponent<Camera>();
+        _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         _canvas.worldCamera = _cam;
         //Debug.Log("E.N.D.");
     }

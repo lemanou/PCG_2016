@@ -21,7 +21,10 @@ public class DisableOnOfMyChildren : MonoBehaviour {
             numToDisable = count;
 
         if (numToDisable > 1)
-            numToDisable = Random.Range(1, numToDisable);
+            if (gameObject.name.Contains("BooksRow"))
+                numToDisable = Random.Range(0, numToDisable);
+            else
+                numToDisable = Random.Range(1, numToDisable);
 
         for (int i = 0; i < numToDisable;) {
             int random = Random.Range(-1, goList.Count - 1);

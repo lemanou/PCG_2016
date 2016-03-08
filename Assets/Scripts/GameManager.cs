@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 //using UnityEditor;
 
 public class GameManager : MonoBehaviour {
@@ -12,29 +13,39 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.Space)) {
+        if (Input.GetKeyDown(KeyCode.P)) {
             RestartGame();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Cursor.visible = true;
+            SceneManager.LoadScene("SelectionMenu");
         }
     }
 
     private void BeginGame() {
-        _spawnerInstance = Instantiate(SpawnerPrefab) as Spawner;
-        _spawnerInstance.Spawn();
+        if (SpawnerPrefab != null) {
+            _spawnerInstance = Instantiate(SpawnerPrefab) as Spawner;
+            _spawnerInstance.Spawn();
+        }
     }
 
     public void RestartGame() {
         ClearConsole();
-        
-        SpawnObjectsOnMe[] sooma = FindObjectsOfType<SpawnObjectsOnMe>();
-        foreach (var item in sooma) {
-            item.Reset();
-        }
 
-        _spawnerInstance.gameObject.GetComponent<SpawnQuests>().Reset();
-        _spawnerInstance.gameObject.GetComponent<SpawnChairs>().Reset();
-        _spawnerInstance.gameObject.GetComponent<SpawnWallObjects>().Reset();
-        _spawnerInstance.Reset();
-        BeginGame();
+        if (SpawnerPrefab != null) {
+            SpawnObjectsOnMe[] sooma = FindObjectsOfType<SpawnObjectsOnMe>();
+            foreach (var item in sooma) {
+                item.Reset();
+            }
+
+            _spawnerInstance.gameObject.GetComponent<SpawnQuests>().Reset();
+            _spawnerInstance.gameObject.GetComponent<SpawnChairs>().Reset();
+            _spawnerInstance.gameObject.GetComponent<SpawnWallObjects>().Reset();
+            _spawnerInstance.Reset();
+            BeginGame();
+        } else {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     // UsefulShortcuts reflection trick

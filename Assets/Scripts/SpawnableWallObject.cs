@@ -40,7 +40,7 @@ public class SpawnableWallObject : MonoBehaviour {
             }
             _placed = true;
         } else {
-            if (transform.position == new Vector3(0, 0, 0)) {
+            if (transform.position.x == 0 || transform.position.z == 0) {
                 Debug.LogWarning(gameObject.name + " was stuck mid room. Disabling.");
                 gameObject.SetActive(false);
             }
