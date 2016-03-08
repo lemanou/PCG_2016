@@ -177,7 +177,7 @@ public class DescriptiveTextScript : MonoBehaviour
             BlackBorderText.text = "Congratulations! You have managed to find the hidden code!";
             if (!proceedToRestart) {
                 proceedToRestart = true;
-                StartCoroutine(ReturnToMenu(2.0f));
+                StartCoroutine(ReturnToMenu(4.0f));
             }
         }
     }
