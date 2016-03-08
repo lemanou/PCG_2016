@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 /*
     This script is placed on the BlackBorderText and allows for descriptive subtitles to pop up.
@@ -12,7 +14,9 @@ public class DescriptiveTextScript : MonoBehaviour
     private GameObject currentGO, currentQuestItemGO;
     private GameObject currentDialNumberGO;
     private float lastSuccessfulMouseClick, mouseDelay;
-    private bool dialNumberShown;
+    private bool
+        dialNumberShown,
+        proceedToRestart;
 
     public enum State
     {
@@ -37,7 +41,9 @@ public class DescriptiveTextScript : MonoBehaviour
         currentGO = null;
         currentQuestItemGO = tutorialPaper;
         currentState = State.foundHiddenNote;
+        proceedToRestart = false;
         mouseDelay = 0.2f;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -169,6 +175,17 @@ public class DescriptiveTextScript : MonoBehaviour
         if (currentState == State.completed)
         {
             BlackBorderText.text = "Congratulations! You have managed to find the hidden code!";
+            if (!proceedToRestart) {
+                proceedToRestart = true;
+                StartCoroutine(ReturnToMenu(2.0f));
+            }
         }
+    }
+
+    IEnumerator ReturnToMenu(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        Cursor.visible = true;
+        SceneManager.LoadScene(0);
     }
 }

@@ -12,7 +12,6 @@ GameObject:
   - 114: {fileID: 11400000}
   - 54: {fileID: 5400000}
   - 82: {fileID: 8200000}
-  - 114: {fileID: 11445462}
   m_Layer: 2
   m_Name: FPSController
   m_TagString: Untagged
@@ -1007,17 +1006,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cameraTransform: {fileID: 400002}
---- !u!114 &11445462
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 958cc16d0bcd4cd4a950cb51a71ad511, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &11490112
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1058,6 +1046,7 @@ MonoBehaviour:
   dialFlip4: {fileID: 8300000, guid: 31f0d91b31368674d8c30ba7e2c7967f, type: 3}
   dialUnlockingMechanism: {fileID: 8300000, guid: 4c335b271f53d374490911e335d05436,
     type: 3}
+  trueNumbers: 
 --- !u!143 &14300000
 CharacterController:
   m_ObjectHideFlags: 1
