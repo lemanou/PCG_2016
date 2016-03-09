@@ -3,6 +3,7 @@
 /*
     This script is placed on furniture that is supposed to be interacted with.
     It allows furniture to have a description and to hold a quest item.
+    And in case of the door, instead of a quest item, it holds the number dial object.
 */
 public class ClickableFurniture : MonoBehaviour
 {

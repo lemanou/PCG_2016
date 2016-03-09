@@ -5,7 +5,11 @@ using UnityEngine.SceneManagement;
 
 /*
     This script is placed on the BlackBorderText and allows for descriptive subtitles to pop up.
+    The pop up is depending on states.
     It also shows the corresponding quest paper, if we click a furniture with one attached.
+    Because we are already making use of states; When the player finds the correct code,
+    this script will know when to send us back to the main menu, and will do so.
+    This script will therefore also take care of turning the cursor in/visible.
 */
 public class DescriptiveTextScript : MonoBehaviour
 {
