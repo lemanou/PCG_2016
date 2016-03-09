@@ -7,8 +7,8 @@ public class SpawnableWallObject : MonoBehaviour {
 
     public int maxPlacementNum;
 
-    private enum ObjSize { Small, Large }
-    private ObjSize _eSize;
+    private enum ObjSize { Small, Large, NotSet }
+    private ObjSize _eSize = ObjSize.NotSet;
     private bool _placed = false;
     private Renderer _myRenderer;
     private Vector3 _myBounds;
@@ -37,12 +37,15 @@ public class SpawnableWallObject : MonoBehaviour {
                 FindSpot();
             } else if (_eSize == ObjSize.Large) {
                 FindLargeSpot();
+            } else {
+                Debug.LogWarning("aaah? not set???" + gameObject.name);
             }
             _placed = true;
         } else {
             if (transform.position.x == 0 || transform.position.z == 0) {
-                Debug.LogWarning(gameObject.name + " was stuck mid room. Disabling.");
-                gameObject.SetActive(false);
+                Debug.LogWarning(gameObject.name + " was stuck mid room. trying again.");
+                //gameObject.SetActive(false);
+                _placed = false;
             }
         }
     }
@@ -91,20 +94,31 @@ public class SpawnableWallObject : MonoBehaviour {
 
         SpawnableBox objToUse = _possibleSpots.Where(sbx => sbx.GetWallObject() == null).FirstOrDefault();
         if (objToUse != null) {
-
-            SpawnableBox extraSpotToUse = FindCollidingFreeBoxes(objToUse);
-
-            if (extraSpotToUse != objToUse) {
-                _swo.RemoveSpot(extraSpotToUse);
-                extraSpotToUse.SetWallObject(this);
-                _swo.RemoveSpot(objToUse);
-                objToUse.SetWallObject(this);
-                AlignOnCorrectWall(objToUse);
-                CorrectPositionBasedOnNewSpot(objToUse, extraSpotToUse);
+            PlaceLargeWallObj(objToUse);
+        } else {
+            objToUse = _possibleSpots.Where(sbx => sbx.GetWallObject() == null).LastOrDefault();
+            if (objToUse != null) {
+                PlaceLargeWallObj(objToUse);
             } else {
-                //Debug.LogWarning("No space for: " + gameObject.name + " disabling.");
+                //Debug.LogWarning("2: No space for: " + gameObject.name + " disabling.");
                 gameObject.SetActive(false);
             }
+        }
+    }
+
+    private void PlaceLargeWallObj(SpawnableBox objToUse) {
+        SpawnableBox extraSpotToUse = FindCollidingFreeBoxes(objToUse);
+
+        if (extraSpotToUse != objToUse) {
+            _swo.RemoveSpot(extraSpotToUse);
+            extraSpotToUse.SetWallObject(this);
+            _swo.RemoveSpot(objToUse);
+            objToUse.SetWallObject(this);
+            AlignOnCorrectWall(objToUse);
+            CorrectPositionBasedOnNewSpot(objToUse, extraSpotToUse);
+        } else {
+            //Debug.LogWarning("1: No space for: " + gameObject.name + " disabling.");
+            gameObject.SetActive(false);
         }
     }
 
