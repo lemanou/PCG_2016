@@ -20,11 +20,11 @@ public class SpawnWallObjects : MonoBehaviour {
     private bool CheckPossibleBoxes() {
         // Check for available spots
         foreach (var box in _allBoxes) {
-            if ((box.GetBoxCondition() == SpawnableBox.BoxCondition.Free || box.GetBoxCondition() == SpawnableBox.BoxCondition.Short) &&
+            if ((box.GetBoxCondition() == SpawnableBox.BoxCondition.Free || box.GetBoxCondition() == SpawnableBox.BoxCondition.Short || box.GetBoxCondition() == SpawnableBox.BoxCondition.ChairSpot) &&
                 (box.GetBoxLocation() == SpawnableBox.BoxLocation.North || box.GetBoxLocation() == SpawnableBox.BoxLocation.East || box.GetBoxLocation() == SpawnableBox.BoxLocation.South
                 || box.GetBoxLocation() == SpawnableBox.BoxLocation.West)) {
 
-                _possibleSpots.Add(box);
+                AddSpot(box);
                 //box.GetComponent<Renderer>().enabled = true;
                 //box.GetComponent<Renderer>().material.color = Color.blue;
             }
@@ -68,7 +68,7 @@ public class SpawnWallObjects : MonoBehaviour {
             int newObjKey = _fullObjDic.ElementAt(randW.Next(0, _fullObjDic.Count)).Key;
 
             // now we place this object
-            SpawnableWallObject newSObj = Instantiate(_fullObjDic[newObjKey]);
+            SpawnableWallObject newSObj = Instantiate(_fullObjDic[newObjKey], new Vector3(0, _fullObjDic[newObjKey].transform.position.y, 0), Quaternion.identity) as SpawnableWallObject;
             newSObj.name += ": " + _placedNumOfObjs;
             _placedObjs.Add(newSObj);
             // thus we cannot again
@@ -107,6 +107,10 @@ public class SpawnWallObjects : MonoBehaviour {
 
     public void RemoveSpot(SpawnableBox box) {
         _possibleSpots.Remove(box);
+    }
+
+    public void AddSpot(SpawnableBox box) {
+        _possibleSpots.Add(box);
     }
 
     public void Reset() {

@@ -146,5 +146,9 @@ public class SpawnableBox : MonoBehaviour {
             _wallObj = swo.gameObject;
             //ChangeColor(_wallObj);
         }
+        if (swo == null) {
+            _boxcond = BoxCondition.Free;
+            _wallObj = null;
+        }
     }
 }
