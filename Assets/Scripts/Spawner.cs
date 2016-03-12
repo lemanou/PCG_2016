@@ -229,7 +229,7 @@ public class Spawner : MonoBehaviour {
 
         var children = new List<GameObject>();
         foreach (Transform child in transform) children.Add(child.gameObject);
-        children.ForEach(child => Destroy(child)); //  child.GetComponent<Renderer>().enabled = false
+        //children.ForEach(child => Destroy(child)); //  child.GetComponent<Renderer>().enabled = false
 
 
         // we have to spawn the canvas early to use it for the quest spawning

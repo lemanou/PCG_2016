@@ -18,6 +18,7 @@ public class SpawnableWallObject : MonoBehaviour {
     private Vector3 _myBounds;
     private SpawnWallObjects _swo;
     private List<SpawnableBox> _possibleSpots = new List<SpawnableBox>();
+    private SpawnableBox _usedSpotOne = null, _usedSpotTwo = null;
 
     void Start() {
         if (SceneManager.GetActiveScene().name != "PCG") {
@@ -46,8 +47,16 @@ public class SpawnableWallObject : MonoBehaviour {
             }
             _placed = true;
         } else {
-            if (transform.position.x == 0 || transform.position.z == 0) {
+            if (transform.position.x == 0 && transform.position.z == 0) {
                 Debug.LogWarning(gameObject.name + " was stuck mid room. trying again.");
+                if (_usedSpotOne != null) {
+                    _usedSpotOne.SetWallObject(null);
+                    _swo.AddSpot(_usedSpotOne);
+                }
+                if (_usedSpotTwo != null) {
+                    _usedSpotTwo.SetWallObject(null);
+                    _swo.AddSpot(_usedSpotTwo);
+                }
                 //gameObject.SetActive(false);
                 _placed = false;
             }
@@ -104,7 +113,7 @@ public class SpawnableWallObject : MonoBehaviour {
             if (objToUse != null) {
                 PlaceLargeWallObj(objToUse);
             } else {
-                //Debug.LogWarning("2: No space for: " + gameObject.name + " disabling.");
+               // Debug.LogWarning("2: No space for: " + gameObject.name + " disabling.");
                 gameObject.SetActive(false);
             }
         }
@@ -112,11 +121,13 @@ public class SpawnableWallObject : MonoBehaviour {
 
     private void PlaceLargeWallObj(SpawnableBox objToUse) {
         SpawnableBox extraSpotToUse = FindCollidingFreeBoxes(objToUse);
-
+        //Debug.Log(extraSpotToUse.name + " compared with: " + objToUse.name);
         if (extraSpotToUse != objToUse) {
             _swo.RemoveSpot(extraSpotToUse);
+            _usedSpotTwo = extraSpotToUse;
             extraSpotToUse.SetWallObject(this);
             _swo.RemoveSpot(objToUse);
+            _usedSpotOne = objToUse;
             objToUse.SetWallObject(this);
             AlignOnCorrectWall(objToUse);
             CorrectPositionBasedOnNewSpot(objToUse, extraSpotToUse);
@@ -129,22 +140,25 @@ public class SpawnableWallObject : MonoBehaviour {
     private void CorrectPositionBasedOnNewSpot(SpawnableBox objToUse, SpawnableBox extraSpotToUse) {
         Vector3 placedPos = objToUse.transform.position;
         Vector3 targetPos = extraSpotToUse.transform.position;
-        float offset = 0.46f;
+        float offset = 0.5f;
         SpawnableBox.BoxLocation loc = objToUse.GetBoxLocation();
         switch (loc) {
             case SpawnableBox.BoxLocation.North:
+                //Debug.Log("North: " + gameObject.name + " initial pos: " + transform.position);
                 if (targetPos.x > placedPos.x)
                     transform.position = new Vector3(transform.position.x + offset, transform.position.y, transform.position.z);
                 else if (targetPos.x < placedPos.x)
                     transform.position = new Vector3(transform.position.x - offset, transform.position.y, transform.position.z);
                 break;
             case SpawnableBox.BoxLocation.East:
+                //Debug.Log("East: " + gameObject.name + " initial pos: " + transform.position);
                 if (targetPos.z > placedPos.z)
                     transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + offset);
-                else if (targetPos.x < placedPos.x)
+                else if (targetPos.z < placedPos.z)
                     transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - offset);
                 break;
             case SpawnableBox.BoxLocation.South:
+                //Debug.Log("South: " + gameObject.name + " initial pos: " + transform.position);
                 if (targetPos.x > placedPos.x)
                     transform.position = new Vector3(transform.position.x + offset, transform.position.y, transform.position.z);
                 else if (targetPos.x < placedPos.x)
@@ -161,20 +175,21 @@ public class SpawnableWallObject : MonoBehaviour {
 
     private SpawnableBox FindCollidingFreeBoxes(SpawnableBox box) {
         // First check all colliding spawnedBoxes for neighbors
-        Collider[] _colliders = Physics.OverlapSphere(box.transform.position, box.GetComponent<Collider>().bounds.size.x / 2);
+        Collider[] _colliders = Physics.OverlapSphere(box.transform.position, box.GetComponent<Collider>().bounds.size.x);
+        //GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //sphere.transform.position = box.transform.position;
+        //sphere.transform.localScale = new Vector3(box.GetComponent<Collider>().bounds.size.x, box.GetComponent<Collider>().bounds.size.y, box.GetComponent<Collider>().bounds.size.z);
         // If we found some
         if (_colliders.Length > 2) {
             foreach (var obj in _colliders) {
                 SpawnableBox sbx = obj.GetComponent<SpawnableBox>();
                 if (sbx) {
                     //Debug.Log(box.name + " collides with: " + sbx.name);
-                    if (sbx.name != box.name && sbx.GetBoxLocation() == box.GetBoxLocation() && sbx.GetWallObject() == null && sbx.GetBoxCondition() != SpawnableBox.BoxCondition.Occupied && sbx.GetBoxCondition() != SpawnableBox.BoxCondition.Tall) {
+                    if (sbx.name != box.name && sbx.GetBoxLocation() == box.GetBoxLocation() && sbx.GetWallObject() == null
+                            && sbx.GetBoxCondition() != SpawnableBox.BoxCondition.Occupied && sbx.GetBoxCondition() != SpawnableBox.BoxCondition.Tall) {
                         //Debug.Log(box.name + " found possible placement: " + sbx.name);
-                        return sbx; // return 2 spots only everytime
+                        return sbx; // return 1 spots only everytime
                     }
-                    //else {
-                    //    Debug.Log(box.name + " found USED/MIDDLE/IGNORED: " + sbx.name);
-                    //}
                 }
             }
         }
