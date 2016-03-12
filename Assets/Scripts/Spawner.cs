@@ -8,6 +8,16 @@ using UnityStandardAssets.Characters.FirstPerson;
 [RequireComponent(typeof(SpawnableChair))]
 [RequireComponent(typeof(SpawnWallObjects))]
 
+/*
+    This script checks if there's enough furniture to fulfill the level settings.
+    We destroy everything in the scene, change camera and stop coroutines on Reset().
+    The tile boxes are created and a dictionary for all furniture to be placed.
+    We instantiate furniture and repeat for carpets.
+    SpawnChairs.cs calls DeleteAllBoxes(), as the chairs are the last furniture to be placed.
+        -Which creates the canvas and quests and calls StartGame().
+            -Which creates the player and changes camera.
+    In LateUpdate() we make sure that the wall objects and chairs are placed after the furniture.
+*/
 public class Spawner : MonoBehaviour {
 
     [Range(1, 20)]

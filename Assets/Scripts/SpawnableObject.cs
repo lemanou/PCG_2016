@@ -4,6 +4,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/*
+    This script attempts to place furniture in a random manner, within the boundaries of the room.
+*/
 public class SpawnableObject : MonoBehaviour {
 
     public enum Tag {

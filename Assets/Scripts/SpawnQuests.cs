@@ -3,7 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-
+/*
+    This script divides the fake and valid quests into their corresponding dictionaries.
+    We place quests on available furniture and parent the quests to the canvas and reset scaling to 1.
+    The reason to use canvas as parent, is due to the quests using canvas renderers, to always put them on top. 
+    On Reset() we stop all coroutines and destroy all quests.
+*/
 public class SpawnQuests : MonoBehaviour {
 
     [Range(1, 5)]
