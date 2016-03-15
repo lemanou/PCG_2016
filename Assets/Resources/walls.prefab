@@ -635,6 +635,7 @@ GameObject:
   - 4: {fileID: 499360}
   - 33: {fileID: 3376680}
   - 23: {fileID: 2341514}
+  - 114: {fileID: 11485576}
   m_Layer: 0
   m_Name: candleStick (2)
   m_TagString: Untagged
@@ -821,6 +822,7 @@ GameObject:
   - 4: {fileID: 488332}
   - 33: {fileID: 3349136}
   - 23: {fileID: 2343036}
+  - 114: {fileID: 11431976}
   m_Layer: 0
   m_Name: candleStick (1)
   m_TagString: Untagged
@@ -1090,6 +1092,7 @@ GameObject:
   - 4: {fileID: 436942}
   - 33: {fileID: 3384400}
   - 23: {fileID: 2310388}
+  - 114: {fileID: 11477952}
   m_Layer: 0
   m_Name: candleStick
   m_TagString: Untagged
@@ -3816,6 +3819,18 @@ Light:
   m_ShadowRadius: 0
   m_ShadowAngle: 0
   m_AreaSize: {x: 1, y: 1}
+--- !u!114 &11431976
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 168664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2633a89029e622640a2e9c2ff24b4548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  percentToDisable: 10
 --- !u!114 &11445930
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3830,6 +3845,30 @@ MonoBehaviour:
   questItemAttached: {fileID: 0}
   numberDialAttached: {fileID: 0}
   text: The door has an intricate locking mechanism above the handle.
+--- !u!114 &11477952
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 192396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2633a89029e622640a2e9c2ff24b4548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  percentToDisable: 10
+--- !u!114 &11485576
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 146012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2633a89029e622640a2e9c2ff24b4548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  percentToDisable: 10
 --- !u!198 &19812994
 ParticleSystem:
   m_ObjectHideFlags: 1

@@ -28,6 +28,7 @@ GameObject:
   - 33: {fileID: 3368898}
   - 23: {fileID: 2395716}
   - 114: {fileID: 11490656}
+  - 114: {fileID: 11438352}
   m_Layer: 0
   m_Name: candleStick
   m_TagString: Untagged
@@ -431,6 +432,18 @@ Light:
   m_ShadowRadius: 0
   m_ShadowAngle: 0
   m_AreaSize: {x: 1, y: 1}
+--- !u!114 &11438352
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 114846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2633a89029e622640a2e9c2ff24b4548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  percentToDisable: 10
 --- !u!114 &11490656
 MonoBehaviour:
   m_ObjectHideFlags: 1

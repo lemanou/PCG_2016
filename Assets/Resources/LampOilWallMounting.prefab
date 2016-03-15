@@ -111,6 +111,7 @@ GameObject:
   - 33: {fileID: 3300000}
   - 23: {fileID: 2300000}
   - 114: {fileID: 11455294}
+  - 114: {fileID: 11486338}
   m_Layer: 0
   m_Name: LampOilWallMounting
   m_TagString: Untagged
@@ -321,6 +322,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxPlacementNum: 2
+--- !u!114 &11486338
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2633a89029e622640a2e9c2ff24b4548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  percentToDisable: 10
 --- !u!198 &19800000
 ParticleSystem:
   m_ObjectHideFlags: 1
