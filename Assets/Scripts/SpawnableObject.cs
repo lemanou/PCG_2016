@@ -422,17 +422,17 @@ public class SpawnableObject : MonoBehaviour {
             case Facing.North:
                 objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.North).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 if (objToUse == null)
-                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.North).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
+                    objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.North).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 break;
             case Facing.East:
                 objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.East).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 if (objToUse == null)
-                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.East).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
+                    objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.East).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 break;
             case Facing.South:
                 objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.South).FirstOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 if (objToUse == null)
-                    _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.South).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
+                    objToUse = _allBoxes.Where(sbx => sbx.GetBoxLocation() == SpawnableBox.BoxLocation.South).LastOrDefault(sbx => sbx.GetBoxCondition() == SpawnableBox.BoxCondition.Free);
                 break;
         }
 
@@ -464,7 +464,7 @@ public class SpawnableObject : MonoBehaviour {
                     // Correct facing
                     transform.rotation = Quaternion.Euler(0, 270, 0);
                     // Need to move the Dresser a bit
-                    if (gameObject.name.Contains("Dresser")) {
+                    if (gameObject.name.Contains("Dresser") || gameObject.name.Contains("armoire")) {
                         transform.position = new Vector3(transform.position.x - _myBounds.x / 5, transform.position.y, transform.position.z);
                     }
                     break;

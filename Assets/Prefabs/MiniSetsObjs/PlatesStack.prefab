@@ -10,7 +10,6 @@ GameObject:
   - 4: {fileID: 434506}
   - 33: {fileID: 3331106}
   - 23: {fileID: 2325506}
-  - 114: {fileID: 11450874}
   m_Layer: 0
   m_Name: plateDinner (12)
   m_TagString: Untagged
@@ -28,7 +27,6 @@ GameObject:
   - 4: {fileID: 457594}
   - 33: {fileID: 3379680}
   - 23: {fileID: 2326518}
-  - 114: {fileID: 11493092}
   m_Layer: 0
   m_Name: plateDinner (13)
   m_TagString: Untagged
@@ -46,7 +44,6 @@ GameObject:
   - 4: {fileID: 410044}
   - 33: {fileID: 3368740}
   - 23: {fileID: 2371184}
-  - 114: {fileID: 11472288}
   m_Layer: 0
   m_Name: plateDinner (6)
   m_TagString: Untagged
@@ -64,7 +61,6 @@ GameObject:
   - 4: {fileID: 489640}
   - 33: {fileID: 3315622}
   - 23: {fileID: 2320400}
-  - 114: {fileID: 11414120}
   m_Layer: 0
   m_Name: plateDinner (9)
   m_TagString: Untagged
@@ -82,7 +78,6 @@ GameObject:
   - 4: {fileID: 489366}
   - 33: {fileID: 3359384}
   - 23: {fileID: 2332126}
-  - 114: {fileID: 11482212}
   m_Layer: 0
   m_Name: plateDinner (15)
   m_TagString: Untagged
@@ -100,7 +95,6 @@ GameObject:
   - 4: {fileID: 429580}
   - 33: {fileID: 3307018}
   - 23: {fileID: 2344762}
-  - 114: {fileID: 11492380}
   m_Layer: 0
   m_Name: plateDinner (14)
   m_TagString: Untagged
@@ -118,7 +112,6 @@ GameObject:
   - 4: {fileID: 468140}
   - 33: {fileID: 3367104}
   - 23: {fileID: 2386088}
-  - 114: {fileID: 11432596}
   m_Layer: 0
   m_Name: plateDinner (4)
   m_TagString: Untagged
@@ -152,7 +145,6 @@ GameObject:
   - 4: {fileID: 491754}
   - 33: {fileID: 3335744}
   - 23: {fileID: 2353562}
-  - 114: {fileID: 11414468}
   m_Layer: 0
   m_Name: plateDinner (16)
   m_TagString: Untagged
@@ -170,7 +162,6 @@ GameObject:
   - 4: {fileID: 418452}
   - 33: {fileID: 3344594}
   - 23: {fileID: 2316240}
-  - 114: {fileID: 11407922}
   m_Layer: 0
   m_Name: plateDinner (17)
   m_TagString: Untagged
@@ -188,7 +179,6 @@ GameObject:
   - 4: {fileID: 469366}
   - 33: {fileID: 3327978}
   - 23: {fileID: 2351704}
-  - 114: {fileID: 11498858}
   m_Layer: 0
   m_Name: plateDinner (3)
   m_TagString: Untagged
@@ -206,7 +196,6 @@ GameObject:
   - 4: {fileID: 448640}
   - 33: {fileID: 3368402}
   - 23: {fileID: 2377524}
-  - 114: {fileID: 11455510}
   m_Layer: 0
   m_Name: plateDinner (11)
   m_TagString: Untagged
@@ -224,7 +213,6 @@ GameObject:
   - 4: {fileID: 491552}
   - 33: {fileID: 3312798}
   - 23: {fileID: 2354424}
-  - 114: {fileID: 11424476}
   m_Layer: 0
   m_Name: plateDinner (8)
   m_TagString: Untagged
@@ -242,7 +230,6 @@ GameObject:
   - 4: {fileID: 475552}
   - 33: {fileID: 3307112}
   - 23: {fileID: 2377092}
-  - 114: {fileID: 11411536}
   m_Layer: 0
   m_Name: plateDinner (7)
   m_TagString: Untagged
@@ -260,7 +247,6 @@ GameObject:
   - 4: {fileID: 416994}
   - 33: {fileID: 3399906}
   - 23: {fileID: 2318576}
-  - 114: {fileID: 11421548}
   m_Layer: 0
   m_Name: plateDinner (5)
   m_TagString: Untagged
@@ -278,7 +264,6 @@ GameObject:
   - 4: {fileID: 444004}
   - 33: {fileID: 3325020}
   - 23: {fileID: 2339640}
-  - 114: {fileID: 11485004}
   m_Layer: 0
   m_Name: plateDinner (10)
   m_TagString: Untagged
@@ -296,7 +281,6 @@ GameObject:
   - 4: {fileID: 499336}
   - 33: {fileID: 3343658}
   - 23: {fileID: 2367550}
-  - 114: {fileID: 11429008}
   m_Layer: 0
   m_Name: plateDinner (2)
   m_TagString: Untagged
@@ -1052,230 +1036,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 167928}
   m_Mesh: {fileID: 4300000, guid: c0c1593c48e640448aa26bcd8254ec6b, type: 3}
---- !u!114 &11407922
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 147220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11411536
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 167506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11414120
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 105400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11414468
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 145868}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11421548
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 167928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11424476
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 161904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11429008
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 198960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11432596
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 128594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11450874
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 103454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11455510
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 155232}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11472288
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 104930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11482212
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 123012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11485004
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 196572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11492380
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 124450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11493092
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 103902}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11498858
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 149310}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
 --- !u!114 &11499436
 MonoBehaviour:
   m_ObjectHideFlags: 1

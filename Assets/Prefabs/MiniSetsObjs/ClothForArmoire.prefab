@@ -10,7 +10,6 @@ GameObject:
   - 4: {fileID: 454776}
   - 33: {fileID: 3347332}
   - 23: {fileID: 2394272}
-  - 114: {fileID: 11474748}
   - 64: {fileID: 6475760}
   - 114: {fileID: 11414182}
   m_Layer: 0
@@ -130,20 +129,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxPlacementNum: 1
---- !u!114 &11474748
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 111874}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: An intricately crocheted table cloth.
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

@@ -28,13 +28,15 @@ public class SpawnableBox : MonoBehaviour {
         NotSet
     }
 
-    private BoxLocation _boxloc = BoxLocation.NotSet;
-    private BoxCondition _boxcond = BoxCondition.Free;
-    private GameObject _furniture = null,
+    public BoxLocation _boxloc = BoxLocation.NotSet;
+    public BoxCondition _boxcond = BoxCondition.Free;
+    public GameObject _furniture = null,
         _carpet = null,
         _wallObj = null;
     private List<string> OccupiedBoxes = new List<string>(new string[] { "Spawned Box 0, 1", "Spawned Box 0, 2", "Spawned Box 0, 3", "Spawned Box 0, 4",
-                                                                        "Spawned Box 0, 5", "Spawned Box 0, 6", "Spawned Box 7, 3", "Spawned Box 7, 4" });
+                                                                        "Spawned Box 0, 5", "Spawned Box 0, 6", "Spawned Box 7, 3", "Spawned Box 7, 4",
+                                                                        "Spawned Box 6, 2", "Spawned Box 6, 3", "Spawned Box 6, 4", "Spawned Box 6, 5",
+                                                                        "Spawned Box 5, 3", "Spawned Box 5, 4"});
     private void Start() {
         if (OccupiedBoxes.Contains(gameObject.name)) {
             _boxcond = BoxCondition.Occupied;
