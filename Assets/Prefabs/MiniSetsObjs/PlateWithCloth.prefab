@@ -26,7 +26,6 @@ GameObject:
   - 4: {fileID: 402574}
   - 33: {fileID: 3321844}
   - 23: {fileID: 2303558}
-  - 114: {fileID: 11486934}
   - 64: {fileID: 6453152}
   m_Layer: 0
   m_Name: tableClothA
@@ -45,7 +44,6 @@ GameObject:
   - 4: {fileID: 485996}
   - 33: {fileID: 3394494}
   - 23: {fileID: 2367250}
-  - 114: {fileID: 11447154}
   m_Layer: 0
   m_Name: plateDinner
   m_TagString: Untagged
@@ -181,34 +179,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxPlacementNum: 2
---- !u!114 &11447154
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 179288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: A fine dinner plate.
---- !u!114 &11486934
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 174930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f32c1138afc68d3469a751a501dab3a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  questItemAttached: {fileID: 0}
-  numberDialAttached: {fileID: 0}
-  text: An intricately crocheted table cloth.
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

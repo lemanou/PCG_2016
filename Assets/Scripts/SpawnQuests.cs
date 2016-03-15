@@ -18,17 +18,28 @@ public class SpawnQuests : MonoBehaviour {
     private List<QuestItemScript> _fakeQAs = new List<QuestItemScript>();
     private List<QuestItemScript> _validQAs = new List<QuestItemScript>();
     private List<QuestItemScript> _placedQuests = new List<QuestItemScript>();
+    private List<ClickableFurniture> _possibleForQuests = new List<ClickableFurniture>();
     private Dictionary<string, int> _fullValidDic = new Dictionary<string, int>();
     private Dictionary<string, int> _fullFakeDic = new Dictionary<string, int>();
 
     public void StartPlacingQuests() {
         _allPossibleTargets = FindObjectsOfType<ClickableFurniture>();
+        foreach (var item in _allPossibleTargets) {
+            if (item.questItemAttached == null && !item.name.Contains("door"))
+                _possibleForQuests.Add(item);
+        }
 
-        if (_allPossibleTargets.Length * 2 < totalAmountOfSets) {
+        if (_possibleForQuests.Count < totalAmountOfSets * 3) { //  * 2
             Debug.LogWarning("The amount of clickable furniture is less than the required quests asked to place.");
             return;
         }
 
+        //Debug.Log("Furniture: " + _possibleForQuests.Count + " requested quests (x3x2): " + totalAmountOfSets);
+        //foreach (var item in _allPossibleTargets) {
+        //    Debug.Log(item.name);
+        //}
+
+        ListShuffle(_possibleForQuests);
         LoadAllQuests();
 
         // Check sets - valid
@@ -109,7 +120,9 @@ public class SpawnQuests : MonoBehaviour {
         // now we set these already instantiated object
         foreach (QuestItemScript q in _fakeQAs) {
             if (q.GetNameChar() == testKey) {
-                ClickableFurniture tmp = _allPossibleTargets.Where(cf => cf.questItemAttached == null).FirstOrDefault();
+                int r = UnityEngine.Random.Range(0, _possibleForQuests.Count);
+                ListShuffle(_possibleForQuests);
+                ClickableFurniture tmp = _possibleForQuests[r]; // _allPossibleTargets.Where(cf => cf.questItemAttached == null).FirstOrDefault();
                 if (tmp != null) {
                     //Debug.Log("Placing fake " + q.name + " to " + tmp.name);
                     q.transform.SetParent(_canvas.transform.FindChild("QuestItemHolder").transform);
@@ -117,6 +130,7 @@ public class SpawnQuests : MonoBehaviour {
                     tmp.questItemAttached = q;
                     _placedQuests.Add(q);
                     q.gameObject.SetActive(true);
+                    _possibleForQuests.Remove(tmp);
                     if (_fullFakeDic.ContainsKey(testKey))
                         _fullFakeDic.Remove(testKey);
                 } else {
@@ -134,7 +148,9 @@ public class SpawnQuests : MonoBehaviour {
         // now we set these already instantiated object
         foreach (QuestItemScript q in _validQAs) {
             if (q.GetNameChar() == testKey) {
-                ClickableFurniture tmp = _allPossibleTargets.Where(cf => cf.questItemAttached == null).FirstOrDefault();
+                int r = UnityEngine.Random.Range(0, _possibleForQuests.Count);
+                ListShuffle(_possibleForQuests);
+                ClickableFurniture tmp = _possibleForQuests[r]; //_allPossibleTargets.Where(cf => cf.questItemAttached == null).FirstOrDefault();
                 if (tmp != null) {
                     //Debug.Log("Placing valid " + q.name + " to " + tmp.name);
                     q.transform.SetParent(_canvas.transform.FindChild("QuestItemHolder").transform);
@@ -142,6 +158,7 @@ public class SpawnQuests : MonoBehaviour {
                     tmp.questItemAttached = q;
                     _placedQuests.Add(q);
                     q.gameObject.SetActive(true);
+                    _possibleForQuests.Remove(tmp);
                     //q.AddQuestNumber();
                 } else {
                     Debug.LogWarning("Problem when placing: " + q.name);
@@ -174,5 +191,17 @@ public class SpawnQuests : MonoBehaviour {
         _validQAs.Clear();
 
         _placedQuests.Clear();
+    }
+
+    private void ListShuffle(List<ClickableFurniture> myList) {
+        System.Random rng = new System.Random();
+        int n = myList.Count;
+        while (n > 1) {
+            n--;
+            int k = rng.Next(n + 1);
+            ClickableFurniture value = myList[k];
+            myList[k] = myList[n];
+            myList[n] = value;
+        }
     }
 }
