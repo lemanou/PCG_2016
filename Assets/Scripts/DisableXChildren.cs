@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class DisableOnOfMyChildren : MonoBehaviour {
+public class DisableXChildren : MonoBehaviour {
 
     public int numToDisable = 1;
 

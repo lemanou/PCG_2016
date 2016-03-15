@@ -7,9 +7,9 @@ using UnityEngine.SceneManagement;
 public class SpawnObjectsOnMe : MonoBehaviour {
 
     //[Range(1, 10)]
-    private int totalAmountOfMiniObjects = 1;
+    private int _totalAmountOfMiniObjects = 1;
 
-    public bool iAmOnShelf = false;
+    public bool parentOfParent = false;
     public float generationStepDelay;
     public List<SpawnableMiniObject> MiniObjectsToPlace;
 
@@ -44,7 +44,7 @@ public class SpawnObjectsOnMe : MonoBehaviour {
             }
         }
 
-        while (_placedMiniObjsCount < totalAmountOfMiniObjects) {
+        while (_placedMiniObjsCount < _totalAmountOfMiniObjects) {
 
             _placedMiniObjsCount++;
 
@@ -113,14 +113,13 @@ public class SpawnObjectsOnMe : MonoBehaviour {
             }
         }
 
-        while (_placedMiniObjsCount < totalAmountOfMiniObjects) {
+        while (_placedMiniObjsCount < _totalAmountOfMiniObjects) {
 
             _placedMiniObjsCount++;
             // Get random key from Dictionary
             int newObjKey = _fullMiniObjsDict.ElementAt(randM.Next(0, _fullMiniObjsDict.Count)).Key;
 
-            // now we place this object            
-
+            // now we place this object
             SpawnableMiniObject newSObj = Instantiate(_fullMiniObjsDict[newObjKey], transform.position, transform.rotation * _fullMiniObjsDict[newObjKey].transform.rotation) as SpawnableMiniObject;
             newSObj.name += ": " + _placedMiniObjsCount;
             newSObj.transform.SetParent(gameObject.transform);
@@ -128,9 +127,11 @@ public class SpawnObjectsOnMe : MonoBehaviour {
             // thus we cannot again
             _fullMiniObjsDict.Remove(newObjKey);
 
-            if (newSObj.gameObject.name.Contains("paper")) {
+            if (newSObj.gameObject.name.Contains("paper"))
                 transform.localPosition = new Vector3(transform.localPosition.x, 0.001f, transform.localPosition.z);
-            }
+
+            if (gameObject.name.Contains("tableCloth"))
+                newSObj.transform.localPosition = new Vector3(newSObj.transform.localPosition.x, newSObj.transform.localPosition.y - 0.38f, newSObj.transform.localPosition.z);
 
             yield return delay;
         }
@@ -142,22 +143,22 @@ public class SpawnObjectsOnMe : MonoBehaviour {
             return;
         }
 
-        if (iAmOnShelf)
+        if (parentOfParent)
             _papa = gameObject.transform.parent.transform.parent.GetComponent<SpawnableObject>();
         else
             _papa = gameObject.transform.parent.GetComponent<SpawnableObject>();
 
-        int objSum = 0;
+        //int objSum = 0;
 
-        foreach (var item in MiniObjectsToPlace) {
-            objSum += item.maxPlacementNum;
-        }
+        //foreach (var item in MiniObjectsToPlace) {
+        //    objSum += item.maxPlacementNum;
+        //}
 
-        if (totalAmountOfMiniObjects > objSum) {
-            Debug.LogWarning("Sum of mini objects lower than the number asked to place. Exiting. " + gameObject.name);
-            _placed = true;
-            return;
-        }
+        //if (_totalAmountOfMiniObjects > objSum) {
+        //    Debug.LogWarning("Sum of mini objects lower than the number asked to place. Exiting. " + gameObject.name);
+        //    _placed = true;
+        //    return;
+        //}
     }
 
     void LateUpdate() {
@@ -168,7 +169,7 @@ public class SpawnObjectsOnMe : MonoBehaviour {
 
         if (_papa.GetPlacementCheck() && !_placed) {
             CreateFullDict();
-            if (iAmOnShelf)
+            if (parentOfParent)
                 StartCoroutine(MiniObjectShelfSpawning());
             else
                 StartCoroutine(MiniObjectSpawning());
@@ -177,7 +178,7 @@ public class SpawnObjectsOnMe : MonoBehaviour {
     }
 
     public void Reset() {
-        if (iAmOnShelf)
+        if (parentOfParent)
             StopCoroutine(MiniObjectShelfSpawning());
         else
             StopCoroutine(MiniObjectSpawning());
