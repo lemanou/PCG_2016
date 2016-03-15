@@ -131,7 +131,13 @@ public class SpawnQuests : MonoBehaviour {
                 if (tmp != null) {
                     //Debug.Log("Placing fake " + q.name + " to " + tmp.name);
                     q.transform.SetParent(_canvas.transform.FindChild("QuestItemHolder").transform);
-                    q.transform.localScale = new Vector3(1, 1, 1);
+                    RectTransform _rectTrans = q.GetComponent<RectTransform>();
+                    if (_rectTrans != null)
+                    {
+                        q.transform.localScale = Vector3.one;
+                        _rectTrans.sizeDelta = Vector2.zero;
+                        _rectTrans.anchoredPosition = Vector2.zero;
+                    }
                     tmp.questItemAttached = q;
                     _placedQuests.Add(q);
                     q.gameObject.SetActive(true);
@@ -159,7 +165,13 @@ public class SpawnQuests : MonoBehaviour {
                 if (tmp != null) {
                     //Debug.Log("Placing valid " + q.name + " to " + tmp.name);
                     q.transform.SetParent(_canvas.transform.FindChild("QuestItemHolder").transform);
-                    q.transform.localScale = new Vector3(1, 1, 1);
+                    RectTransform _rectTrans = q.GetComponent<RectTransform>();
+                    if (_rectTrans != null)
+                    {
+                        q.transform.localScale = Vector3.one;
+                        _rectTrans.sizeDelta = Vector2.zero;
+                        _rectTrans.anchoredPosition = Vector2.zero;
+                    }
                     tmp.questItemAttached = q;
                     _placedQuests.Add(q);
                     q.gameObject.SetActive(true);
