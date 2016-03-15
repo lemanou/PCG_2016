@@ -2,6 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+    This script places chairs on all tiles designated for chairs.
+    Once all chairs have been placed, the script calls the spawner to delete all boxes.
+*/
 public class SpawnChairs : MonoBehaviour {
 
     [Range(0, 8)]

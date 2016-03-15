@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+/*
+    This script finds free spots to place furniture against the walls and then instantiates the furniture.
+    On Reset() stops the coroutine and destroys all related objects.
+*/
 public class SpawnWallObjects : MonoBehaviour {
 
     [Range(0, 10)]

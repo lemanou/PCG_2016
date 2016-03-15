@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/*
+    This script holds the states of the boxes that the room is divided into.
+    It is also a 'toolbox' for setting or resetting different kinds of furniture on boxes.
+*/
 public class SpawnableBox : MonoBehaviour {
 
     [HideInInspector]

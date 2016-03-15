@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 //using UnityEditor;
-
+/*
+    This script takes care of initiating a level (it creates the spawner) and resetting the spawners on level restart.
+    It also allows us to pop back to the main menu or redo the level.
+*/
 public class GameManager : MonoBehaviour {
 
     public Spawner SpawnerPrefab;

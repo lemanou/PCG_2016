@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/*
+    This script calculates a perlin noise texture.
+*/
 public class ExampleClass : MonoBehaviour {
 
     // Create a texture and fill it with Perlin noise.

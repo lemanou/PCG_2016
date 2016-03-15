@@ -2,7 +2,8 @@
 //using UnityEngine.SceneManagement;
 
 /*
-    This script is placed on each quest paper and adds the paper's correct answer to the list of true numbers.
+    This script is placed on each paper to make it a quest item.
+    It also allows us to ask it what story the paper is part of, by returning a single char.
 */
 public class QuestItemScript : MonoBehaviour {
     public int questNumber;

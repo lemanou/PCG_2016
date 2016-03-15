@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 /*
     This script is placed on the number dial gameobject.
-    Is allows the player to turn the individual dials and compares the current numbers to the list of true numbers.
+    It fetches the true numbers from the quest item pages in the scene.
+    It allows the player to turn the individual dials and compares the current numbers to the list of true numbers.
+    Should the player find the correct code, the DescriptiveText.State is set to completed.
 */
 public class NumberDialScript : MonoBehaviour {
     public GameObject
@@ -24,7 +26,7 @@ public class NumberDialScript : MonoBehaviour {
 
     private Quaternion dialRotationZero;
     private List<GameObject> dialObjects = new List<GameObject>();
-    private List<int> dialNumbers = new List<int>();
+    private List<int> dialNumbers = new List<int>() { 0, 0, 0 };
     private List<int> availableNumbers = new List<int>();
 
     private int correctDialNumbers;
@@ -34,9 +36,6 @@ public class NumberDialScript : MonoBehaviour {
         dialObjects.Add(dialObject2);
         dialObjects.Add(dialObject3);
         dialRotationZero = dialObject1.transform.rotation;
-        dialNumbers.Add(0);
-        dialNumbers.Add(0);
-        dialNumbers.Add(0);
 
         FindInSceneValidQuests();
 
@@ -65,7 +64,7 @@ public class NumberDialScript : MonoBehaviour {
                 dialObjects[0].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
                 if (dialNumbers[0] == 9) dialNumbers[0] = 0;
                 else dialNumbers[0]++;
-                int _random = (int)UnityEngine.Random.Range(1, 4);
+                int _random = Random.Range(1, 4);
                 if (_random == 1) _audiosource1.clip = dialFlip1;
                 else if (_random == 2) _audiosource1.clip = dialFlip2;
                 else if (_random == 3) _audiosource1.clip = dialFlip3;
@@ -78,7 +77,7 @@ public class NumberDialScript : MonoBehaviour {
                 dialObjects[1].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
                 if (dialNumbers[1] == 9) dialNumbers[1] = 0;
                 else dialNumbers[1]++;
-                int _random = (int)UnityEngine.Random.Range(1, 4);
+                int _random = Random.Range(1, 4);
                 if (_random == 1) _audiosource2.clip = dialFlip1;
                 else if (_random == 2) _audiosource2.clip = dialFlip2;
                 else if (_random == 3) _audiosource2.clip = dialFlip3;
@@ -91,7 +90,7 @@ public class NumberDialScript : MonoBehaviour {
                 dialObjects[2].transform.rotation = rot * Quaternion.Euler(-1 * 36, 0, 0);
                 if (dialNumbers[2] == 9) dialNumbers[2] = 0;
                 else dialNumbers[2]++;
-                int _random = (int)UnityEngine.Random.Range(1, 4);
+                int _random = Random.Range(1, 4);
                 if (_random == 1) _audiosource3.clip = dialFlip1;
                 else if (_random == 2) _audiosource3.clip = dialFlip2;
                 else if (_random == 3) _audiosource3.clip = dialFlip3;
@@ -118,7 +117,7 @@ public class NumberDialScript : MonoBehaviour {
                 i++;
             }
         }
-        // We lock the interaction is the player wins the game.
+        // We lock the interaction if the player wins the game.
         else if (DescriptiveTextScript.currentState != DescriptiveTextScript.State.completed) {
             _audiosource1.clip = dialUnlockingMechanism;
             _audiosource1.Play();

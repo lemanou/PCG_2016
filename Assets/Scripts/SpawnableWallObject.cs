@@ -3,6 +3,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/*
+    This script finds empty walls to place wall objects on and aligns the objects accordingly.
+    Large paintings are placed in the middle between two available wall spots.
+*/
 public class SpawnableWallObject : MonoBehaviour {
 
     public int maxPlacementNum;
@@ -161,7 +165,7 @@ public class SpawnableWallObject : MonoBehaviour {
                     transform.position = new Vector3(transform.position.x - offset, transform.position.y, transform.position.z);
                 break;
             case SpawnableBox.BoxLocation.West:
-                Debug.LogWarning("West wall too occupied for large paining. Error in correcting placement for: " + gameObject.name);
+                Debug.LogWarning("West wall too occupied for large painting. Error in correcting placement for: " + gameObject.name);
                 break;
             default:
                 Debug.LogWarning("Error in correcting placement for: " + gameObject.name);

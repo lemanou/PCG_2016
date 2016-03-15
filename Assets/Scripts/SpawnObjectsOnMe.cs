@@ -3,7 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
-
+/*
+    This script places mini-objects on shelfsand tabletops.
+    We instantiate mini-objects and place them within the bounds of their parent furniture.
+    Special rules apply when placing mini-objects inside the armoire and when placing certain mini-objects.
+    We instantiate mini-objects on shelves and parent mini-objects to their furniture.
+    On Reset() we destroy all mini-objects and stop all coroutines.
+*/
 public class SpawnObjectsOnMe : MonoBehaviour {
 
     //[Range(1, 10)]

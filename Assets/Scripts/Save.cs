@@ -5,7 +5,11 @@ using System.Text;
 using System.Collections.Generic;
 using TETCSharpClient;
 using TETCSharpClient.Data;
-
+/*
+    Activating and deactivating the GazeListener, that works with the eye-tracker.
+    We save the recorded data to a csv-file.
+    We decide what data to include and write it to the file.
+*/
 public class Save : MonoBehaviour, IGazeListener {
 
     // Used to save the gazeData from the game
