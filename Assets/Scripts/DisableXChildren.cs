@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
 /*
     This script disables a specific number of random children.
 */
-public class DisableOnOfMyChildren : MonoBehaviour {
+public class DisableXChildren : MonoBehaviour {
 
     public int numToDisable = 1;
 
