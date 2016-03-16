@@ -25710,7 +25710,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1045060424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31551,6 +31551,7 @@ GameObject:
   - 224: {fileID: 1778191290}
   - 222: {fileID: 1778191292}
   - 114: {fileID: 1778191291}
+  - 114: {fileID: 1778191293}
   m_Layer: 5
   m_Name: ImageCrosshair
   m_TagString: Untagged
@@ -31611,6 +31612,17 @@ CanvasRenderer:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1778191289}
+--- !u!114 &1778191293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1778191289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a32e9c9724f3543a2356e62376dd68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1790932401
 Prefab:
   m_ObjectHideFlags: 0
