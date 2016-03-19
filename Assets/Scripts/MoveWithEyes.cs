@@ -4,7 +4,8 @@ using TETCSharpClient.Data;
 
 public class MoveWithEyes : MonoBehaviour, IGazeListener {
 
-    private RectTransform rTrans;
+    private RectTransform _rTrans;
+    private Vector3 _lastPos = Vector3.zero;
 
     private void Start() {
         //activate C# TET client, default port
@@ -17,11 +18,11 @@ public class MoveWithEyes : MonoBehaviour, IGazeListener {
         //register for gaze updates
         GazeManager.Instance.AddGazeListener(this);
 
-        rTrans = transform.GetComponent<RectTransform>();
+        _rTrans = transform.GetComponent<RectTransform>();
     }
 
     private void Update() {
-        rTrans.position = GetGazeScreenPosition();
+        _rTrans.position = GetGazeScreenPosition();
     }
 
     private void OnApplicationQuit() {
@@ -32,11 +33,11 @@ public class MoveWithEyes : MonoBehaviour, IGazeListener {
     private Vector3 GetGazeScreenPosition() {
         Point2D gp = GazeDataValidator.Instance.GetLastValidSmoothedGazeCoordinates();
 
-        if (null != gp) {
+        if (gp != null) {
             Point2D sp = UnityGazeUtils.GetGazeCoordsToUnityWindowCoords(gp);
-            return new Vector3((float)sp.X, (float)sp.Y, 0f);
-        } else
-            return Vector3.zero;
+            _lastPos = new Vector3((float)sp.X, (float)sp.Y, 0f);
+        }
+        return _lastPos;
     }
 
     public void OnGazeUpdate(GazeData gazeData) {
