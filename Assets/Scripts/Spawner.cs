@@ -258,6 +258,9 @@ public class Spawner : MonoBehaviour {
         Camera _cam = _player.gameObject.GetComponent<Transform>().GetChild(0).GetComponent<Camera>();
         _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         _canvas.worldCamera = _cam;
+
+        MoveWithEyes mwe = FindObjectOfType<MoveWithEyes>();
+        mwe.StartFindingObjects();
         //Debug.Log("E.N.D.");
     }
 
