@@ -22,12 +22,12 @@ public class NumberDialScript : MonoBehaviour {
         dialFlip3,
         dialFlip4,
         dialUnlockingMechanism;
-    public List<int> trueNumbers = new List<int>();
 
     private Quaternion dialRotationZero;
     private List<GameObject> dialObjects = new List<GameObject>();
     private List<int> dialNumbers = new List<int>() { 0, 0, 0 };
     private List<int> availableNumbers = new List<int>();
+    private List<int> trueNumbers;
 
     private int correctDialNumbers;
 
@@ -46,6 +46,7 @@ public class NumberDialScript : MonoBehaviour {
     }
 
     private void FindInSceneValidQuests() {
+        trueNumbers = new List<int>();
         QuestItemScript[] qiss = FindObjectsOfType<QuestItemScript>();
         foreach (QuestItemScript q in qiss) {
             if (q.questNumber != -1) {

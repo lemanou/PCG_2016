@@ -55,20 +55,15 @@ public class MoveWithEyes : MonoBehaviour, IGazeListener {
 
         _forward = Camera.main.transform.forward;
         Vector3 screenToWorldVector = Camera.main.ScreenToWorldPoint(transform.position);
-        Debug.DrawRay(screenToWorldVector, _forward * 20, Color.green);
+        //Debug.DrawRay(screenToWorldVector, _forward * 20, Color.green);
 
         Ray mRay = new Ray(screenToWorldVector, _forward);
 
-        Debug.Log("1");
-
         if (Physics.Raycast(mRay, out rayhit, 20f)) {
             _currentObject = rayhit.collider.gameObject;
-            Debug.Log(_currentObject.name);
-            Debug.Log("2");
+            //Debug.Log(_currentObject.name);;
             if (_currentObject != null) {
-                Debug.Log("3");
                 if (_currentObject != _oldObj) {
-                    Debug.Log("4");
                     _endTime = Time.time; // Old object's end time
                     _tmpTime = _startTime; // Old object's start time
                     _startTime = Time.time; // New object's start time
@@ -77,13 +72,11 @@ public class MoveWithEyes : MonoBehaviour, IGazeListener {
                     _oldObj = _currentObject;
 
                     if (_objToSave) {
-                        Debug.Log("5");
                         if (_objsLookedAtDictTime.ContainsKey(_objToSave)) {
-                            Debug.Log("6");
                             if (_endTime - _tmpTime > 0.5f) { // Lower margin for time looking at furniture
                                 _objsLookedAtDictTime[_objToSave] += _endTime - _tmpTime;
                                 _objsLookedAtDictCount[_objToSave] += 1;
-                                Debug.Log("Saving time: " + _objsLookedAtDictTime[_objToSave] + " of GO: " + _objToSave);
+                                //Debug.Log("Saving time: " + _objsLookedAtDictTime[_objToSave] + " of GO: " + _objToSave);
                             }
                         }
                     }
