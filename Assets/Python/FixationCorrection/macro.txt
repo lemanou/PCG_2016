@@ -1,0 +1,40 @@
+Sub Macro1()
+'
+' Macro1 Macro
+'
+
+'
+    ScreenUpdating = False
+    Dim wks As Worksheet
+    Set wks = ActiveSheet
+
+    Dim rowRange As Range
+    Dim colRange As Range
+
+    Dim LastCol As Long
+    Dim LastRow As Long
+    LastRow = wks.Cells(wks.Rows.Count, "C").End(xlUp).Row
+
+    Set rowRange = wks.Range("C2:C" & LastRow)
+
+    'Loop through each row
+    For Each rrow In rowRange
+        
+        If rrow = False Then
+            If wks.Range("G" & rrow.Row) = "Fixation" Then
+                Rows(rrow.Row & ":" & rrow.Row).Select
+                Selection.Style = "Neutral"
+            Else
+                Rows(rrow.Row & ":" & rrow.Row).Select
+                Selection.Style = "Bad"
+            End If
+        ElseIf rrow = True Then
+            Rows(rrow.Row & ":" & rrow.Row).Select
+            Selection.Style = "Good"
+        End If
+        
+        
+    Next rrow
+    ScreenUpdating = True
+    
+End Sub

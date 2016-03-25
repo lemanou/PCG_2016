@@ -19,6 +19,7 @@
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+Assets/Python/FixationCorrection/.idea/*
 Assets/Standard Assets/Characters/PhysicsMaterials.meta
 Assets/Standard Assets/Vehicles/PhysicsMaterials.meta
 Build/
