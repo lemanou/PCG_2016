@@ -43,11 +43,21 @@ public class DescriptiveTextScript : MonoBehaviour
     {
         BlackBorderText = GetComponent<Text>();
         currentGO = null;
-        currentQuestItemGO = tutorialPaper;
-        currentState = State.foundHiddenNote;
+        if (SceneManager.GetActiveScene().name != "SelectionMenu")
+        {
+            tutorialPaper.SetActive(true);
+            currentQuestItemGO = tutorialPaper;
+            currentState = State.foundHiddenNote;
+            Cursor.visible = false;
+        }
+        else
+        {
+            currentState = State.empty;
+            tutorialPaper.SetActive(false);
+            Cursor.visible = true;
+        }
         proceedToRestart = false;
         mouseDelay = 0.2f;
-        Cursor.visible = false;
     }
 
     void Update()

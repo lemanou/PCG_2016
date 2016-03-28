@@ -75,6 +75,9 @@ public class Spawner : MonoBehaviour {
             return;
         }
 
+        // we have to spawn the canvas early to use it for the quest spawning
+        _canvas = Instantiate(Resources.Load("Canvas", typeof(Canvas)), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as Canvas;
+
         _roomInstance = Instantiate(RoomPrefab) as GameObject;
 
         GetRoomBoundariesStepZero();
@@ -232,8 +235,6 @@ public class Spawner : MonoBehaviour {
         children.ForEach(child => Destroy(child)); //  child.GetComponent<Renderer>().enabled = false
 
 
-        // we have to spawn the canvas early to use it for the quest spawning
-        _canvas = Instantiate(Resources.Load("Canvas", typeof(Canvas)), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as Canvas;
 
         // After finishing with all object placement we can start placing quests
         SpawnQuests qc = GetComponent<SpawnQuests>();
