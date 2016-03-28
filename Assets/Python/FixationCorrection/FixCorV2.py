@@ -57,7 +57,7 @@ def main():
         csx = row['CSX'][1:]
         csy = row['CSY'][:-1]
         if float(csx) == 0 or float(csy) == 0:
-            continue # skip this line
+            continue  # skip this line
         # print float(csx) + float(csy)
         if row['IsFixated'] == 'TRUE':
             new_row = [csx, csy, row['IsFixated'], row['State'], row['TimeStamp'], row['Result'], 'Fixation']
