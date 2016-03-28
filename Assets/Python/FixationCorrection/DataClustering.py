@@ -10,10 +10,12 @@ Main program.
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 from matplotlib.collections import LineCollection
+import time
 
 
-def testOne():
+def testone():
     data = np.genfromtxt('Data - Result.csv', delimiter=',', skip_header=10,
                          skip_footer=10, names=['CSX', 'CSY'])
 
@@ -26,50 +28,107 @@ def testOne():
 
     myPlot.plot(data['CSX'], data['CSY'], color='r', label='the data')
 
-    plt.show()
     # plt.savefig("plot.png")
+    plt.show()
 
 
-def main():
+def testtwo():
     file1 = open("Data - Result.csv", 'rb')
     reader = csv.DictReader(file1)
 
     fixations_list = []
-    saccades_list = []
-    fixations_list.append([])
-    fixations_list.append([])
-    saccades_list.append([])
-    saccades_list.append([])
+    # saccades_list = []
 
-    tmpcount = 0
     for row in reader:
-        if row['Result'] == 'Saccade':
-            saccades_list[tmpcount].append(float(row['CSX']))
-            saccades_list[tmpcount].append(float(row['CSY']))
-            tmpcount += 1
-        elif row['Result'] == 'Fixation':
+        # if row['Result'] == 'Saccade':
+        # saccades_list.append([float(row['CSX']), float(row['CSY'])])
+        # elif
+        if row['Result'] == 'Fixation':
             fixations_list.append([float(row['CSX']), float(row['CSY'])])
-        else:
-            print 'Error in file'
+            # else:
+            #   print 'Error in file'
 
-            file1.close()
+    file1.close()
 
-            # myPlot.plot(saccades_list, color='r', label='Saccades')
-            # myPlot.scatter(fixations_list, color='b', label='Fixations')
+    fig = plt.figure()
+    myPlot = fig.add_subplot(111)
+    # for row in saccades_list:
+    #    myPlot.scatter(row[0],row[1], color='r', label='Saccades')
 
-            xy = (np.random.random((1000, 2)) - 0.5).cumsum(axis=0)
-            # Reshape things so that we have a sequence of:
-            # [[(x0,y0),(x1,y1)],[(x0,y0),(x1,y1)],...]
-            xy = xy.reshape(-1, 1, 2)
-            segments = np.hstack([fixations_list[:-1], fixations_list[1:]])
-            fig, ax = plt.subplots()
-            coll = LineCollection(segments, cmap=plt.cm.gist_ncar)
-            coll.set_array(np.random.random(xy.shape[0]))
+    myPlot.set_title("Game Gaze ~ test subject 1")
+    myPlot.set_xlabel('Pixels')
+    myPlot.set_ylabel('Pixels')
+    myPlot.axis([0, 1600, 0, 900])
 
-            ax.add_collection(coll)
-            ax.autoscale_view()
+    for row in fixations_list:
+        myPlot.scatter(row[0], row[1], s=5, color='b', label='Fixations', zorder=10)
 
-            plt.show()
+    data = np.genfromtxt('Data - Result.csv', delimiter=',', skip_header=10,
+                         skip_footer=10, names=['CSX', 'CSY'])
 
-# testOne()
-main()
+    myPlot.plot(data['CSX'], data['CSY'], color='r', label='All data', zorder=1)
+    plt.savefig("plot.png")
+    plt.show()
+
+
+def testthree():
+    file1 = open("Data - Result.csv", 'rb')
+    reader = csv.DictReader(file1)
+
+    fixations_list = []
+    all_list = []
+
+    for row in reader:
+        all_list.append([float(row['CSX']), float(row['CSY'])])
+        if row['Result'] == 'Fixation':
+            fixations_list.append([float(row['CSX']), float(row['CSY'])])
+
+    file1.close()
+
+    fig = plt.figure()
+    myPlot = fig.add_subplot(111)
+
+    myPlot.set_title("Game Gaze ~ test subject 1")
+    myPlot.set_xlabel('Pixels')
+    myPlot.set_ylabel('Pixels')
+    myPlot.axis([0, 1600, 0, 900])
+
+    plt.ion()
+    plt.show()
+
+    # for row in all_list:
+    myPlot.plot(all_list, color='r', label='Fixations', zorder=1)
+    fig.canvas.draw()
+
+    for row in fixations_list:
+        myPlot.scatter(row[0], row[1], s=5, color='b', label='Fixations', zorder=10)
+        plt.draw()
+
+
+def testfour():
+    fig = plt.figure()
+    ax1 = fig.add_subplot(1, 1, 1)
+
+    pullData = np.genfromtxt('Data - Result.csv', delimiter=',', skip_header=10,
+                             skip_footer=10, names=['CSX', 'CSY'])
+    plt.ion()
+    plt.show()
+    xar = []
+    yar = []
+    for eachLine in pullData:
+        if len(eachLine) > 1:
+            x, y = str(eachLine).split(',')
+            xar.append(float(x[1:]))
+            yar.append(float(y[:-1]))
+            print eachLine
+            ax1.clear()
+            ax1.plot(xar, yar)
+            fig.canvas.draw()
+
+
+
+
+# testone()
+#testtwo()
+# testthree()
+testfour()
