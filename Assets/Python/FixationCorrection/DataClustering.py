@@ -14,8 +14,10 @@ import matplotlib.animation as animation
 from matplotlib.collections import LineCollection
 import time
 
+fixationradius = 100
+inputfile = "Data - ResultRaw" + str(fixationradius) +".csv"
 
-def testone():
+def testPlotSaccadesOnly():
     data = np.genfromtxt('Data - Result.csv', delimiter=',', skip_header=10,
                          skip_footer=10, names=['CSX', 'CSY'])
 
@@ -32,8 +34,8 @@ def testone():
     plt.show()
 
 
-def testtwo():
-    file1 = open("Data - Result.csv", 'rb')
+def testPlotWithFixations():
+    file1 = open(inputfile, 'rb')
     reader = csv.DictReader(file1)
 
     fixations_list = []
@@ -44,7 +46,7 @@ def testtwo():
         # saccades_list.append([float(row['CSX']), float(row['CSY'])])
         # elif
         if row['Result'] == 'Fixation':
-            fixations_list.append([float(row['CSX']), float(row['CSY'])])
+            fixations_list.append([float(row['CRX']), float(row['CRY'])])
             # else:
             #   print 'Error in file'
 
@@ -63,25 +65,25 @@ def testtwo():
     for row in fixations_list:
         myPlot.scatter(row[0], row[1], s=5, color='b', label='Fixations', zorder=10)
 
-    data = np.genfromtxt('Data - Result.csv', delimiter=',', skip_header=10,
-                         skip_footer=10, names=['CSX', 'CSY'])
+    data = np.genfromtxt(inputfile, delimiter=',', skip_header=10,
+                         skip_footer=10, names=['CRX', 'CRY'])
 
-    myPlot.plot(data['CSX'], data['CSY'], color='r', label='All data', zorder=1)
-    plt.savefig("plot.png")
+    myPlot.plot(data['CRX'], data['CRY'], color='r', label='All data', zorder=1)
+    plt.savefig("plotRawWithFixations" + str(fixationradius) +".png")
     plt.show()
 
 
 def testthree():
-    file1 = open("Data - Result.csv", 'rb')
+    file1 = open("Data - ResultRaw.csv", 'rb')
     reader = csv.DictReader(file1)
 
     fixations_list = []
     all_list = []
 
     for row in reader:
-        all_list.append([float(row['CSX']), float(row['CSY'])])
+        all_list.append([float(row['CRX']), float(row['CRY'])])
         if row['Result'] == 'Fixation':
-            fixations_list.append([float(row['CSX']), float(row['CSY'])])
+            fixations_list.append([float(row['CRX']), float(row['CRY'])])
 
     file1.close()
 
@@ -105,14 +107,17 @@ def testthree():
         plt.draw()
 
 
-def testfour():
+def testAnimated():
     fig = plt.figure()
     ax1 = fig.add_subplot(1, 1, 1)
 
-    pullData = np.genfromtxt('Data - Result.csv', delimiter=',', skip_header=10,
-                             skip_footer=10, names=['CSX', 'CSY'])
+    pullData = np.genfromtxt('Data - ResultRaw.csv', delimiter=',', skip_header=10,
+                             skip_footer=10, names=['CRX', 'CRY'])
+
+
     plt.ion()
     plt.show()
+
     xar = []
     yar = []
     for eachLine in pullData:
@@ -122,13 +127,15 @@ def testfour():
             yar.append(float(y[:-1]))
             print eachLine
             ax1.clear()
+            ax1.autoscale(False, axis='both')
+            ax1.axis([0, 1600, 0, 900])
             ax1.plot(xar, yar)
             fig.canvas.draw()
 
 
 
 
-# testone()
-#testtwo()
-# testthree()
-testfour()
+# testPlotSaccadesOnly()
+testPlotWithFixations()
+#testthree()
+#testAnimated()

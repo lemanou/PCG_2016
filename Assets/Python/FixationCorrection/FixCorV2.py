@@ -8,6 +8,9 @@ Main program.
 """
 import csv
 
+fixationradius = 100
+exportfilename = "Data - ResultRaw" + str(fixationradius) + ".csv"
+
 
 def max_xvalue(inputlist):
     return max([sublist[0] for sublist in inputlist])
@@ -38,8 +41,8 @@ def CheckRange(csx, csy, comparing_list):
         maxy = max_yvalue(comparing_list)
         miny = min_yvalue(comparing_list)
 
-    if (abs(float(maxx) - float(csx)) <= 10 and abs(float(minx) - float(csx)) <= 10 and abs(
-                float(maxy) - float(csy)) <= 10 and abs(float(miny) - float(csy)) <= 10):
+    if (abs(float(maxx) - float(csx)) <= fixationradius and abs(float(minx) - float(csx)) <= fixationradius and abs(
+                float(maxy) - float(csy)) <= fixationradius and abs(float(miny) - float(csy)) <= fixationradius):
         return True
     return False
 
@@ -51,11 +54,11 @@ def main():
     new_rows_list = []
     comparing_list = []
 
-    header = ['CSX', 'CSY', 'IsFixated', 'State', 'TimeStamp', ' ', 'Result']
+    header = ['CRX', 'CRY', 'IsFixated', 'State', 'TimeStamp', ' ', 'Result']
     # new_rows_list.append(new_row)
     for row in reversed(list(reader)):
-        csx = row['CSX'][1:]
-        csy = row['CSY'][:-1]
+        csx = row['CRX'][1:]
+        csy = row['CRY'][:-1]
         if float(csx) == 0 or float(csy) == 0:
             continue  # skip this line
         # print float(csx) + float(csy)
@@ -78,7 +81,7 @@ def main():
     file1.close()
 
     # Do the writing
-    file2 = open("Data - Result.csv", 'wb')
+    file2 = open(exportfilename, 'wb')
     writer = csv.writer(file2)
     writer.writerows(new_rows_list)
     file2.close()
