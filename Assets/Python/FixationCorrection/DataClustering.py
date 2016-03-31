@@ -13,13 +13,17 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.collections import LineCollection
 import time
+import math
+import random
 
-fixationradius = 100
-inputfile = "Data - ResultRaw" + str(fixationradius) +".csv"
+fixationradius = ""
+inputfile = "Data - ResultRaw" + str(fixationradius) + ".csv"
+outfilename = "DataCluster"
+
 
 def testPlotSaccadesOnly():
-    data = np.genfromtxt('Data - Result.csv', delimiter=',', skip_header=10,
-                         skip_footer=10, names=['CSX', 'CSY'])
+    data = np.genfromtxt(inputfile, delimiter=',', skip_header=1,
+                         skip_footer=0, names=['CSX', 'CSY'])
 
     fig = plt.figure()
     myPlot = fig.add_subplot(111)
@@ -65,11 +69,11 @@ def testPlotWithFixations():
     for row in fixations_list:
         myPlot.scatter(row[0], row[1], s=5, color='b', label='Fixations', zorder=10)
 
-    data = np.genfromtxt(inputfile, delimiter=',', skip_header=10,
-                         skip_footer=10, names=['CRX', 'CRY'])
+    data = np.genfromtxt(inputfile, delimiter=',', skip_header=1,
+                         skip_footer=0, names=['CRX', 'CRY'])
 
     myPlot.plot(data['CRX'], data['CRY'], color='r', label='All data', zorder=1)
-    plt.savefig("plotRawWithFixations" + str(fixationradius) +".png")
+    plt.savefig("plotRawWithFixations" + str(fixationradius) + ".png")
     plt.show()
 
 
@@ -111,9 +115,8 @@ def testAnimated():
     fig = plt.figure()
     ax1 = fig.add_subplot(1, 1, 1)
 
-    pullData = np.genfromtxt('Data - ResultRaw.csv', delimiter=',', skip_header=10,
-                             skip_footer=10, names=['CRX', 'CRY'])
-
+    pullData = np.genfromtxt('Data - ResultRaw.csv', delimiter=',', skip_header=1,
+                             skip_footer=0, names=['CRX', 'CRY'])
 
     plt.ion()
     plt.show()
@@ -133,9 +136,177 @@ def testAnimated():
             fig.canvas.draw()
 
 
+# ================= region DBSCAN testing ============================== #
+# Configurable values
+min_fix = 0.100
+min_cluster_size = 50.0
+frame_res = 60.0
+
+# Derived value(s)
+min_fix_pts = round(min_fix * frame_res)
+
+
+def generate_color(r, g, b):
+    r += 80
+    if r > 240:
+        r = 0
+        g += 80
+    if g > 240:
+        g = 0
+        b += 80
+    if b > 240:
+        b = 0
+
+    color = '#{:02x}{:02x}{:02x}'.format(r, g, b)
+    color = '#{:02x}{:02x}{:02x}'.format(*map(lambda x: random.randint(0, 255), range(3)))
+    return color, r, g, b
+
+
+def spat_dist(p1, p2):
+    return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+
+def cluster_frames_DBSCAN(npeyeframes):
+    '''
+    Cluster frames with a derivate of DBSCAN taking into account the time
+
+    This DBSCAN variation uses DBSCAN in the local spatial neighbourhood with timing constraints:
+    Single or a few outliers followed by additional connected points are considered noise,
+    and more points can be added to the current cluster
+    However if enough disjoint points are seen that could make up a cluster (temporally!) it ends the current cluster
+    '''
+
+    def query_region(frames, first, reference):
+        '''returns absolute indices of frames in neighbourhood of reference, from first to break/len(frames)'''
+        i = first
+        region = set()
+        seq_outside = 0
+        while i < len(frames):
+            if spat_dist(frames[reference], npeyeframes[i]) < min_cluster_size:
+                region.add(i)
+                seq_outside = 0
+            else:
+                if i > reference:
+                    seq_outside += 1
+                    if seq_outside >= min_fix_pts:
+                        break
+            i += 1
+        return region
+
+    # first create labels; 0 means unassigned (so far)
+    labels = np.zeros(len(npeyeframes), dtype=int)
+
+    label = 1
+    unassigned = 0
+    nextp = unassigned
+    while nextp < len(labels):
+        print ("DBSCAN index %d" % nextp)
+        if labels[nextp] == 0:
+            neighbours = query_region(npeyeframes, unassigned, nextp)
+            if len(neighbours) < min_fix_pts:
+                print ("   Too few neighbours; leaving point alone: %d" % len(neighbours))
+            else:
+                print ("   New cluster: %d [Initial: %d]" % (label, len(neighbours)))
+                unvisited = neighbours
+                unvisited.remove(nextp)
+                visited = set()
+                visited.add(nextp)
+
+                while len(unvisited) > 0:
+                    first = unvisited.pop()
+
+                    visited.add(first)
+                    neighbours = query_region(npeyeframes, unassigned, first)
+                    if len(neighbours) >= min_fix_pts:
+                        unvisited.update(neighbours - visited)
+
+                for v in visited:
+                    assert labels[v] == 0, "Reassigning point to new cluster, should not take place"
+                    labels[v] = label
+                    nextp = max(nextp, v)
+
+                unassigned = nextp + 1
+                label += 1
+                print ("   Next unassigned: %d [Final: %d]" % (unassigned, len(visited)))
+        else:
+            print ("   Already assigned to %d" % labels[nextp])
+
+        nextp += 1
+
+    # remove any empty last cluster
+    if len(npeyeframes[labels == label]) == 0:
+        print ("   Last cluster (%d) is empty, removing" % (label))
+        label -= 1
+
+    # calculate the cluster centers...
+    print ("   Ended up with %d clusters" % label)
+
+    cluster_centers = np.empty([label + 1, 2 * 4])  # was 3*4
+    for l in range(label + 1):
+        # print ("   Fixing frames in  clusters %d" % l)
+
+        myframes = npeyeframes[labels == l]
+        mylen = len(myframes)
+        if (mylen > 0):
+            cmean = np.mean(myframes, 0)
+            cmin = np.amin(myframes, 0)
+            cmax = np.amax(myframes, 0)
+            cstd = np.std(myframes, 0)
+            # print  "LB:", "\n", cluster_centers[l], "\n", np.concatenate((cmean, cmin, cmax, cstd))
+            cluster_centers[l] = np.concatenate((cmean, cmin, cmax, cstd))
+            # print  "LA:", "\n", cluster_centers[l], "\n", len(np.concatenate((cmean, cmin, cmax, cstd)))
+
+    return (labels, cluster_centers)
+
+
+def myFloat(myList):
+    return map(float, myList)
+
+
+data = np.genfromtxt(inputfile, delimiter=',', skip_header=1, names=['CRX', 'CRY'])
+data = np.array(map(myFloat, data))  # refactor double string array to double float array
+
+# Cluster the data into and centers and labels
+labels, cluster_centers = cluster_frames_DBSCAN(data)
+
+labels_unique = np.unique(labels)
+n_clusters = len(labels_unique)
+
+assert n_clusters == len(cluster_centers) or n_clusters == len(cluster_centers) - 1, \
+    "Weird, we got %d unique labels but %d clusters returned..." % (n_clusters, len(cluster_centers))
+
+fixations_list = []
+for k in labels_unique:
+    my_members = labels == k
+    fixations_list.append(data[my_members])
+
+fig = plt.figure()
+myplot = fig.add_subplot(111)
+
+myplot.set_title("plotRawWithFixationsClustered" + str(fixationradius) + ".png")
+myplot.set_xlabel('Pixels')
+myplot.set_ylabel('Pixels')
+myplot.axis([0, 1600, 0, 900])
+
+myr = 0
+myg = 80
+myb = 160
+
+for members in fixations_list:
+    memmberscolor, myr, myg, myb = generate_color(myr, myg, myb)
+    for points in members:
+        # print "points", points[0], points[1]
+        myplot.scatter(points[0], points[1], s=5, color=memmberscolor, label='Fixations', zorder=10)
+
+newdata = np.genfromtxt(inputfile, delimiter=',', skip_header=1, skip_footer=0, names=['CRX', 'CRY'])
+
+myplot.plot(newdata['CRX'], newdata['CRY'], color='black', label='All data', zorder=1)
+plt.savefig("plotRawWithFixationsClustered" + str(fixationradius) + ".png")
+plt.show()
+# ================= endregion DBSCAN testing ======================== #
 
 
 # testPlotSaccadesOnly()
-testPlotWithFixations()
-#testthree()
-#testAnimated()
+# testPlotWithFixations()
+# testthree()
+# testAnimated()
