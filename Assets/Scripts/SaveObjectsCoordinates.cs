@@ -3,15 +3,21 @@ using System;
 using System.IO;
 using System.Text;
 
+
+/*
+Skipped / not used ~ Using LookedAtFurniture
+*/
+
 public class SaveObjectsCoordinates : MonoBehaviour {
 
     private string _timeStamp;
 
-    // If the application is trying to shut down, we save the game state and allow it to continue to shut down.
+    //If the application is trying to shut down, we save the game state and allow it to continue to shut down.
     void OnApplicationQuit() {
         if (enabled)
             Savecsv();
     }
+
 
     void Start() {
         // Get time stamp for file name

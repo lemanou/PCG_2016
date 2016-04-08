@@ -11,8 +11,7 @@ using UnityEngine.SceneManagement;
     this script will know when to send us back to the main menu, and will do so.
     This script will therefore also take care of turning the cursor in/visible.
 */
-public class DescriptiveTextScript : MonoBehaviour
-{
+public class DescriptiveTextScript : MonoBehaviour {
     Text BlackBorderText;
     public GameObject tutorialPaper;
     private GameObject currentGO, currentQuestItemGO;
@@ -22,8 +21,7 @@ public class DescriptiveTextScript : MonoBehaviour
         dialNumberShown,
         proceedToRestart;
 
-    public enum State
-    {
+    public enum State {
         empty,
         normalDescription,
         foundHiddenNote,
@@ -33,25 +31,20 @@ public class DescriptiveTextScript : MonoBehaviour
 
     public static State currentState = State.foundHiddenNote;
 
-    public State CurrentState
-    {
+    public State CurrentState {
         get { return currentState; }
         set { currentState = value; }
     }
 
-    void Awake()
-    {
+    void Awake() {
         BlackBorderText = GetComponent<Text>();
         currentGO = null;
-        if (SceneManager.GetActiveScene().name != "SelectionMenu")
-        {
+        if (SceneManager.GetActiveScene().name != "SelectionMenu") {
             tutorialPaper.SetActive(true);
             currentQuestItemGO = tutorialPaper;
             currentState = State.foundHiddenNote;
             Cursor.visible = false;
-        }
-        else
-        {
+        } else {
             currentState = State.empty;
             tutorialPaper.SetActive(false);
             Cursor.visible = true;
@@ -60,134 +53,100 @@ public class DescriptiveTextScript : MonoBehaviour
         mouseDelay = 0.2f;
     }
 
-    void Update()
-    {
-        if (currentState != State.completed)
-        {
+    void Update() {
+        if (currentState != State.completed) {
             // If we click
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (Time.time < lastSuccessfulMouseClick + mouseDelay)
-                {
+            if (Input.GetMouseButtonDown(0)) {
+                if (Time.time < lastSuccessfulMouseClick + mouseDelay) {
                     return;
                 }
                 lastSuccessfulMouseClick = Time.time;
 
                 // Removing the visible dialNumber.
-                if (currentDialNumberGO != null)
-                {
-                    if (currentDialNumberGO.activeSelf)
-                    {
+                if (currentDialNumberGO != null) {
+                    if (currentDialNumberGO.activeSelf) {
                         currentDialNumberGO.SetActive(false);
                         currentDialNumberGO = null;
                     }
                 }
 
                 // Removing the visible paper.
-                if (currentState == State.foundHiddenNote)
-                {
+                if (currentState == State.foundHiddenNote) {
                     currentQuestItemGO.GetComponent<Image>().enabled = false;
                     currentQuestItemGO = null;
 
-                    if (RayFromCrosshair.GOHitByRay != null)
-                    {
+                    if (RayFromCrosshair.GOHitByRay != null) {
                         currentState = State.normalDescription;
-                    }
-                    else
-                    {
+                    } else {
                         currentState = State.empty;
                     }
                 }
 
                 // If we hit anything, show a descriptive text.
-                else if (RayFromCrosshair.GOHitByRay != null)
-                {
+                else if (RayFromCrosshair.GOHitByRay != null) {
                     currentGO = RayFromCrosshair.GOHitByRay.gameObject;
 
-                    if (RayFromCrosshair.GOHitByRay.numberDialAttached != null)
-                    {
-                        if (!RayFromCrosshair.GOHitByRay.numberDialAttached.activeSelf && !dialNumberShown)
-                        {
+                    if (RayFromCrosshair.GOHitByRay.numberDialAttached != null) {
+                        if (!RayFromCrosshair.GOHitByRay.numberDialAttached.activeSelf && !dialNumberShown) {
                             RayFromCrosshair.GOHitByRay.numberDialAttached.SetActive(true);
                             currentDialNumberGO = RayFromCrosshair.GOHitByRay.numberDialAttached;
                             dialNumberShown = true;
-                        }
-                        else
-                        {
+                        } else {
                             dialNumberShown = false;
                         }
                     }
 
                     // Has the player clicked furniture with a quest item attached?
-                    if (RayFromCrosshair.GOHitByRay.questItemAttached != null)
-                    {
+                    if (RayFromCrosshair.GOHitByRay.questItemAttached != null) {
                         currentQuestItemGO = RayFromCrosshair.GOHitByRay.questItemAttached.gameObject;
                         currentState = State.foundHiddenNote;
                         currentQuestItemGO.GetComponent<Image>().enabled = true;
-                    }
-                    else if (RayFromCrosshair.GOHitByRay.questItemAttached == null)
-                    {
+                    } else if (RayFromCrosshair.GOHitByRay.questItemAttached == null) {
                         currentState = State.nothingOfInterest;
                     }
                 }
             }
             // If we do not click
-            else
-            {
+            else {
                 // We're hovering something
-                if (RayFromCrosshair.GOHitByRay != null)
-                {
-                    if (currentState != State.foundHiddenNote && currentState != State.nothingOfInterest)
-                    {
+                if (RayFromCrosshair.GOHitByRay != null) {
+                    if (currentState != State.foundHiddenNote && currentState != State.nothingOfInterest) {
                         currentState = State.normalDescription;
                         // If we go directly from hitting one to hitting another, reset any quest item text, to allow for descriptive text.  
-                    }
-                    else if (currentState != State.foundHiddenNote && (RayFromCrosshair.GOHitByRay != null && currentGO != null && currentGO != RayFromCrosshair.GOHitByRay.gameObject))
-                    {
+                    } else if (currentState != State.foundHiddenNote && (RayFromCrosshair.GOHitByRay != null && currentGO != null && currentGO != RayFromCrosshair.GOHitByRay.gameObject)) {
                         currentState = State.normalDescription;
                     }
                 }
                 // We're not hovering anything
-                else
-                {
-                    if (currentState != State.foundHiddenNote)
-                    {
+                else {
+                    if (currentState != State.foundHiddenNote) {
                         currentState = State.empty;
                     }
                 }
             }
         }
         // Set the descriptive text.
-        if (currentState == State.foundHiddenNote)
-        {
-            if(currentQuestItemGO == tutorialPaper) BlackBorderText.text = "Hints will be written here. Press the left mouse button when you have finished reading the paper.";
+        if (currentState == State.foundHiddenNote) {
+            if (currentQuestItemGO == tutorialPaper) BlackBorderText.text = "Hints will be written here. Press the left mouse button when you have finished reading the paper.";
             else BlackBorderText.text = "You have found a hidden note.";
         }
-        if (currentState == State.nothingOfInterest)
-        {
-            if (currentDialNumberGO == null)
-            {
+        if (currentState == State.nothingOfInterest) {
+            if (currentDialNumberGO == null) {
                 BlackBorderText.text = "You have found nothing of interest.";
-            }
-            else
-            {
+            } else {
                 BlackBorderText.text = "Enter the correct three digits to unlock the door.";
             }
         }
-        if (currentState == State.normalDescription)
-        {
-            if (RayFromCrosshair.GOHitByRay != null)
-            {
+        if (currentState == State.normalDescription) {
+            if (RayFromCrosshair.GOHitByRay != null) {
                 BlackBorderText.text = RayFromCrosshair.GOHitByRay.text;
             }
         }
-        if (currentState == State.empty)
-        {
+        if (currentState == State.empty) {
             currentGO = null;
             BlackBorderText.text = "";
         }
-        if (currentState == State.completed)
-        {
+        if (currentState == State.completed) {
             BlackBorderText.text = "Congratulations! You have managed to find the hidden code!";
             if (!proceedToRestart) {
                 proceedToRestart = true;
@@ -196,8 +155,18 @@ public class DescriptiveTextScript : MonoBehaviour
         }
     }
 
-    IEnumerator ReturnToMenu(float waitTime)
-    {
+    IEnumerator ReturnToMenu(float waitTime) {
+        // Call recorders to save files
+        LookedAtFurniture taf = FindObjectOfType<LookedAtFurniture>();
+        if (taf != null)
+            taf.Quiting();
+        SaveGazesToCSV sgtc = FindObjectOfType<SaveGazesToCSV>();
+        if (sgtc != null)
+            sgtc.Quiting();
+        BlinksDetector bd = FindObjectOfType<BlinksDetector>();
+        if (bd != null)
+            bd.Quiting();
+
         yield return new WaitForSeconds(waitTime);
         Cursor.visible = true;
         SceneManager.LoadScene(0);

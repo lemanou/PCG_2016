@@ -30,7 +30,7 @@ public class LoadingScreenImage : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name != "SelectionMenu")
         {
-            if (_loadingImage.enabled == true && _timer > 5)
+            if (_loadingImage.enabled == true && _timer > 7)
             {
                 _loadingImage.enabled = false;
                 _loadingText.enabled = false;

@@ -11,7 +11,7 @@ GameObject:
   - 222: {fileID: 22257172}
   - 114: {fileID: 11420552}
   - 225: {fileID: 22558514}
-  - 114: {fileID: 11412428}
+  - 114: {fileID: 11496058}
   m_Layer: 5
   m_Name: ImageEyeTracker
   m_TagString: Untagged
@@ -284,17 +284,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &11412428
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 103110}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0a32e9c9724f3543a2356e62376dd68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &11414544
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -338,7 +327,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 103110}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
@@ -907,6 +896,17 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &11496058
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 103110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6fa8e43acb387f49937aa01da69db6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11497932
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1064,7 +1064,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 1
   m_TargetDisplay: 0

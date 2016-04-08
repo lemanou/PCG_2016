@@ -7,6 +7,7 @@ using System.Text;
 using System.IO;
 using System;
 
+// Not used
 public class MoveWithEyes : MonoBehaviour, IGazeListener {
 
     private bool _dontTrace = true;
