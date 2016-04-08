@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-//using UnityEditor;
+
+[RequireComponent(typeof(BlinksDetector))]
+[RequireComponent(typeof(SaveGazesToCSV))]
+
 /*
     This script takes care of initiating a level (it creates the spawner) and resetting the spawners on level restart.
     It also allows us to pop back to the main menu or redo the level.
@@ -20,6 +23,18 @@ public class GameManager : MonoBehaviour {
             RestartGame();
         }
         if (Input.GetKeyDown(KeyCode.Escape)) {
+            // Call recorders to save files
+            LookedAtFurniture taf = FindObjectOfType<LookedAtFurniture>();
+            if (taf != null)
+                taf.Quiting();
+            else
+                Debug.LogWarning("LookedAtFurniture UI object missing");
+
+            SaveGazesToCSV sgtc = GetComponent<SaveGazesToCSV>();
+            sgtc.Quiting();
+            BlinksDetector bd = GetComponent<BlinksDetector>();
+            bd.Quiting();
+
             Cursor.visible = true;
             SceneManager.LoadScene("SelectionMenu");
         }
@@ -33,7 +48,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void RestartGame() {
-        ClearConsole();
+        //ClearConsole(); // Not needed in build
 
         if (SpawnerPrefab != null) {
             SpawnObjectsOnMe[] sooma = FindObjectsOfType<SpawnObjectsOnMe>();

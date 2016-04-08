@@ -7,6 +7,9 @@ using System.Text;
 using System.IO;
 using System;
 
+// Should be placed on a UI object to move around and find what we are looking at 
+// and for how long
+
 public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
     private bool _dontTrace = true;
@@ -19,8 +22,8 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     private GameObject _oldObj = null,
         _objToSave = null,
         _currentObject = null;
-    private Dictionary<GameObject, float> _objsLookedAtDictTime = new Dictionary<GameObject, float>();
-    private Dictionary<GameObject, int> _objsLookedAtDictCount = new Dictionary<GameObject, int>();
+    private Dictionary<GameObject, float> _objsLookedAtDictTime;
+    private Dictionary<GameObject, int> _objsLookedAtDictCount;
     private string _timeStamp;
 
     private void Start() {
@@ -38,6 +41,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
         _rectTrans = transform.GetComponent<RectTransform>();
 
+        // The canvas is spawned before all the objects in the PCG level, so that function will be called when all has been placed.
         if (SceneManager.GetActiveScene().name == "scene") {
             StartFindingObjects();
         }
@@ -86,6 +90,8 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     }
 
     public void StartFindingObjects() {
+        _objsLookedAtDictTime = new Dictionary<GameObject, float>();
+        _objsLookedAtDictCount = new Dictionary<GameObject, int>();
         GameObject[] objs = FindObjectsOfType<GameObject>();
 
         foreach (var obj in objs) {
@@ -96,7 +102,14 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         _dontTrace = false;
     }
 
-    private void OnApplicationQuit() {
+    //private void OnApplicationQuit() {
+    //    GazeManager.Instance.RemoveGazeListener(this);
+    //    GazeManager.Instance.Deactivate();
+
+    //    Savecsv();
+    //}
+
+    public void Quiting() {
         GazeManager.Instance.RemoveGazeListener(this);
         GazeManager.Instance.Deactivate();
 
@@ -110,22 +123,27 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
 
     void Savecsv() {
-        string filePath = Application.dataPath + "/SavedFiles/LookedAtFurniture " + _timeStamp + ".csv";
+        string filePath = Application.persistentDataPath + "/SavedFiles/LookedAtFurniture For "
+            + SceneManager.GetActiveScene().name + " "
+            + _timeStamp + ".csv";
         string delimiter = ",";
 
         string[][] output = new string[_objsLookedAtDictCount.Count + 1][]; // +1 for the header
 
         // Header of csv file
-        output[0] = new string[] { "Name", "Time", "Count" };
+        output[0] = new string[] { "Name", "Time", "Count", "POSX", "POSY", "POSZ", "ROTX", "ROTY", "ROTZ", "ROTW" };
 
         int _index = 0;
         foreach (var key in _objsLookedAtDictCount.Keys) {
+
+            if (key == null)
+                continue;
 
             string tmpName = key.name;
             float tmpTime = _objsLookedAtDictTime[key];
             int tmpCount = _objsLookedAtDictCount[key];
 
-            output[_index + 1] = new string[] { tmpName, tmpTime.ToString(), tmpCount.ToString() };
+            output[_index + 1] = new string[] { tmpName, tmpTime.ToString(), tmpCount.ToString(), key.transform.position.ToString(), key.transform.rotation.ToString() };
             _index++;
         }
 

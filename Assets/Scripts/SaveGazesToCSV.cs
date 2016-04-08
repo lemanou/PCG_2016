@@ -5,10 +5,11 @@ using System.Text;
 using System.Collections.Generic;
 using TETCSharpClient;
 using TETCSharpClient.Data;
+using UnityEngine.SceneManagement;
 /*
-    Activating and deactivating the GazeListener, that works with the eye-tracker.
-    We save the recorded data to a csv-file.
-    We decide what data to include and write it to the file.
+Activating and deactivating the GazeListener, that works with the eye-tracker.
+We save the recorded data to a csv-file.
+We decide what data to include and write it to the file.
 */
 public class SaveGazesToCSV : MonoBehaviour, IGazeListener {
 
@@ -28,9 +29,16 @@ public class SaveGazesToCSV : MonoBehaviour, IGazeListener {
     }
 
     // If the application is trying to shut down, we save the game state and allow it to continue to shut down.
-    void OnApplicationQuit() {
+    //void OnApplicationQuit() {
 
-        // RemoveListener and Deactivate GM
+    //    // RemoveListener and Deactivate GM
+    //    GazeManager.Instance.RemoveGazeListener(this);
+    //    GazeManager.Instance.Deactivate();
+
+    //    Savecsv();
+    //}
+
+    public void Quiting() {
         GazeManager.Instance.RemoveGazeListener(this);
         GazeManager.Instance.Deactivate();
 
@@ -49,30 +57,36 @@ public class SaveGazesToCSV : MonoBehaviour, IGazeListener {
     }
 
     void Savecsv() {
-        string filePath = Application.dataPath + "/SavedFiles/" + _timeStamp + ".csv";
+        string filePath = Application.persistentDataPath + "/SavedFiles/Gazes For "
+            + SceneManager.GetActiveScene().name + " "
+            + _timeStamp + ".csv";
+
         string delimiter = ",";
 
         string[][] output = new string[_gd.Count + 1][]; // +1 for the header
 
         // Header of csv file
-        output[0] = new string[] { "Head Orientation", "","", "Left Raw", "", "Left Smoothed", "", "Right Raw", "", "Right Smoothed", "",
+        output[0] = new string[] { "Left Raw", "", "Left Smoothed", "" , "Left Center Coordinates", "", "LPupil Size",
+                         "Right Raw", "", "Right Smoothed", "", "Right Center Coordinates", "", "RPupil Size",
                         "Combined Raw", "","Combined Smoothed", "", "Is Fixated", "State", "TimeStamp"};
 
         for (int i = 0; i < _gd.Count; i++) {
 
-            // Head
-            Head head = _gd[i].Head;
-            string tmpHeadLoc = head.Orientation.ToString();
-            
             // Left Eye
             Eye le = _gd[i].LeftEye;
             string tmpLeftRaw = le.RawCoordinates.ToString();
             string tmpLeftSmooth = le.SmoothedCoordinates.ToString();
+            string tmpLeftPupilCoo = le.PupilCenterCoordinates.ToString();
+            string tmpLeftPupilSize = le.PupilSize.ToString();
+            //string tmpLeftPupilSizeP = le.PupilSizePhysical.ToString(); // Always zero
 
             // Right Eye
             Eye re = _gd[i].RightEye;
             string tmpRightRaw = re.RawCoordinates.ToString();
             string tmpRightSmooth = re.SmoothedCoordinates.ToString();
+            string tmpRightPupilCoo = re.PupilCenterCoordinates.ToString();
+            string tmpRightPupilSize = re.PupilSize.ToString();
+            //string tmpRightPupilSizeP = re.PupilSizePhysical.ToString(); // Always zero
 
             // Combined
             string tmpRaw = _gd[i].RawCoordinates.ToString();
@@ -83,7 +97,8 @@ public class SaveGazesToCSV : MonoBehaviour, IGazeListener {
             //string tmpTimeStamp = _gd[i].TimeStamp.ToString(); // dont need the long time stamp
             string tmpTimeStampString = _gd[i].TimeStampString.ToString();
 
-            output[i + 1] = new string[] { tmpHeadLoc, tmpLeftRaw, tmpLeftSmooth, tmpRightRaw, tmpRightSmooth,
+            output[i + 1] = new string[] { tmpLeftRaw, tmpLeftSmooth, tmpLeftPupilCoo, tmpLeftPupilSize,
+                                        tmpRightRaw, tmpRightSmooth, tmpRightPupilCoo, tmpRightPupilSize,
                                     tmpRaw, tmpSmooth, tmpIsFixated, tmpState, tmpTimeStampString };
 
         }
