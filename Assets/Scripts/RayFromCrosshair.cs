@@ -14,7 +14,7 @@ public class RayFromCrosshair : MonoBehaviour {
     void FixedUpdate() {
         GOHitByRay = null;
         _forward = _cameraTransform.forward;
-        Debug.DrawRay(transform.position, _forward * 2, Color.red);
+        //Debug.DrawRay(transform.position, _forward * 2, Color.red);
 
         Ray mRay = new Ray(transform.position, _forward);
 

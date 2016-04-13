@@ -19,21 +19,31 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Update() {
+
         if (Input.GetKeyDown(KeyCode.P)) {
-            RestartGame();
+            if (SceneManager.GetActiveScene().name == "PCG")
+                RestartGame();
         }
+
         if (Input.GetKeyDown(KeyCode.Escape)) {
+            // Enable loading image
+            LoadingScreenImage lsi = FindObjectOfType<LoadingScreenImage>();
+            if (lsi != null)
+                lsi.EnableLoadingImage();
+
             // Call recorders to save files
             LookedAtFurniture taf = FindObjectOfType<LookedAtFurniture>();
             if (taf != null)
                 taf.Quiting();
-            else
-                Debug.LogWarning("LookedAtFurniture UI object missing");
-
             SaveGazesToCSV sgtc = GetComponent<SaveGazesToCSV>();
-            sgtc.Quiting();
+            if (sgtc != null)
+                sgtc.Quiting();
             BlinksDetector bd = GetComponent<BlinksDetector>();
-            bd.Quiting();
+            if (bd != null)
+                bd.Quiting();
+            SaveObjectsCoordinates soc = GetComponent<SaveObjectsCoordinates>();
+            if (soc != null)
+                soc.Quiting();
 
             Cursor.visible = true;
             SceneManager.LoadScene("SelectionMenu");

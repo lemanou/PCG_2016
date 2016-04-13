@@ -7,9 +7,9 @@ using TETCSharpClient;
 using TETCSharpClient.Data;
 using UnityEngine.SceneManagement;
 /*
-Activating and deactivating the GazeListener, that works with the eye-tracker.
-We save the recorded data to a csv-file.
-We decide what data to include and write it to the file.
+    Activating and deactivating the GazeListener, that works with the eye-tracker.
+    We save the recorded data to a csv-file.
+    We decide what data to include and write it to the file.
 */
 public class SaveGazesToCSV : MonoBehaviour, IGazeListener {
 
@@ -25,7 +25,7 @@ public class SaveGazesToCSV : MonoBehaviour, IGazeListener {
     // Implementing IGazeListener
     public void OnGazeUpdate(GazeData gazeData) {
         //Add frame to GazeData cache handler
-        _gd.Add(gazeData);
+        if (gazeData.State == 7) _gd.Add(gazeData);
     }
 
     // If the application is trying to shut down, we save the game state and allow it to continue to shut down.

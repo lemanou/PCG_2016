@@ -7,34 +7,32 @@ using UnityEngine.UI;
 //  The loading screen is also used as background for the menu.
 //////////////////////////////////////////////////
 
-public class LoadingScreenImage : MonoBehaviour
-{
+public class LoadingScreenImage : MonoBehaviour {
     public Image _loadingImage;
     public Text _loadingText;
 
     private float _timer;
 
-    void Start()
-    {
+    void Start() {
         _loadingImage.enabled = true;
-        if (SceneManager.GetActiveScene().name != "SelectionMenu")
-        {
+        if (SceneManager.GetActiveScene().name != "SelectionMenu") {
             _loadingText.enabled = true;
-        }
-        else _loadingText.enabled = false;
+        } else _loadingText.enabled = false;
     }
 
-    void Update()
-    {
+    void Update() {
         _timer = Time.timeSinceLevelLoad;
 
-        if (SceneManager.GetActiveScene().name != "SelectionMenu")
-        {
-            if (_loadingImage.enabled == true && _timer > 7)
-            {
+        if (SceneManager.GetActiveScene().name != "SelectionMenu") {
+            if (_loadingImage.enabled == true && _timer > 7) {
                 _loadingImage.enabled = false;
                 _loadingText.enabled = false;
             }
         }
+    }
+
+    public void EnableLoadingImage() {
+        _loadingImage.enabled = true;
+        _loadingText.enabled = true;
     }
 }

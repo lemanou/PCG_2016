@@ -75,7 +75,7 @@ public class Spawner : MonoBehaviour {
             return;
         }
 
-        // we have to spawn the canvas early to use it for the quest spawning
+        // Has to be spawned first to parent the quests under it
         _canvas = Instantiate(Resources.Load("Canvas", typeof(Canvas)), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as Canvas;
 
         _roomInstance = Instantiate(RoomPrefab) as GameObject;
@@ -248,6 +248,7 @@ public class Spawner : MonoBehaviour {
         _firstCam.gameObject.SetActive(false);
 
         _player = Instantiate(Resources.Load("FPSController", typeof(FirstPersonController)), new Vector3(3.5f, 1.0f, 0.0f), Quaternion.identity) as FirstPersonController;
+        _player.transform.Rotate(new Vector3(0, 1, 0), -90);
         NumberDialScript tmpDial = _player.transform.GetChild(0).GetComponentInChildren<NumberDialScript>();
         tmpDial.gameObject.SetActive(false);
         ClickableFurniture[] _allCF = FindObjectsOfType<ClickableFurniture>();
@@ -263,6 +264,7 @@ public class Spawner : MonoBehaviour {
         LookedAtFurniture mwe = FindObjectOfType<LookedAtFurniture>();
         if (mwe != null)
             mwe.StartFindingObjects();
+
         //Debug.Log("E.N.D.");
     }
 
