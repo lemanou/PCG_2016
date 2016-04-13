@@ -166,6 +166,9 @@ public class DescriptiveTextScript : MonoBehaviour {
         BlinksDetector bd = FindObjectOfType<BlinksDetector>();
         if (bd != null)
             bd.Quiting();
+        SaveObjectsCoordinates soc = FindObjectOfType<SaveObjectsCoordinates>();
+        if (soc != null)
+            soc.Quiting();
 
         yield return new WaitForSeconds(waitTime);
         Cursor.visible = true;
