@@ -75,7 +75,7 @@ public class Spawner : MonoBehaviour {
             return;
         }
 
-        // we have to spawn the canvas early to use it for the quest spawning
+        // Has to be spawned first to parent the quests under it
         _canvas = Instantiate(Resources.Load("Canvas", typeof(Canvas)), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as Canvas;
 
         _roomInstance = Instantiate(RoomPrefab) as GameObject;

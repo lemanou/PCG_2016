@@ -168,6 +168,10 @@ public class SpawnObjectsOnMe : MonoBehaviour {
     }
 
     void LateUpdate() {
+
+        if (_placed)
+            return;
+
         if (_papa == null) {
             Debug.Log("Check father: " + gameObject.name);
             return;

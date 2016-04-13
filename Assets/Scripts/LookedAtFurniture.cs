@@ -140,10 +140,29 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
                 continue;
 
             string tmpName = key.name;
+            // Skip specific objects
+            if (tmpName.Contains("Character") || tmpName.Contains("Controller") || tmpName.Contains("ImageEyeTracker") || tmpName.Contains("Shelf")
+                || tmpName.Contains("candleStick") || tmpName.Contains("Point light") || tmpName.Contains("TutorialPaper") || tmpName.Contains("QuestItemHolder")
+                || tmpName.Contains("BlackBorderText") || tmpName.Contains("ImageCrosshair") || tmpName.Contains("BlackBorderTop") || tmpName.Contains("BlackBorderBottom")
+                || tmpName.Contains("Text") || tmpName.Contains("ImageLoadingScreen") || tmpName.Contains("Canvas") || tmpName.Contains("Spawner")
+                || tmpName.Contains("GameManager") || tmpName.Contains("FireWood") || tmpName.Contains("EventSystem") || tmpName.Contains("particle")
+                || tmpName.Contains("SP1") || tmpName.Contains("SP2") || tmpName.Contains("SP3") || tmpName.Contains("SPD") || tmpName.Contains("SPBK")
+                || tmpName.Contains("Particle") || tmpName.Contains("SPFP") || tmpName.Contains("SPA") || tmpName.Contains("spoon") || tmpName.Contains("fork") || tmpName.Contains("knife")
+                || tmpName.Contains("wall") || tmpName.Contains("Wall") || tmpName.Contains("door") || tmpName.Contains("Raycaster") || tmpName.Contains("audio")
+                || tmpName.Contains("bookA") || tmpName.Contains("bookB") || tmpName.Contains("bookC") || tmpName.Contains("bookD") || tmpName.Contains("bookStackBlueStanding")) {
+                continue;
+            }
+
+            if (tmpName == "TableCloth")
+                continue;
+
             float tmpTime = _objsLookedAtDictTime[key];
             int tmpCount = _objsLookedAtDictCount[key];
 
-            output[_index + 1] = new string[] { tmpName, tmpTime.ToString(), tmpCount.ToString(), key.transform.position.ToString(), key.transform.rotation.ToString() };
+            string Position = key.transform.position.x + "," + key.transform.position.y + "," + key.transform.position.z;
+            string Rotation = key.transform.rotation.x + "," + key.transform.rotation.y + "," + key.transform.rotation.z + "," + key.transform.rotation.w;
+
+            output[_index + 1] = new string[] { tmpName, tmpTime.ToString(), tmpCount.ToString(), Position, Rotation };
             _index++;
         }
 

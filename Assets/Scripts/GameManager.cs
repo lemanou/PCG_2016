@@ -19,10 +19,18 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Update() {
+
         if (Input.GetKeyDown(KeyCode.P)) {
-            RestartGame();
+            if (SceneManager.GetActiveScene().name == "PCG")
+                RestartGame();
         }
+
         if (Input.GetKeyDown(KeyCode.Escape)) {
+            // Enable loading image
+            LoadingScreenImage lsi = FindObjectOfType<LoadingScreenImage>();
+            if (lsi != null)
+                lsi.EnableLoadingImage();
+
             // Call recorders to save files
             LookedAtFurniture taf = FindObjectOfType<LookedAtFurniture>();
             if (taf != null)

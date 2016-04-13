@@ -43,19 +43,25 @@ public class SaveObjectsCoordinates : MonoBehaviour {
         for (int i = 0; i < objs.Length; i++) {
 
             // Skip specific objects
-            string name = objs[i].name;
-            if (name.Contains("Character") || name.Contains("Controller") || name.Contains("ImageEyeTracker") || name.Contains("Shelf")
-                || name.Contains("TutorialPaper") || name.Contains("QuestItemHolder") || name.Contains("BlackBorderText") || name.Contains("ImageCrosshair")
-                || name.Contains("BlackBorderTop") || name.Contains("BlackBorderBottom") || name.Contains("Text") || name.Contains("ImageLoadingScreen")
-                || name.Contains("Canvas") || name.Contains("Spawner") || name.Contains("GameManager") || name.Contains("EventSystem")
-                || name.Contains("SP1") || name.Contains("SP2") || name.Contains("SP3") || name.Contains("SPD") || name.Contains("SPBK")
-                || name.Contains("SPFP") || name.Contains("SPA") || name.Contains("wall") || name.Contains("Wall") || name.Contains("door")) {
+            string objName = objs[i].name;
+            if (objName.Contains("Character") || objName.Contains("Controller") || objName.Contains("ImageEyeTracker") || objName.Contains("Shelf")
+                || objName.Contains("candleStick") || objName.Contains("Point light") || objName.Contains("TutorialPaper") || objName.Contains("QuestItemHolder")
+                || objName.Contains("BlackBorderText") || objName.Contains("ImageCrosshair") || objName.Contains("BlackBorderTop") || objName.Contains("BlackBorderBottom")
+                || objName.Contains("Text") || objName.Contains("ImageLoadingScreen") || objName.Contains("Canvas") || objName.Contains("Spawner")
+                || objName.Contains("GameManager") || objName.Contains("FireWood") || objName.Contains("EventSystem") || objName.Contains("particle")
+                || objName.Contains("SP1") || objName.Contains("SP2") || objName.Contains("SP3") || objName.Contains("SPD") || objName.Contains("SPBK")
+                || objName.Contains("Particle") || objName.Contains("SPFP") || objName.Contains("SPA") || objName.Contains("spoon") || objName.Contains("fork") || objName.Contains("knife")
+                || objName.Contains("wall") || objName.Contains("Wall") || objName.Contains("door") || objName.Contains("Raycaster") || objName.Contains("audio")
+                || objName.Contains("bookA") || objName.Contains("bookB") || objName.Contains("bookC") || objName.Contains("bookD") || objName.Contains("bookStackBlueStanding")) {
                 continue;
             }
 
-            int index = name.IndexOf("("); // cut everything after (
+            if (objName == "TableCloth")
+                continue;
+
+            int index = objName.IndexOf("("); // cut everything after (
             if (index > 0)
-                name = name.Substring(0, index);
+                objName = objName.Substring(0, index);
 
             ClickableFurniture cf = objs[i].GetComponent<ClickableFurniture>();
             if (cf != null) {
@@ -67,14 +73,14 @@ public class SaveObjectsCoordinates : MonoBehaviour {
                     if (c > 0)
                         qname = qname.Substring(0, c);
 
-                    name = name + "_" + qname;
+                    objName = objName + "_" + qname;
                 }
             }
 
-            string Position = objs[i].transform.position.ToString();
-            string Rotation = objs[i].transform.rotation.ToString();
+            string Position = objs[i].transform.position.x + "," + objs[i].transform.position.y + "," + objs[i].transform.position.z;
+            string Rotation = objs[i].transform.rotation.x + "," + objs[i].transform.rotation.y + "," + objs[i].transform.rotation.z + "," + objs[i].transform.rotation.w;
 
-            output[i + 1] = new string[] { name, Position, Rotation };
+            output[i + 1] = new string[] { objName, Position, Rotation };
         }
 
         int length = output.GetLength(0);
