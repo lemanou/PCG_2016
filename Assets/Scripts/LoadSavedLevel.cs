@@ -72,6 +72,12 @@ public class LoadSavedLevel : MonoBehaviour {
                             //Debug.Log("!!!" + questToAssign + "!!!");
                             o.questItemAttached = q;
                             q.transform.SetParent(_canvas.transform.FindChild("QuestItemHolder").transform);
+                            RectTransform _rectTrans = q.GetComponent<RectTransform>();
+                            if (_rectTrans != null) {
+                                q.transform.localScale = Vector3.one;
+                                _rectTrans.sizeDelta = Vector2.zero;
+                                _rectTrans.anchoredPosition = Vector2.zero;
+                            }
                             placed = true;
                             break;
                         }

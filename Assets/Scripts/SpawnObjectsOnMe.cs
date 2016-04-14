@@ -145,6 +145,7 @@ public class SpawnObjectsOnMe : MonoBehaviour {
 
     private void Start() {
         if (SceneManager.GetActiveScene().name != "PCG") {
+            gameObject.SetActive(false);
             _placed = true;
             return;
         }

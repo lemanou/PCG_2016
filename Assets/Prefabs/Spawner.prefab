@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9364135456e7b746ac47f459e9f4cea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalAmountOfSets: 5
+  totalAmountOfSets: 2
   generationStepDelay: 0.1
 --- !u!114 &11490454
 MonoBehaviour:

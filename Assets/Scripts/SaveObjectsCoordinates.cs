@@ -38,7 +38,7 @@ public class SaveObjectsCoordinates : MonoBehaviour {
         string[][] output = new string[objs.Length + 1][]; // +1 for the header
 
         // Header of csv file
-        output[0] = new string[] { "Name", "Position", "", "", "Rotation" };
+        //output[0] = new string[] { "Name", "Position", "", "", "Rotation" };
 
         for (int i = 0; i < objs.Length; i++) {
 
@@ -52,16 +52,18 @@ public class SaveObjectsCoordinates : MonoBehaviour {
                 || objName.Contains("SP1") || objName.Contains("SP2") || objName.Contains("SP3") || objName.Contains("SPD") || objName.Contains("SPBK")
                 || objName.Contains("Particle") || objName.Contains("SPFP") || objName.Contains("SPA") || objName.Contains("spoon") || objName.Contains("fork") || objName.Contains("knife")
                 || objName.Contains("wall") || objName.Contains("Wall") || objName.Contains("door") || objName.Contains("Raycaster") || objName.Contains("audio")
-                || objName.Contains("bookA") || objName.Contains("bookB") || objName.Contains("bookC") || objName.Contains("bookD") || objName.Contains("bookStackBlueStanding")) {
+                || objName.Contains("bookA") || objName.Contains("bookB") || objName.Contains("bookD") || objName.Contains("bookStackBlueStanding")) {
                 continue;
             }
-
-            if (objName == "TableCloth")
-                continue;
 
             int index = objName.IndexOf("("); // cut everything after (
             if (index > 0)
                 objName = objName.Substring(0, index);
+
+            objName = objName.TrimEnd(' '); // Remove space from the end
+
+            if (objName == "bookC" || objName == "TableCloth" || objName == "PlatesStack" || objName == "ClothForArmoire" || objName == "PlateWithCloth") // objects already in list as single
+                continue;
 
             ClickableFurniture cf = objs[i].GetComponent<ClickableFurniture>();
             if (cf != null) {
@@ -80,7 +82,7 @@ public class SaveObjectsCoordinates : MonoBehaviour {
             string Position = objs[i].transform.position.x + "," + objs[i].transform.position.y + "," + objs[i].transform.position.z;
             string Rotation = objs[i].transform.rotation.x + "," + objs[i].transform.rotation.y + "," + objs[i].transform.rotation.z + "," + objs[i].transform.rotation.w;
 
-            output[i + 1] = new string[] { objName, Position, Rotation };
+            output[i] = new string[] { objName, Position, Rotation };
         }
 
         int length = output.GetLength(0);

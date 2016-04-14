@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using TETCSharpClient;
 using TETCSharpClient.Data;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         _currentObject = null;
     private Dictionary<GameObject, float> _objsLookedAtDictTime;
     private Dictionary<GameObject, int> _objsLookedAtDictCount;
+    private Dictionary<QuestItemScript, float> _questsLookedAtDictTime;
+    private Dictionary<QuestItemScript, int> _questsLookedAtDictCount;
     private string _timeStamp;
 
     private void Start() {
@@ -78,9 +81,39 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
                     if (_objToSave) {
                         if (_objsLookedAtDictTime.ContainsKey(_objToSave)) {
                             if (_endTime - _tmpTime > 0.5f) { // Lower margin for time looking at furniture
-                                _objsLookedAtDictTime[_objToSave] += _endTime - _tmpTime;
-                                _objsLookedAtDictCount[_objToSave] += 1;
-                                //Debug.Log("Saving time: " + _objsLookedAtDictTime[_objToSave] + " of GO: " + _objToSave);
+                                ClickableFurniture cf = _objToSave.GetComponent<ClickableFurniture>();
+                                string questname = "";
+                                // Check if quest item is attached and on
+                                if (cf != null) {
+                                    QuestItemScript qis = cf.questItemAttached;
+                                    if (qis != null) {
+                                        Image tmpImage = qis.GetComponent<Image>();
+                                        if (tmpImage != null) {
+                                            if (tmpImage.enabled == true) {
+                                                questname = qis.name;
+                                                //Debug.Log(qis.name + " on");
+                                            } else {
+                                                //Debug.Log(qis.name + " off");
+                                            }
+
+                                        }
+                                    }
+                                }
+                                // Save the time on either the quest item or the object
+                                if (questname != "") {
+                                    foreach (var quest in _questsLookedAtDictTime.Keys) {
+                                        if (quest.name == questname) {
+                                            _questsLookedAtDictTime[quest] += _endTime - _tmpTime;
+                                            _questsLookedAtDictCount[quest] += 1;
+                                            //Debug.Log("Saving time: " + _questsLookedAtDictTime[quest] + " of quest paper: " + quest.name);
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    _objsLookedAtDictTime[_objToSave] += _endTime - _tmpTime;
+                                    _objsLookedAtDictCount[_objToSave] += 1;
+                                    //Debug.Log("Saving time: " + _objsLookedAtDictTime[_objToSave] + " of GO: " + _objToSave);
+                                }
                             }
                         }
                     }
@@ -93,12 +126,19 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         _objsLookedAtDictTime = new Dictionary<GameObject, float>();
         _objsLookedAtDictCount = new Dictionary<GameObject, int>();
         GameObject[] objs = FindObjectsOfType<GameObject>();
-
         foreach (var obj in objs) {
             _objsLookedAtDictTime.Add(obj, 0.0f);
             _objsLookedAtDictCount.Add(obj, 0);
         }
         //Debug.Log(_objsLookedAtDictTime.Count);
+        _questsLookedAtDictTime = new Dictionary<QuestItemScript, float>();
+        _questsLookedAtDictCount = new Dictionary<QuestItemScript, int>();
+        QuestItemScript[] qsts = FindObjectsOfType<QuestItemScript>();
+        foreach (var q in qsts) {
+            _questsLookedAtDictTime.Add(q, 0.0f);
+            _questsLookedAtDictCount.Add(q, 0);
+        }
+        //Debug.Log(_questsLookedAtDictTime.Count);
         _dontTrace = false;
     }
 
@@ -128,7 +168,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
             + _timeStamp + ".csv";
         string delimiter = ",";
 
-        string[][] output = new string[_objsLookedAtDictCount.Count + 1][]; // +1 for the header
+        string[][] output = new string[_objsLookedAtDictCount.Count + 1 + _questsLookedAtDictCount.Count][]; // +1 for the header
 
         // Header of csv file
         output[0] = new string[] { "Name", "Time", "Count", "POSX", "POSY", "POSZ", "ROTX", "ROTY", "ROTZ", "ROTW" };
@@ -139,21 +179,23 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
             if (key == null)
                 continue;
 
-            string tmpName = key.name;
+            string objName = key.name;
             // Skip specific objects
-            if (tmpName.Contains("Character") || tmpName.Contains("Controller") || tmpName.Contains("ImageEyeTracker") || tmpName.Contains("Shelf")
-                || tmpName.Contains("candleStick") || tmpName.Contains("Point light") || tmpName.Contains("TutorialPaper") || tmpName.Contains("QuestItemHolder")
-                || tmpName.Contains("BlackBorderText") || tmpName.Contains("ImageCrosshair") || tmpName.Contains("BlackBorderTop") || tmpName.Contains("BlackBorderBottom")
-                || tmpName.Contains("Text") || tmpName.Contains("ImageLoadingScreen") || tmpName.Contains("Canvas") || tmpName.Contains("Spawner")
-                || tmpName.Contains("GameManager") || tmpName.Contains("FireWood") || tmpName.Contains("EventSystem") || tmpName.Contains("particle")
-                || tmpName.Contains("SP1") || tmpName.Contains("SP2") || tmpName.Contains("SP3") || tmpName.Contains("SPD") || tmpName.Contains("SPBK")
-                || tmpName.Contains("Particle") || tmpName.Contains("SPFP") || tmpName.Contains("SPA") || tmpName.Contains("spoon") || tmpName.Contains("fork") || tmpName.Contains("knife")
-                || tmpName.Contains("wall") || tmpName.Contains("Wall") || tmpName.Contains("door") || tmpName.Contains("Raycaster") || tmpName.Contains("audio")
-                || tmpName.Contains("bookA") || tmpName.Contains("bookB") || tmpName.Contains("bookC") || tmpName.Contains("bookD") || tmpName.Contains("bookStackBlueStanding")) {
+            if (objName.Contains("Character") || objName.Contains("Controller") || objName.Contains("ImageEyeTracker") || objName.Contains("Shelf")
+                || objName.Contains("candleStick") || objName.Contains("Point light") || objName.Contains("TutorialPaper") || objName.Contains("QuestItemHolder")
+                || objName.Contains("BlackBorderText") || objName.Contains("ImageCrosshair") || objName.Contains("BlackBorderTop") || objName.Contains("BlackBorderBottom")
+                || objName.Contains("Text") || objName.Contains("ImageLoadingScreen") || objName.Contains("Canvas") || objName.Contains("Spawner")
+                || objName.Contains("GameManager") || objName.Contains("FireWood") || objName.Contains("EventSystem") || objName.Contains("particle")
+                || objName.Contains("SP1") || objName.Contains("SP2") || objName.Contains("SP3") || objName.Contains("SPD") || objName.Contains("SPBK")
+                || objName.Contains("Particle") || objName.Contains("SPFP") || objName.Contains("SPA") || objName.Contains("spoon") || objName.Contains("fork") || objName.Contains("knife")
+                || objName.Contains("wall") || objName.Contains("Wall") || objName.Contains("door") || objName.Contains("Raycaster") || objName.Contains("audio")
+                || objName.Contains("bookA") || objName.Contains("bookB") || objName.Contains("bookD") || objName.Contains("bookStackBlueStanding")) {
                 continue;
             }
 
-            if (tmpName == "TableCloth")
+            objName = objName.TrimEnd(' '); // Remove space from the end
+
+            if (objName == "bookC" || objName == "TableCloth" || objName == "PlatesStack" || objName == "ClothForArmoire" || objName == "PlateWithCloth") // objects already in list as single
                 continue;
 
             float tmpTime = _objsLookedAtDictTime[key];
@@ -161,6 +203,23 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
             string Position = key.transform.position.x + "," + key.transform.position.y + "," + key.transform.position.z;
             string Rotation = key.transform.rotation.x + "," + key.transform.rotation.y + "," + key.transform.rotation.z + "," + key.transform.rotation.w;
+
+            output[_index + 1] = new string[] { objName, tmpTime.ToString(), tmpCount.ToString(), Position, Rotation };
+            _index++;
+        }
+
+        // Add the quest time and count
+        foreach (var questkey in _questsLookedAtDictCount.Keys) {
+
+            if (questkey == null)
+                continue;
+
+            string tmpName = questkey.name;
+            float tmpTime = _questsLookedAtDictTime[questkey];
+            int tmpCount = _questsLookedAtDictCount[questkey];
+
+            string Position = questkey.transform.position.x + "," + questkey.transform.position.y + "," + questkey.transform.position.z;
+            string Rotation = questkey.transform.rotation.x + "," + questkey.transform.rotation.y + "," + questkey.transform.rotation.z + "," + questkey.transform.rotation.w;
 
             output[_index + 1] = new string[] { tmpName, tmpTime.ToString(), tmpCount.ToString(), Position, Rotation };
             _index++;
