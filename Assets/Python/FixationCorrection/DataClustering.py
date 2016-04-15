@@ -262,47 +262,74 @@ def cluster_frames_DBSCAN(npeyeframes):
 def myFloat(myList):
     return map(float, myList)
 
+def main():
+    data = np.genfromtxt(inputfile, delimiter=',', skip_header=1, names=['CRX', 'CRY'])
+    data = np.array(map(myFloat, data))  # refactor double string array to double float array
 
-data = np.genfromtxt(inputfile, delimiter=',', skip_header=1, names=['CRX', 'CRY'])
-data = np.array(map(myFloat, data))  # refactor double string array to double float array
+    # Cluster the data into and centers and labels
+    labels, cluster_centers = cluster_frames_DBSCAN(data)
 
-# Cluster the data into and centers and labels
-labels, cluster_centers = cluster_frames_DBSCAN(data)
+    labels_unique = np.unique(labels)
+    n_clusters = len(labels_unique)
 
-labels_unique = np.unique(labels)
-n_clusters = len(labels_unique)
+    assert n_clusters == len(cluster_centers) or n_clusters == len(cluster_centers) - 1, \
+        "Weird, we got %d unique labels but %d clusters returned..." % (n_clusters, len(cluster_centers))
 
-assert n_clusters == len(cluster_centers) or n_clusters == len(cluster_centers) - 1, \
-    "Weird, we got %d unique labels but %d clusters returned..." % (n_clusters, len(cluster_centers))
+    fixations_list = []
+    for k in labels_unique:
+        my_members = labels == k
+        fixations_list.append(data[my_members])
 
-fixations_list = []
-for k in labels_unique:
-    my_members = labels == k
-    fixations_list.append(data[my_members])
+    fig = plt.figure()
+    myplot = fig.add_subplot(111)
 
-fig = plt.figure()
-myplot = fig.add_subplot(111)
+    myplot.set_title("plotRawWithFixationsClustered" + str(fixationradius) + ".png")
+    myplot.set_xlabel('Pixels')
+    myplot.set_ylabel('Pixels')
+    myplot.axis([0, 1600, 0, 900])
 
-myplot.set_title("plotRawWithFixationsClustered" + str(fixationradius) + ".png")
-myplot.set_xlabel('Pixels')
-myplot.set_ylabel('Pixels')
-myplot.axis([0, 1600, 0, 900])
+    myr = 0
+    myg = 80
+    myb = 160
+    for members in fixations_list:
+        memmberscolor, myr, myg, myb = generate_color(myr, myg, myb)
+        for points in members:
+            myplot.scatter(points[0], points[1], s=5, color=memmberscolor, label='Fixations', zorder=10)
 
-myr = 0
-myg = 80
-myb = 160
+    newdata = np.genfromtxt(inputfile, delimiter=',', skip_header=1, skip_footer=0, names=['CRX', 'CRY'])
 
-for members in fixations_list:
-    memmberscolor, myr, myg, myb = generate_color(myr, myg, myb)
-    for points in members:
-        # print "points", points[0], points[1]
-        myplot.scatter(points[0], points[1], s=5, color=memmberscolor, label='Fixations', zorder=10)
+    myplot.plot(newdata['CRX'], newdata['CRY'], color='black', label='All data', zorder=1)
+    plt.savefig("plotRawWithFixationsClustered" + str(fixationradius) + ".png")
+    plt.show()
 
-newdata = np.genfromtxt(inputfile, delimiter=',', skip_header=1, skip_footer=0, names=['CRX', 'CRY'])
+    # plot total number of fixations and sacades
+    n_groups = 1
 
-myplot.plot(newdata['CRX'], newdata['CRY'], color='black', label='All data', zorder=1)
-plt.savefig("plotRawWithFixationsClustered" + str(fixationradius) + ".png")
-plt.show()
+    fig, ax = plt.subplots()
+
+    index = np.arange(n_groups)
+    bar_width = 0.35
+
+    opacity = 0.4
+    error_config = {'ecolor': '0.3'}
+
+    # remove one fixation, for the Zero cluster
+    rects1 = plt.bar(index,
+                     len(fixations_list) - 1,
+                     bar_width,
+                     alpha=opacity,
+                     color='b',
+                     error_kw=error_config,
+                     label='Men')
+
+    plt.xlabel('Group')
+    plt.ylabel('Sums')
+    plt.title('Sum of fixations')
+    plt.xticks(index + bar_width, ('F', 'S'))
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()
 # ================= endregion DBSCAN testing ======================== #
 
 
@@ -310,3 +337,4 @@ plt.show()
 # testPlotWithFixations()
 # testthree()
 # testAnimated()
+main()
