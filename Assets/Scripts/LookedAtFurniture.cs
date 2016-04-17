@@ -13,19 +13,18 @@ using System;
 
 public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
-    private bool _dontTrace = true;
+    private bool _dontTrace = true, _dontWork = false;
     private float _endTime = 0.0f,
         _startTime = 0.0f,
         _tmpTime = 0.0f;
     private RectTransform _rectTrans;
     private RaycastHit rayhit = new RaycastHit();
-    private Vector3 _forward = Vector3.zero;
+    //private Vector3 _forward = Vector3.zero;
     private GameObject _oldObj = null,
         _objToSave = null,
         _currentObject = null;
     private Dictionary<GameObject, float> _objsLookedAtDictTime;
     private Dictionary<GameObject, int> _objsLookedAtDictCount;
-    private Dictionary<QuestItemScript, float> _questsLookedAtDictTime;
     private Dictionary<QuestItemScript, int> _questsLookedAtDictCount;
     private string _timeStamp;
 
@@ -53,22 +52,35 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     private void Update() {
         Vector3 tmpTarget = GazeDataValidator.Instance.GetLastValidSmoothedUnityGazeCoordinate();
         float d = Vector3.Distance(_rectTrans.position, tmpTarget);
-        _rectTrans.position = Vector3.MoveTowards(_rectTrans.position, tmpTarget, d * 1.5f);
+        _rectTrans.position = Vector3.MoveTowards(_rectTrans.position, tmpTarget, d * 2f);
     }
 
     void FixedUpdate() {
+        if (_dontWork)
+            return;
+
+        // if a quest item is on, don't trace, they trace themselves
+        if (_questsLookedAtDictCount != null)
+            foreach (QuestItemScript qis in _questsLookedAtDictCount.Keys) {
+                if (qis != null) {
+                    if (qis.CheckImage()) {
+                        _dontTrace = true;
+                        break;
+                    } else {
+                        _dontTrace = false;
+                    }
+                }
+            }
+
         if (_dontTrace)
             return;
 
-        _forward = Camera.main.transform.forward;
-        Vector3 screenToWorldVector = Camera.main.ScreenToWorldPoint(transform.position);
-        //Debug.DrawRay(screenToWorldVector, _forward * 20, Color.green);
-
-        Ray mRay = new Ray(screenToWorldVector, _forward);
+        Ray mRay = Camera.main.ScreenPointToRay(transform.position);
+        //Debug.DrawRay(mRay.origin, mRay.direction * 100, Color.red);
 
         if (Physics.Raycast(mRay, out rayhit, 20f)) {
             _currentObject = rayhit.collider.gameObject;
-            //Debug.Log(_currentObject.name);;
+            //Debug.Log(_currentObject.name); ;
             if (_currentObject != null) {
                 if (_currentObject != _oldObj) {
                     _endTime = Time.time; // Old object's end time
@@ -80,64 +92,35 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
                     if (_objToSave) {
                         if (_objsLookedAtDictTime.ContainsKey(_objToSave)) {
-                            if (_endTime - _tmpTime > 0.5f) { // Lower margin for time looking at furniture
-                                ClickableFurniture cf = _objToSave.GetComponent<ClickableFurniture>();
-                                string questname = "";
-                                // Check if quest item is attached and on
-                                if (cf != null) {
-                                    QuestItemScript qis = cf.questItemAttached;
-                                    if (qis != null) {
-                                        Image tmpImage = qis.GetComponent<Image>();
-                                        if (tmpImage != null) {
-                                            if (tmpImage.enabled == true) {
-                                                questname = qis.name;
-                                                //Debug.Log(qis.name + " on");
-                                            } else {
-                                                //Debug.Log(qis.name + " off");
-                                            }
-
-                                        }
-                                    }
-                                }
-                                // Save the time on either the quest item or the object
-                                if (questname != "") {
-                                    foreach (var quest in _questsLookedAtDictTime.Keys) {
-                                        if (quest.name == questname) {
-                                            _questsLookedAtDictTime[quest] += _endTime - _tmpTime;
-                                            _questsLookedAtDictCount[quest] += 1;
-                                            //Debug.Log("Saving time: " + _questsLookedAtDictTime[quest] + " of quest paper: " + quest.name);
-                                            break;
-                                        }
-                                    }
-                                } else {
-                                    _objsLookedAtDictTime[_objToSave] += _endTime - _tmpTime;
-                                    _objsLookedAtDictCount[_objToSave] += 1;
-                                    //Debug.Log("Saving time: " + _objsLookedAtDictTime[_objToSave] + " of GO: " + _objToSave);
-                                }
+                            if (_endTime - _tmpTime > 0.5f) { // Lower margin for time looking at 
+                                _objsLookedAtDictTime[_objToSave] += _endTime - _tmpTime;
+                                _objsLookedAtDictCount[_objToSave] += 1;
+                                Debug.Log("Saving time: " + _objsLookedAtDictTime[_objToSave] + " of GO: " + _objToSave);
                             }
                         }
                     }
                 }
             }
         }
+
     }
 
     public void StartFindingObjects() {
         _objsLookedAtDictTime = new Dictionary<GameObject, float>();
         _objsLookedAtDictCount = new Dictionary<GameObject, int>();
+        _questsLookedAtDictCount = new Dictionary<QuestItemScript, int>();
         GameObject[] objs = FindObjectsOfType<GameObject>();
+
         foreach (var obj in objs) {
-            _objsLookedAtDictTime.Add(obj, 0.0f);
-            _objsLookedAtDictCount.Add(obj, 0);
+            QuestItemScript qis = obj.GetComponent<QuestItemScript>();
+            if (qis != null) {
+                _questsLookedAtDictCount.Add(qis, 0);
+            } else {
+                _objsLookedAtDictTime.Add(obj, 0.0f);
+                _objsLookedAtDictCount.Add(obj, 0);
+            }
         }
         //Debug.Log(_objsLookedAtDictTime.Count);
-        _questsLookedAtDictTime = new Dictionary<QuestItemScript, float>();
-        _questsLookedAtDictCount = new Dictionary<QuestItemScript, int>();
-        QuestItemScript[] qsts = FindObjectsOfType<QuestItemScript>();
-        foreach (var q in qsts) {
-            _questsLookedAtDictTime.Add(q, 0.0f);
-            _questsLookedAtDictCount.Add(q, 0);
-        }
         //Debug.Log(_questsLookedAtDictTime.Count);
         _dontTrace = false;
     }
@@ -150,9 +133,9 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     //}
 
     public void Quiting() {
+        _dontWork = true;
         GazeManager.Instance.RemoveGazeListener(this);
         GazeManager.Instance.Deactivate();
-
         Savecsv();
     }
 
@@ -209,17 +192,17 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         }
 
         // Add the quest time and count
-        foreach (var questkey in _questsLookedAtDictCount.Keys) {
+        foreach (QuestItemScript qis in _questsLookedAtDictCount.Keys) {
 
-            if (questkey == null)
+            if (qis == null)
                 continue;
 
-            string tmpName = questkey.name;
-            float tmpTime = _questsLookedAtDictTime[questkey];
-            int tmpCount = _questsLookedAtDictCount[questkey];
+            string tmpName = qis.name;
+            float tmpTime = qis.GetTimeRead();
+            int tmpCount = qis.GetCountRead();
 
-            string Position = questkey.transform.position.x + "," + questkey.transform.position.y + "," + questkey.transform.position.z;
-            string Rotation = questkey.transform.rotation.x + "," + questkey.transform.rotation.y + "," + questkey.transform.rotation.z + "," + questkey.transform.rotation.w;
+            string Position = qis.transform.position.x + "," + qis.transform.position.y + "," + qis.transform.position.z;
+            string Rotation = qis.transform.rotation.x + "," + qis.transform.rotation.y + "," + qis.transform.rotation.z + "," + qis.transform.rotation.w;
 
             output[_index + 1] = new string[] { tmpName, tmpTime.ToString(), tmpCount.ToString(), Position, Rotation };
             _index++;
