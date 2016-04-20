@@ -27,7 +27,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     private Dictionary<GameObject, float> _objsLookedAtDictTime;
     private Dictionary<GameObject, int> _objsLookedAtDictCount;
     private Dictionary<QuestItemScript, int> _questsLookedAtDictCount;
-    private List<DynamicHeatMapData> _dhmdlist;
+    private List<string> _dhmdlist;
     private string _timeStamp, _trackerTime, _newTimeStamp, _oldTimeStamp;
     private DynamicHeatMapData _dhmdA, _dhmdB;
 
@@ -88,13 +88,13 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
                 if (_currentObject != _oldObj) {
 
                     if (_dhmdA.GetSwapper()) {
-                        _dhmdA.SetEndTime(_trackerTime);
-                        _dhmdB.SetStartTime(_trackerTime);
+                        _dhmdA.SetStartTime(_trackerTime);
+                        _dhmdB.SetEndTime(_trackerTime);
                         _dhmdB.SetPlayer(_fpc.gameObject);
                         _dhmdB.SetFurnitureName(_currentObject.name);
                     } else {
-                        _dhmdB.SetEndTime(_trackerTime);
-                        _dhmdA.SetStartTime(_trackerTime);
+                        _dhmdB.SetStartTime(_trackerTime);
+                        _dhmdA.SetEndTime(_trackerTime);
                         _dhmdA.SetPlayer(_fpc.gameObject);
                         _dhmdA.SetFurnitureName(_currentObject.name);
                     }
@@ -110,10 +110,14 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
                         if (_objsLookedAtDictTime.ContainsKey(_objToSave)) {
                             if (_endTime - _tmpTime > 0.5f) { // Lower margin for time looking at 
 
-                                if (_dhmdA.GetSwapper()) {
-                                    _dhmdlist.Add(_dhmdA);
+                                if (!_dhmdA.GetSwapper()) {
+                                    //_dhmdA.PrintData("A");
+                                    string _dm = FormatString(_dhmdA);
+                                    _dhmdlist.Add(_dm);
                                 } else {
-                                    _dhmdlist.Add(_dhmdB);
+                                    //_dhmdB.PrintData("B");
+                                    string _dm = FormatString(_dhmdB);
+                                    _dhmdlist.Add(_dm);
                                 }
                                 _dhmdB.SetSwapper(!_dhmdB.GetSwapper());
                                 _dhmdA.SetSwapper(!_dhmdA.GetSwapper());
@@ -130,13 +134,25 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
     }
 
+    private string FormatString(DynamicHeatMapData tmpdhmd) {
+        string returnedString;
+
+        GameObject _player = tmpdhmd.GetPlayer();
+        string Position = _player.transform.position.x + "," + _player.transform.position.y + "," + _player.transform.position.z;
+        string Rotation = _player.transform.rotation.x + "," + _player.transform.rotation.y + "," + _player.transform.rotation.z + "," + _player.transform.rotation.w;
+
+        returnedString = tmpdhmd.GetFurnitureName() + "," + tmpdhmd.GetStartTime() + "," + tmpdhmd.GetEndTime() + "," + Position + "," + Rotation;
+
+        return returnedString;
+    }
+
     public void StartFindingObjects() {
         _dhmdA = new DynamicHeatMapData();
         _dhmdA.SetSwapper(true);
-        _dhmdA.SetStartTime(_trackerTime);
         _dhmdB = new DynamicHeatMapData();
         _dhmdB.SetSwapper(false);
-        _dhmdlist = new List<DynamicHeatMapData>();
+        _dhmdB.SetStartTime(_trackerTime);
+        _dhmdlist = new List<string>();
 
         _objsLookedAtDictTime = new Dictionary<GameObject, float>();
         _objsLookedAtDictCount = new Dictionary<GameObject, int>();
@@ -169,6 +185,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         GazeManager.Instance.RemoveGazeListener(this);
         GazeManager.Instance.Deactivate();
         Savecsv();
+        SaveDynamicDataToCsv();
     }
 
     public void OnGazeUpdate(GazeData gazeData) {
@@ -252,6 +269,34 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         File.WriteAllText(filePath, sb.ToString());
     }
 
+    void SaveDynamicDataToCsv() {
+        string filePath = Application.persistentDataPath + "/SavedFiles/LookedAtFurnitureDynamic For "
+            + SceneManager.GetActiveScene().name + " "
+            + _timeStamp + ".csv";
+        string delimiter = ",";
+
+        string[][] output = new string[_dhmdlist.Count + 1][]; // +1 for the header
+
+        // Header of csv file
+        output[0] = new string[] { "Name", "StartTime", "EndTime", "PlayerPOSX", "PlayerPOSY", "PlayerPOSZ", "PlayerROTX", "PlayerROTY", "PlayerROTZ", "PlayerROTW" };
+
+        int _index = 0;
+        foreach (var dobj in _dhmdlist) {
+            output[_index + 1] = new string[] { dobj };
+            _index++;
+        }
+
+        int length = output.GetLength(0);
+        StringBuilder sb = new StringBuilder();
+
+        for (int index = 0; index < length; index++) {
+            if (output[index] != null)
+                sb.AppendLine(string.Join(delimiter, output[index]));
+        }
+
+        File.WriteAllText(filePath, sb.ToString());
+    }
+
     public class DynamicHeatMapData {
 
         protected GameObject _player;
@@ -260,6 +305,13 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         protected bool _swapper;
 
         public DynamicHeatMapData() {
+        }
+
+        public DynamicHeatMapData(GameObject p, string fn, string st, string et) {
+            _player = p;
+            _furnitureName = fn;
+            _startTimeStamp = st;
+            _endTimeStamp = et;
         }
 
         public void SetSwapper(bool sw) {
@@ -300,6 +352,10 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
         public string GetEndTime() {
             return _endTimeStamp;
+        }
+
+        public void PrintData(string objs) {
+            Debug.Log(objs + " " + _furnitureName + " " + _startTimeStamp + " " + _endTimeStamp + " " + _player.name);
         }
     }
 }
