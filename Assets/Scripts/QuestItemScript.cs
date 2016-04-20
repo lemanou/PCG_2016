@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityStandardAssets.Characters.FirstPerson;
 
 /*
     This script is placed on each paper to make it a quest item.
@@ -9,6 +10,7 @@ using UnityEngine.UI;
 public class QuestItemScript : MonoBehaviour {
     public int questNumber;
 
+    private FirstPersonController _fpc;
     private bool _once = false;
     private string _char = null;
     private float _timeread, _timereading = 0.0f;
@@ -30,13 +32,26 @@ public class QuestItemScript : MonoBehaviour {
         return false;
     }
 
+    private void Start() {
+        _fpc = FindObjectOfType<FirstPersonController>();
+        //Debug.Log("FPS: " + _fpc);
+    }
+
     private void Update() {
+
+        if (_fpc == null)
+            _fpc = FindObjectOfType<FirstPersonController>();
+
         if (CheckImage()) {
+            if (_fpc.GetRun())
+                _fpc.SetOff(gameObject.name);
             _timereading += Time.deltaTime;
             if (!_once)
                 _once = true;
             // Debug.Log(_timereading);
         } else {
+            if (!_fpc.GetRun())
+                _fpc.SetOn(gameObject.name);
             _timeread += _timereading;
             if (_once) {
                 _once = false;

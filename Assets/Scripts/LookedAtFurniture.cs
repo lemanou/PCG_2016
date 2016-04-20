@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using TETCSharpClient;
 using TETCSharpClient.Data;
 using System.Collections.Generic;
@@ -7,12 +6,14 @@ using UnityEngine.SceneManagement;
 using System.Text;
 using System.IO;
 using System;
+using UnityStandardAssets.Characters.FirstPerson;
 
 // Should be placed on a UI object to move around and find what we are looking at 
 // and for how long
 
 public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
+    private FirstPersonController _fpc;
     private bool _dontTrace = true, _dontWork = false;
     private float _endTime = 0.0f,
         _startTime = 0.0f,
@@ -26,7 +27,9 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     private Dictionary<GameObject, float> _objsLookedAtDictTime;
     private Dictionary<GameObject, int> _objsLookedAtDictCount;
     private Dictionary<QuestItemScript, int> _questsLookedAtDictCount;
-    private string _timeStamp;
+    private List<DynamicHeatMapData> _dhmdlist;
+    private string _timeStamp, _trackerTime, _newTimeStamp, _oldTimeStamp;
+    private DynamicHeatMapData _dhmdA, _dhmdB;
 
     private void Start() {
         // Get time stamp for file name
@@ -42,7 +45,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         GazeManager.Instance.AddGazeListener(this);
 
         _rectTrans = transform.GetComponent<RectTransform>();
-
+        _fpc = FindObjectOfType<FirstPersonController>();
         // The canvas is spawned before all the objects in the PCG level, so that function will be called when all has been placed.
         if (SceneManager.GetActiveScene().name == "scene") {
             StartFindingObjects();
@@ -83,6 +86,19 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
             //Debug.Log(_currentObject.name); ;
             if (_currentObject != null) {
                 if (_currentObject != _oldObj) {
+
+                    if (_dhmdA.GetSwapper()) {
+                        _dhmdA.SetEndTime(_trackerTime);
+                        _dhmdB.SetStartTime(_trackerTime);
+                        _dhmdB.SetPlayer(_fpc.gameObject);
+                        _dhmdB.SetFurnitureName(_currentObject.name);
+                    } else {
+                        _dhmdB.SetEndTime(_trackerTime);
+                        _dhmdA.SetStartTime(_trackerTime);
+                        _dhmdA.SetPlayer(_fpc.gameObject);
+                        _dhmdA.SetFurnitureName(_currentObject.name);
+                    }
+
                     _endTime = Time.time; // Old object's end time
                     _tmpTime = _startTime; // Old object's start time
                     _startTime = Time.time; // New object's start time
@@ -93,9 +109,18 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
                     if (_objToSave) {
                         if (_objsLookedAtDictTime.ContainsKey(_objToSave)) {
                             if (_endTime - _tmpTime > 0.5f) { // Lower margin for time looking at 
+
+                                if (_dhmdA.GetSwapper()) {
+                                    _dhmdlist.Add(_dhmdA);
+                                } else {
+                                    _dhmdlist.Add(_dhmdB);
+                                }
+                                _dhmdB.SetSwapper(!_dhmdB.GetSwapper());
+                                _dhmdA.SetSwapper(!_dhmdA.GetSwapper());
+
                                 _objsLookedAtDictTime[_objToSave] += _endTime - _tmpTime;
                                 _objsLookedAtDictCount[_objToSave] += 1;
-                                Debug.Log("Saving time: " + _objsLookedAtDictTime[_objToSave] + " of GO: " + _objToSave);
+                                //Debug.Log("Saving time: " + _objsLookedAtDictTime[_objToSave] + " of GO: " + _objToSave);
                             }
                         }
                     }
@@ -106,6 +131,13 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     }
 
     public void StartFindingObjects() {
+        _dhmdA = new DynamicHeatMapData();
+        _dhmdA.SetSwapper(true);
+        _dhmdA.SetStartTime(_trackerTime);
+        _dhmdB = new DynamicHeatMapData();
+        _dhmdB.SetSwapper(false);
+        _dhmdlist = new List<DynamicHeatMapData>();
+
         _objsLookedAtDictTime = new Dictionary<GameObject, float>();
         _objsLookedAtDictCount = new Dictionary<GameObject, int>();
         _questsLookedAtDictCount = new Dictionary<QuestItemScript, int>();
@@ -142,6 +174,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     public void OnGazeUpdate(GazeData gazeData) {
         //Add frame to GazeData cache handler
         GazeDataValidator.Instance.Update(gazeData);
+        _trackerTime = gazeData.TimeStampString;
     }
 
 
@@ -217,5 +250,56 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         }
 
         File.WriteAllText(filePath, sb.ToString());
+    }
+
+    public class DynamicHeatMapData {
+
+        protected GameObject _player;
+        protected string _furnitureName,
+            _startTimeStamp, _endTimeStamp;
+        protected bool _swapper;
+
+        public DynamicHeatMapData() {
+        }
+
+        public void SetSwapper(bool sw) {
+            _swapper = sw;
+        }
+
+        public void SetPlayer(GameObject pl) {
+            _player = pl;
+        }
+
+        public void SetFurnitureName(string fn) {
+            _furnitureName = fn;
+        }
+
+        public void SetStartTime(string sts) {
+            _startTimeStamp = sts;
+        }
+
+        public void SetEndTime(string ets) {
+            _endTimeStamp = ets;
+        }
+
+        public bool GetSwapper() {
+            return _swapper;
+        }
+
+        public GameObject GetPlayer() {
+            return _player;
+        }
+
+        public string GetFurnitureName() {
+            return _furnitureName;
+        }
+
+        public string GetStartTime() {
+            return _startTimeStamp;
+        }
+
+        public string GetEndTime() {
+            return _endTimeStamp;
+        }
     }
 }
