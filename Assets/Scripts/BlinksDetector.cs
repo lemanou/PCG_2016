@@ -121,13 +121,12 @@ public class BlinksDetector : MonoBehaviour, IGazeListener {
         string[][] output = new string[_blinksList.Count + 1][]; // +1 for the header
 
         // Header of csv file
-        output[0] = new string[] { "BlinkType", "TimeTracker", "TimeUnity" };
+        output[0] = new string[] { "BlinkType", "TimeTracker" }; // , "TimeUnity"
 
         for (int i = 0; i < _blinksList.Count; i++) {
 
             output[i + 1] = new string[] { _blinksList[i].GetBlinkType(),
-                _blinksList[i].GetTrackerTime(),
-                _blinksList[i].GetUnityTime() };
+                _blinksList[i].GetTrackerTime()}; // , _blinksList[i].GetUnityTime()
         }
 
         int length = output.GetLength(0);

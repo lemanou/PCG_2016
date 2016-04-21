@@ -22466,7 +22466,7 @@ GameObject:
   - 114: {fileID: 231790083}
   - 114: {fileID: 231790082}
   m_Layer: 0
-  m_Name: Bookcase
+  m_Name: Bookcase_QuestB1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55434,7 +55434,7 @@ GameObject:
   - 114: {fileID: 663367835}
   - 65: {fileID: 663367841}
   m_Layer: 0
-  m_Name: paintingLandscapeLarge
+  m_Name: paintingLandscapeLarge_QuestD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77632,7 +77632,7 @@ GameObject:
   - 114: {fileID: 997121498}
   - 114: {fileID: 997121497}
   m_Layer: 0
-  m_Name: sofa
+  m_Name: sofa_QuestB3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85824,7 +85824,7 @@ GameObject:
   - 114: {fileID: 1095387641}
   - 114: {fileID: 1095387640}
   m_Layer: 0
-  m_Name: Bookcase (1)
+  m_Name: Bookcase_QuestD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92100,6 +92100,10 @@ Prefab:
       propertyPath: questItemAttached
       value: 
       objectReference: {fileID: 1061501687}
+    - target: {fileID: 125146, guid: a99fd2377e8aaf34f87218da9eb404a2, type: 2}
+      propertyPath: m_Name
+      value: tableClothB_QuestD3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a99fd2377e8aaf34f87218da9eb404a2, type: 2}
   m_IsPrefabParent: 0
@@ -95364,7 +95368,7 @@ GameObject:
   - 114: {fileID: 1355182919}
   - 114: {fileID: 1355182918}
   m_Layer: 0
-  m_Name: tableDinner
+  m_Name: tableDinner_QuestB2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
