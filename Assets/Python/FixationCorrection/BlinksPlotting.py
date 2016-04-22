@@ -17,8 +17,10 @@ import pandas
 ewma = pandas.stats.moments.ewma
 import matplotlib.pyplot as plt
 
-inputfiles = {"BlinksLoadedSigurdBlue.csv", "BlinksSceneSigurdBlue.csv", "BlinksLoadedElefBrown.csv",
-              "BlinksSceneElefBrown.csv"}
+input_files = {"Blinks For LoadSavedLevel2.csv", "Blinks For LoadSavedLevel3.csv", "Blinks For scene1.csv"}
+path = "2016.04.21/Girl2/"
+type = "AllBlinks"
+()
 
 
 # def wma_jaggy_notused(secondsArray):
@@ -100,13 +102,13 @@ def weighted_moving_average(secondsArray, inputfile):
     plt.ylabel('Blinks per minute')
     # plt.legend(loc=1)
     # Put a legend to the right of the current axis
-    plt.legend(loc='lower center', bbox_to_anchor=(0.5, 1))
-    plt.savefig('ewma_correctionOverTime' + inputfile + '.png', fmt='png', dpi=100)
+    plt.legend(loc='lower center', bbox_to_anchor=(0.5, 0.97))
+    plt.savefig(path + 'ewma_' + inputfile + ' ' + type + '.png', fmt='png', dpi=100)  # correctionOverTime
     plt.show()
 
 
 def main(inputfile):
-    file1 = open(inputfile, 'rb')
+    file1 = open(path + inputfile, 'rb')
     reader = csv.DictReader(file1)
     once = True
 
@@ -114,27 +116,30 @@ def main(inputfile):
     list_of_datetimes = []
     for row in reader:
         # print row['BlinkType']
-        timeminutes = (row['TimeTracker'][11:]).split('.')[0]
-        timemiliseconds = (row['TimeTracker'][11:]).split('.')[1]
-        timemiliseconds = float(timemiliseconds) / 1000
-        x = time.strptime(timeminutes, '%H:%M:%S')
-        if once:
-            starttime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
-            starttime += timemiliseconds
-            list_of_datetimes.append(0)
-            once = False
-            continue
+        if row['BlinkType'] == type or type == "AllBlinks":
+            timeminutes = (row['TimeTracker'][11:]).split('.')[0]
+            timemiliseconds = (row['TimeTracker'][11:]).split('.')[1]
+            timemiliseconds = float(timemiliseconds) / 1000
+            x = time.strptime(timeminutes, '%H:%M:%S')
+            if once:
+                starttime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
+                starttime += timemiliseconds
+                list_of_datetimes.append(0)
+                once = False
+                continue
 
-        newtime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
-        newtime -= starttime
-        newtime += timemiliseconds
-        list_of_datetimes.append(newtime)
+            newtime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
+            newtime -= starttime
+            newtime += timemiliseconds
+            list_of_datetimes.append(newtime)
 
     file1.close()
     # print list_of_datetimes
-    weighted_moving_average(list_of_datetimes, inputfile)
-    # wma_jaggy_notused(list_of_datetimes)
+    if len(list_of_datetimes) > 0:
+        weighted_moving_average(list_of_datetimes, inputfile)
+
+        # wma_jaggy_notused(list_of_datetimes)
 
 
-for tmpfile in inputfiles:
+for tmpfile in input_files:
     main(tmpfile)
