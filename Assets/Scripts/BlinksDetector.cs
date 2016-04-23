@@ -9,17 +9,19 @@ using UnityEngine.SceneManagement;
 
 public class BlinksDetector : MonoBehaviour, IGazeListener {
 
+    private GazeData _gazeData = null;
     private string _timeStamp;
     private float _startTime = 0.0f,
         _blinkTime = 0.0f;
     private int _gazeState,
-        _count = 1;
+        _framesWithValidPosition = 1;
     private Point3D _oldValidUserPos,
         _currentValidUserPos;
     private bool readyForNextBlink;
     private string _timeSUnity, _trackerTime;
     private List<Blinks> _blinksList;
     private bool _countBlinks;
+    private double _curDistance, _oldDistance;
 
     private void Start() {
         _countBlinks = true;
@@ -45,47 +47,95 @@ public class BlinksDetector : MonoBehaviour, IGazeListener {
         _currentValidUserPos = GazeDataValidator.Instance.GetLastValidUserPosition();
 
         if (_currentValidUserPos == _oldValidUserPos)
-            _count++;
+            _framesWithValidPosition++;
         else
-            _count = 1;
+            _framesWithValidPosition = 1;
 
         _oldValidUserPos = _currentValidUserPos;
 
-        if (_count < 10) {
+        if (_framesWithValidPosition < 3) { // if the user has not moved for 3 frames
+
+            _curDistance = GazeDataValidator.Instance.GetLastValidUserDistance();
+            //Debug.Log(_curDistance);
+            if (_curDistance < 0.1) {
+                Debug.LogWarning("Too close to the screen");
+                readyForNextBlink = false;
+                return;
+            }
+
+            if (CheckOneClosedEye()) {
+                Debug.LogWarning("One eye closed");
+                readyForNextBlink = false;
+                return;
+            }
+
             if (CanSeeEyes()) {
                 _startTime = Time.time;
-
-                //Debug.Log("Time: " + _blinkTime);
                 if (readyForNextBlink) {
+                    //Debug.Log("Time: " + _blinkTime);
                     readyForNextBlink = false;
                     if (_blinkTime > 0.0f && _blinkTime <= 0.5f) {
                         _timeSUnity = Time.time.ToString();
                         Blinks blink = new Blinks("NormalBlink", _trackerTime, _timeSUnity);
                         _blinksList.Add(blink);
-                        //Debug.Log("Normal Blink " + _blinksList.Count.ToString());
+                        Debug.Log("Normal Blink " + _blinksList.Count.ToString());
                     } else if (_blinkTime > 0.5f && _blinkTime <= 2.5f) {
                         _timeSUnity = Time.time.ToString();
                         Blinks blink = new Blinks("LongBlink", _trackerTime, _timeSUnity);
                         _blinksList.Add(blink);
-                        //Debug.Log("Long Blink " + _blinksList.Count.ToString());
+                        Debug.Log("Long Blink " + _blinksList.Count.ToString());
                     }
                 }
 
-            } else if (!CanSeeEyes()) {
+            } else if (CheckClosedEyes()) {
                 readyForNextBlink = true;
                 _blinkTime = Time.time - _startTime;
             }
         } else {
             Debug.LogWarning("Not Looking at screen");
+            readyForNextBlink = false;
         }
+    }
+
+    private bool CheckOpenEyes() {
+        if (_gazeData == null)
+            return false;
+
+        if (_gazeData.RightEye.PupilSize > 0 && _gazeData.RightEye.PupilCenterCoordinates.X > 0 && _gazeData.RightEye.PupilCenterCoordinates.Y > 0 &&
+            _gazeData.LeftEye.PupilSize > 0 && _gazeData.LeftEye.PupilCenterCoordinates.X > 0 && _gazeData.LeftEye.PupilCenterCoordinates.Y > 0)
+            return true;
+        return false;
+    }
+
+    private bool CheckOneClosedEye() {
+        if (_gazeData == null)
+            return false;
+
+        if (_gazeData.RightEye.PupilSize == 0 || _gazeData.RightEye.PupilCenterCoordinates.X == 0 || _gazeData.RightEye.PupilCenterCoordinates.Y == 0 ||
+            _gazeData.LeftEye.PupilSize == 0 || _gazeData.LeftEye.PupilCenterCoordinates.X == 0 || _gazeData.LeftEye.PupilCenterCoordinates.Y == 0)
+            if (!CheckClosedEyes())
+                return true;
+        return false;
+    }
+
+    private bool CheckClosedEyes() {
+        if (_gazeData == null)
+            return false;
+
+        if (_gazeData.RightEye.PupilSize == 0 && _gazeData.RightEye.PupilCenterCoordinates.X == 0 && _gazeData.RightEye.PupilCenterCoordinates.Y == 0 &&
+            _gazeData.LeftEye.PupilSize == 0 && _gazeData.LeftEye.PupilCenterCoordinates.X == 0 && _gazeData.LeftEye.PupilCenterCoordinates.Y == 0)
+            return true;
+        return false;
     }
 
     private bool CanSeeEyes() {
         // STATE_TRACKING_GAZE = 1; STATE_TRACKING_EYES = 2; STATE_TRACKING_PRESENCE = 4; STATE_TRACKING = 7
-        if (_gazeState == 7) //_gazeState == 1 || _gazeState == 2 || _gazeState == 4 || 
-            return true;
-        else if (_gazeState == 8 || _gazeState == 16) // STATE_TRACKING_FAIL = 8; STATE_TRACKING_LOST = 16;
-            return false;
+        if (_gazeState == 7) //{//_gazeState == 1 || _gazeState == 2 || _gazeState == 4 || 
+            if (CheckOpenEyes())
+                return true;
+        //} else if (_gazeState == 8 || _gazeState == 16) {// STATE_TRACKING_FAIL = 8; STATE_TRACKING_LOST = 16;
+        //    return false;
+        //}
         return false;
     }
 
@@ -107,6 +157,7 @@ public class BlinksDetector : MonoBehaviour, IGazeListener {
     public void OnGazeUpdate(GazeData gazeData) {
         //Add frame to GazeData cache handler
         GazeDataValidator.Instance.Update(gazeData);
+        _gazeData = gazeData;
         _gazeState = gazeData.State;
         _trackerTime = gazeData.TimeStampString;
     }
