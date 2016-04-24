@@ -7,135 +7,142 @@ Main program.
 ---------------------------------------------------------
 """
 
-import csv
 import numpy as np
 import matplotlib.pyplot as plt
+import math
+import random
+import csv
 import matplotlib.animation as animation
 from matplotlib.collections import LineCollection
 import time
-import math
-import random
 
-fixationradius = ""
-inputfile = "Data - ResultRaw" + str(fixationradius) + ".csv"
-outfilename = "DataCluster"
+# outfilename = "DataCluster"
+# fixationradius = ""
+# inputfile = "Data - ResultRaw" + str(fixationradius) + ".csv"
 
 
-def testPlotSaccadesOnly():
-    data = np.genfromtxt(inputfile, delimiter=',', skip_header=1,
-                         skip_footer=0, names=['CSX', 'CSY'])
+# def testPlotSaccadesOnly():
+#     data = np.genfromtxt(inputfile, delimiter=',', skip_header=1,
+#                          skip_footer=0, names=['CSX', 'CSY'])
+#
+#     fig = plt.figure()
+#     myPlot = fig.add_subplot(111)
+#
+#     myPlot.set_title("Game Gaze ~ test subject 1")
+#     myPlot.set_xlabel('Pixels')
+#     myPlot.set_ylabel('Pixels')
+#
+#     myPlot.plot(data['CSX'], data['CSY'], color='r', label='the data')
+#
+#     # plt.savefig("plot.png")
+#     plt.show()
+#
+#
+# def testPlotWithFixations():
+#     file1 = open(inputfile, 'rb')
+#     reader = csv.DictReader(file1)
+#
+#     fixations_list = []
+#     # saccades_list = []
+#
+#     for row in reader:
+#         # if row['Result'] == 'Saccade':
+#         # saccades_list.append([float(row['CSX']), float(row['CSY'])])
+#         # elif
+#         if row['Result'] == 'Fixation':
+#             fixations_list.append([float(row['CRX']), float(row['CRY'])])
+#             # else:
+#             #   print 'Error in file'
+#
+#     file1.close()
+#
+#     fig = plt.figure()
+#     myPlot = fig.add_subplot(111)
+#     # for row in saccades_list:
+#     #    myPlot.scatter(row[0],row[1], color='r', label='Saccades')
+#
+#     myPlot.set_title("Game Gaze ~ test subject 1")
+#     myPlot.set_xlabel('Pixels')
+#     myPlot.set_ylabel('Pixels')
+#     myPlot.axis([0, 1600, 0, 900])
+#
+#     for row in fixations_list:
+#         myPlot.scatter(row[0], row[1], s=5, color='b', label='Fixations', zorder=10)
+#
+#     data = np.genfromtxt(inputfile, delimiter=',', skip_header=1,
+#                          skip_footer=0, names=['CRX', 'CRY'])
+#
+#     myPlot.plot(data['CRX'], data['CRY'], color='r', label='All data', zorder=1)
+#     plt.savefig("plotRawWithFixations" + str(fixationradius) + ".png")
+#     plt.show()
+#
+#
+# def testthree():
+#     file1 = open("Data - ResultRaw.csv", 'rb')
+#     reader = csv.DictReader(file1)
+#
+#     fixations_list = []
+#     all_list = []
+#
+#     for row in reader:
+#         all_list.append([float(row['CRX']), float(row['CRY'])])
+#         if row['Result'] == 'Fixation':
+#             fixations_list.append([float(row['CRX']), float(row['CRY'])])
+#
+#     file1.close()
+#
+#     fig = plt.figure()
+#     myPlot = fig.add_subplot(111)
+#
+#     myPlot.set_title("Game Gaze ~ test subject 1")
+#     myPlot.set_xlabel('Pixels')
+#     myPlot.set_ylabel('Pixels')
+#     myPlot.axis([0, 1600, 0, 900])
+#
+#     plt.ion()
+#     plt.show()
+#
+#     # for row in all_list:
+#     myPlot.plot(all_list, color='r', label='Fixations', zorder=1)
+#     fig.canvas.draw()
+#
+#     for row in fixations_list:
+#         myPlot.scatter(row[0], row[1], s=5, color='b', label='Fixations', zorder=10)
+#         plt.draw()
+#
+#
+# def testAnimated():
+#     fig = plt.figure()
+#     ax1 = fig.add_subplot(1, 1, 1)
+#
+#     pullData = np.genfromtxt('Data - ResultRaw.csv', delimiter=',', skip_header=1,
+#                              skip_footer=0, names=['CRX', 'CRY'])
+#
+#     plt.ion()
+#     plt.show()
+#
+#     xar = []
+#     yar = []
+#     for eachLine in pullData:
+#         if len(eachLine) > 1:
+#             x, y = str(eachLine).split(',')
+#             xar.append(float(x[1:]))
+#             yar.append(float(y[:-1]))
+#             print eachLine
+#             ax1.clear()
+#             ax1.autoscale(False, axis='both')
+#             ax1.axis([0, 1600, 0, 900])
+#             ax1.plot(xar, yar)
+#             fig.canvas.draw()
 
-    fig = plt.figure()
-    myPlot = fig.add_subplot(111)
+# testPlotSaccadesOnly()
+# testPlotWithFixations()
+# testthree()
+# testAnimated()
 
-    myPlot.set_title("Game Gaze ~ test subject 1")
-    myPlot.set_xlabel('Pixels')
-    myPlot.set_ylabel('Pixels')
-
-    myPlot.plot(data['CSX'], data['CSY'], color='r', label='the data')
-
-    # plt.savefig("plot.png")
-    plt.show()
-
-
-def testPlotWithFixations():
-    file1 = open(inputfile, 'rb')
-    reader = csv.DictReader(file1)
-
-    fixations_list = []
-    # saccades_list = []
-
-    for row in reader:
-        # if row['Result'] == 'Saccade':
-        # saccades_list.append([float(row['CSX']), float(row['CSY'])])
-        # elif
-        if row['Result'] == 'Fixation':
-            fixations_list.append([float(row['CRX']), float(row['CRY'])])
-            # else:
-            #   print 'Error in file'
-
-    file1.close()
-
-    fig = plt.figure()
-    myPlot = fig.add_subplot(111)
-    # for row in saccades_list:
-    #    myPlot.scatter(row[0],row[1], color='r', label='Saccades')
-
-    myPlot.set_title("Game Gaze ~ test subject 1")
-    myPlot.set_xlabel('Pixels')
-    myPlot.set_ylabel('Pixels')
-    myPlot.axis([0, 1600, 0, 900])
-
-    for row in fixations_list:
-        myPlot.scatter(row[0], row[1], s=5, color='b', label='Fixations', zorder=10)
-
-    data = np.genfromtxt(inputfile, delimiter=',', skip_header=1,
-                         skip_footer=0, names=['CRX', 'CRY'])
-
-    myPlot.plot(data['CRX'], data['CRY'], color='r', label='All data', zorder=1)
-    plt.savefig("plotRawWithFixations" + str(fixationradius) + ".png")
-    plt.show()
-
-
-def testthree():
-    file1 = open("Data - ResultRaw.csv", 'rb')
-    reader = csv.DictReader(file1)
-
-    fixations_list = []
-    all_list = []
-
-    for row in reader:
-        all_list.append([float(row['CRX']), float(row['CRY'])])
-        if row['Result'] == 'Fixation':
-            fixations_list.append([float(row['CRX']), float(row['CRY'])])
-
-    file1.close()
-
-    fig = plt.figure()
-    myPlot = fig.add_subplot(111)
-
-    myPlot.set_title("Game Gaze ~ test subject 1")
-    myPlot.set_xlabel('Pixels')
-    myPlot.set_ylabel('Pixels')
-    myPlot.axis([0, 1600, 0, 900])
-
-    plt.ion()
-    plt.show()
-
-    # for row in all_list:
-    myPlot.plot(all_list, color='r', label='Fixations', zorder=1)
-    fig.canvas.draw()
-
-    for row in fixations_list:
-        myPlot.scatter(row[0], row[1], s=5, color='b', label='Fixations', zorder=10)
-        plt.draw()
-
-
-def testAnimated():
-    fig = plt.figure()
-    ax1 = fig.add_subplot(1, 1, 1)
-
-    pullData = np.genfromtxt('Data - ResultRaw.csv', delimiter=',', skip_header=1,
-                             skip_footer=0, names=['CRX', 'CRY'])
-
-    plt.ion()
-    plt.show()
-
-    xar = []
-    yar = []
-    for eachLine in pullData:
-        if len(eachLine) > 1:
-            x, y = str(eachLine).split(',')
-            xar.append(float(x[1:]))
-            yar.append(float(y[:-1]))
-            print eachLine
-            ax1.clear()
-            ax1.autoscale(False, axis='both')
-            ax1.axis([0, 1600, 0, 900])
-            ax1.plot(xar, yar)
-            fig.canvas.draw()
-
-
+input_files = {"Gazes For LoadSavedLevel2.csv", "Gazes For LoadSavedLevel3.csv",
+               "Gazes For scene1.csv"}
+path = "2016.04.21/Girl2/"
 # ================= region DBSCAN testing ============================== #
 # Configurable values
 min_fix = 0.100
@@ -200,13 +207,13 @@ def cluster_frames_DBSCAN(npeyeframes):
     unassigned = 0
     nextp = unassigned
     while nextp < len(labels):
-        print ("DBSCAN index %d" % nextp)
+        # print ("DBSCAN index %d" % nextp)
         if labels[nextp] == 0:
             neighbours = query_region(npeyeframes, unassigned, nextp)
             if len(neighbours) < min_fix_pts:
                 print ("   Too few neighbours; leaving point alone: %d" % len(neighbours))
             else:
-                print ("   New cluster: %d [Initial: %d]" % (label, len(neighbours)))
+                # print ("   New cluster: %d [Initial: %d]" % (label, len(neighbours)))
                 unvisited = neighbours
                 unvisited.remove(nextp)
                 visited = set()
@@ -227,7 +234,7 @@ def cluster_frames_DBSCAN(npeyeframes):
 
                 unassigned = nextp + 1
                 label += 1
-                print ("   Next unassigned: %d [Final: %d]" % (unassigned, len(visited)))
+                # print ("   Next unassigned: %d [Final: %d]" % (unassigned, len(visited)))
         else:
             print ("   Already assigned to %d" % labels[nextp])
 
@@ -235,7 +242,7 @@ def cluster_frames_DBSCAN(npeyeframes):
 
     # remove any empty last cluster
     if len(npeyeframes[labels == label]) == 0:
-        print ("   Last cluster (%d) is empty, removing" % (label))
+        # print ("   Last cluster (%d) is empty, removing" % (label))
         label -= 1
 
     # calculate the cluster centers...
@@ -262,8 +269,9 @@ def cluster_frames_DBSCAN(npeyeframes):
 def myFloat(myList):
     return map(float, myList)
 
-def main():
-    data = np.genfromtxt(inputfile, delimiter=',', skip_header=1, names=['CRX', 'CRY'])
+
+def main(inputfile):
+    data = np.genfromtxt(path + inputfile, delimiter=',', skip_header=1, names=['CRX', 'CRY'])
     data = np.array(map(myFloat, data))  # refactor double string array to double float array
 
     # Cluster the data into and centers and labels
@@ -283,7 +291,7 @@ def main():
     fig = plt.figure()
     myplot = fig.add_subplot(111)
 
-    myplot.set_title("plotRawWithFixationsClustered" + str(fixationradius) + ".png")
+    myplot.set_title("Raw Clustered")  # + str(fixationradius) +
     myplot.set_xlabel('Pixels')
     myplot.set_ylabel('Pixels')
     myplot.axis([0, 1600, 0, 900])
@@ -292,14 +300,14 @@ def main():
     myg = 80
     myb = 160
     for members in fixations_list:
-        memmberscolor, myr, myg, myb = generate_color(myr, myg, myb)
+        memmbers_color, myr, myg, myb = generate_color(myr, myg, myb)
         for points in members:
-            myplot.scatter(points[0], points[1], s=5, color=memmberscolor, label='Fixations', zorder=10)
+            myplot.scatter(points[0], points[1], s=5, color=memmbers_color, label='Fixations', zorder=10)
 
-    newdata = np.genfromtxt(inputfile, delimiter=',', skip_header=1, skip_footer=0, names=['CRX', 'CRY'])
+    new_data = np.genfromtxt(path + inputfile, delimiter=',', skip_header=1, skip_footer=0, names=['CRX', 'CRY'])
 
-    myplot.plot(newdata['CRX'], newdata['CRY'], color='black', label='All data', zorder=1)
-    plt.savefig("plotRawWithFixationsClustered" + str(fixationradius) + ".png")
+    myplot.plot(new_data['CRX'], new_data['CRY'], color='black', label='All data', zorder=1)
+    plt.savefig(path + 'RawClustered' + inputfile + '.png')
     plt.show()
 
     # plot total number of fixations and sacades
@@ -329,12 +337,11 @@ def main():
     plt.legend()
 
     plt.tight_layout()
-    plt.show()
+    # plt.savefig(path + 'FixationsSum' + inputfile + '.png')
+    # plt.show()
+
+
 # ================= endregion DBSCAN testing ======================== #
 
-
-# testPlotSaccadesOnly()
-# testPlotWithFixations()
-# testthree()
-# testAnimated()
-main()
+for tmpfile in input_files:
+    main(tmpfile)
