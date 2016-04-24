@@ -14,7 +14,8 @@ public class BlinksDetector : MonoBehaviour, IGazeListener {
     private float _startTime = 0.0f,
         _blinkTime = 0.0f;
     private int _gazeState,
-        _framesWithValidPosition = 1;
+        _framesWithValidPosition = 1,
+        _count = 1;
     private Point3D _oldValidUserPos,
         _currentValidUserPos;
     private bool readyForNextBlink;
@@ -53,15 +54,7 @@ public class BlinksDetector : MonoBehaviour, IGazeListener {
 
         _oldValidUserPos = _currentValidUserPos;
 
-        if (_framesWithValidPosition < 3) { // if the user has not moved for 3 frames
-
-            _curDistance = GazeDataValidator.Instance.GetLastValidUserDistance();
-            //Debug.Log(_curDistance);
-            if (_curDistance < 0.1) {
-                Debug.LogWarning("Too close to the screen");
-                readyForNextBlink = false;
-                return;
-            }
+        if (_framesWithValidPosition < 10) { // if the user has not moved for 10 frames
 
             if (CheckOneClosedEye()) {
                 Debug.LogWarning("One eye closed");
@@ -69,8 +62,28 @@ public class BlinksDetector : MonoBehaviour, IGazeListener {
                 return;
             }
 
+            _curDistance = GazeDataValidator.Instance.GetLastValidUserDistance();
+            _curDistance = Math.Round(_curDistance, 3); // Keep two decimals
+            if (_curDistance != _oldDistance) {
+                _count++;
+            } else {
+                _count = 1;
+            }
+
+            _oldDistance = _curDistance;
+
+            if (_count > 30) { // half a second? 
+                Debug.LogWarning("You moving WAAAAY too often, " + "Current Distance= " + _curDistance);
+                readyForNextBlink = false;
+                return;
+            }
+
             if (CanSeeEyes()) {
                 _startTime = Time.time;
+                if (!CheckOpenEyes()) {
+                    Debug.Log("One Eye blink?");
+                    return;
+                }
                 if (readyForNextBlink) {
                     //Debug.Log("Time: " + _blinkTime);
                     readyForNextBlink = false;
@@ -86,7 +99,6 @@ public class BlinksDetector : MonoBehaviour, IGazeListener {
                         Debug.Log("Long Blink " + _blinksList.Count.ToString());
                     }
                 }
-
             } else if (CheckClosedEyes()) {
                 readyForNextBlink = true;
                 _blinkTime = Time.time - _startTime;

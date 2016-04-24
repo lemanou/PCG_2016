@@ -63,20 +63,20 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
             return;
 
         // if a quest item is on, don't trace, they trace themselves
-        if (_questsLookedAtDictCount != null)
-            foreach (QuestItemScript qis in _questsLookedAtDictCount.Keys) {
-                if (qis != null) {
-                    if (qis.CheckImage()) {
-                        _dontTrace = true;
-                        break;
-                    } else {
-                        _dontTrace = false;
-                    }
-                }
-            }
+        //if (_questsLookedAtDictCount != null)
+        //    foreach (QuestItemScript qis in _questsLookedAtDictCount.Keys) {
+        //        if (qis != null) {
+        //            if (qis.CheckImage()) {
+        //                _dontTrace = true;
+        //                break;
+        //            } else {
+        //                _dontTrace = false;
+        //            }
+        //        }
+        //    }
 
-        if (_dontTrace)
-            return;
+        //if (_dontTrace)
+        //    return;
 
         Ray mRay = Camera.main.ScreenPointToRay(transform.position);
         //Debug.DrawRay(mRay.origin, mRay.direction * 100, Color.red);
