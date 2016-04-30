@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour {
                 RestartGame();
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.O)) {
             // Enable loading image
             LoadingScreenImage lsi = FindObjectOfType<LoadingScreenImage>();
             if (lsi != null)

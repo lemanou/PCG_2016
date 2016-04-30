@@ -140,9 +140,8 @@ import time
 # testthree()
 # testAnimated()
 
-input_files = {"Gazes For LoadSavedLevel2.csv", "Gazes For LoadSavedLevel3.csv",
-               "Gazes For scene1.csv"}
-path = "2016.04.21/Girl2/"
+input_files = {"Gazes For LoadSavedLevel1.csv", "Gazes For scene2.csv"}
+path = "2016.04.28/Girl2/"
 # ================= region DBSCAN testing ============================== #
 # Configurable values
 min_fix = 0.100
