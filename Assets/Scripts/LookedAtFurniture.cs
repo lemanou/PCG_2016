@@ -14,7 +14,8 @@ using UnityStandardAssets.Characters.FirstPerson;
 public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
     private FirstPersonController _fpc;
-    private bool _dontTrace = true, _dontWork = false;
+    //private bool _dontTrace = true, 
+    private bool _dontWork = false;
     private float _endTime = 0.0f,
         _startTime = 0.0f,
         _tmpTime = 0.0f;
@@ -59,7 +60,10 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     }
 
     void FixedUpdate() {
-        if (_dontWork)
+        if (_fpc == null)
+            _fpc = FindObjectOfType<FirstPersonController>();
+
+        if (_dontWork || _fpc == null)
             return;
 
         // if a quest item is on, don't trace, they trace themselves
@@ -170,7 +174,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         }
         //Debug.Log(_objsLookedAtDictTime.Count);
         //Debug.Log(_questsLookedAtDictTime.Count);
-        _dontTrace = false;
+        //_dontTrace = false;
     }
 
     //private void OnApplicationQuit() {

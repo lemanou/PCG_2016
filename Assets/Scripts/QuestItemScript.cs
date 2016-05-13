@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityStandardAssets.Characters.FirstPerson;
 
@@ -38,29 +39,35 @@ public class QuestItemScript : MonoBehaviour {
     }
 
     private void Update() {
+        if (SceneManager.GetActiveScene().name == "PCG" && gameObject.name == "TutorialPaper") {
+            gameObject.SetActive(false);
+            return;
+        }
+
 
         if (_fpc == null)
             _fpc = FindObjectOfType<FirstPersonController>();
 
-        if (CheckImage()) {
-            if (_fpc.GetRun())
-                _fpc.SetOff(gameObject.name);
-            _timereading += Time.deltaTime;
-            if (!_once)
-                _once = true;
-            // Debug.Log(_timereading);
-        } else {
-            if (!_fpc.GetRun())
-                _fpc.SetOn(gameObject.name);
-            _timeread += _timereading;
-            if (_once) {
-                _once = false;
-                _countread += 1;
+        if (_fpc != null)
+            if (CheckImage()) {
+                if (_fpc.GetRun())
+                    _fpc.SetOff(gameObject.name);
+                _timereading += Time.deltaTime;
+                if (!_once)
+                    _once = true;
+                // Debug.Log(_timereading);
+            } else {
+                if (!_fpc.GetRun())
+                    _fpc.SetOn(gameObject.name);
+                _timeread += _timereading;
+                if (_once) {
+                    _once = false;
+                    _countread += 1;
+                }
+                // if (_timeread > 0)
+                // Debug.Log(gameObject.name + ": " + _timeread + ", times: " + _countread);
+                _timereading = 0;
             }
-            // if (_timeread > 0)
-            // Debug.Log(gameObject.name + ": " + _timeread + ", times: " + _countread);
-            _timereading = 0;
-        }
     }
 
     private void FindCharName() {

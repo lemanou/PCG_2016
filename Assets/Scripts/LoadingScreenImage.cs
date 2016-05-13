@@ -21,6 +21,12 @@ public class LoadingScreenImage : MonoBehaviour {
     }
 
     void Update() {
+        if (SceneManager.GetActiveScene().name == "PCG") {
+            _loadingImage.enabled = false;
+            _loadingText.enabled = false;
+            return;
+        }
+
         _timer = Time.timeSinceLevelLoad;
 
         if (SceneManager.GetActiveScene().name != "SelectionMenu") {
