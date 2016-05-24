@@ -17,9 +17,8 @@ import pandas
 ewma = pandas.stats.moments.ewma
 import matplotlib.pyplot as plt
 
-input_files = {"Blinks For LoadSavedLevel2.csv", "Blinks For scene1.csv"}
-path = "2016.04.28/Guy2/"
-type = "AllBlinks"
+input_files = {"Blinks For LoadSavedLevel1.csv", "Blinks For scene2.csv"}
+path = "2016.04.21/Panos/"
 
 
 # def wma_jaggy_notused(secondsArray):
@@ -62,116 +61,102 @@ type = "AllBlinks"
 #     plt.show()
 
 
-def weighted_moving_average(secondsArray, inputfile, arrayForLongBlinkSeconds=None):
-    mySecondsArray = np.array(secondsArray)
+def hampel_filter(secondsArray):
+    # hampel filter algorithm
     my_list = []
+    for value in range(0, int(secondsArray.max())):
+        count = 0
+        testneg = max(value - 7.5, 0)
+        testpos = min(value + 7.5, secondsArray.max())
+        for v in secondsArray:
+            if v >= testneg and v <= testpos:
+                # print "For point: ", value, " value: ", v, "found in range: ", testneg, testpos
+                count += 1
+            elif v > testpos:
+                # print "Skipping bigger num: " , testpos
+                break
+        # dividing by current interval and multiplying by 60 seconds to get blinks per minute
+        count = (count / (testpos - testneg)) * 60
+        my_list.append(count)
+    return my_list
 
+
+def count_list(a_list):
+    count = 0
+    countList = []
+    for i in a_list:
+        count += 1
+        countList.append(count)
+    return countList
+
+
+def calculate_ewma(a_list):
+    fwd = ewma(a_list, span=15)  # take EWMA in fwd direction
+    bwd = ewma(a_list[::-1], span=15)  # take EWMA in bwd direction
+    c = np.vstack((fwd, bwd[::-1]))  # lump fwd and bwd together
+    c = np.mean(c, axis=0)  # average
+    return c
+
+
+def weighted_moving_average(inputfile, arrayForNormalBlinksSeconds, arrayForLongBlinkSeconds=None):
+    blink_type = "AllBlinks"
     if arrayForLongBlinkSeconds is None:
-        # Make all blinks plot
-        for value in range(0, int(mySecondsArray.max())):
-            count = 0
-            testneg = max(value - 7.5, 0)
-            testpos = min(value + 7.5, mySecondsArray.max())
-            for v in mySecondsArray:
-                if v >= testneg and v <= testpos:
-                    # print "For point: ", value, " value: ", v, "found in range: ", testneg, testpos
-                    count += 1
-                elif v > testpos:
-                    # print "Skipping bigger num: " , testpos
-                    break
-            count = (count / (testpos - testneg)) * 60
-            my_list.append(count)
-
-        # print my_list, len(my_list)
-        my_list = np.array(my_list)
-        plt.plot(my_list, alpha=0.2, label='Raw')
+        # Make ~ All blinks plot
+        mySecondsArray = np.array(arrayForNormalBlinksSeconds)
+        my_normalList = np.array(hampel_filter(mySecondsArray))
+        plt.plot(my_normalList, alpha=0.2, label='Raw')
 
         # take EWMA in both directions with a smaller span term
-        fwd = ewma(my_list, span=15)  # take EWMA in fwd direction
-        bwd = ewma(my_list[::-1], span=15)  # take EWMA in bwd direction
-        c = np.vstack((fwd, bwd[::-1]))  # lump fwd and bwd together
-        c = np.mean(c, axis=0)  # average
-
+        c = calculate_ewma(my_normalList)
         # regular EWMA, with bias against trend
         # plt.plot(fwd, 'b', label='EWMA, span=15')
-
         # "corrected" (?) EWMA
         plt.plot(c, 'r', label='Reversed-Recombined')
 
-        plt.xlabel('Seconds')
-        plt.ylabel('Blinks per minute')
-        # plt.legend(loc=1)
-        # Put a legend to the right of the current axis
-        plt.legend(loc='lower center', bbox_to_anchor=(0.5, 0.97))
-        plt.savefig(path + 'ewma_' + inputfile + ' ' + type + '.png', fmt='png', dpi=100)  # correctionOverTime
-        plt.show()
+        # Calculate linear regression
+        countList = count_list(my_normalList)
+        z = np.polyfit(countList, my_normalList, 1)
+        p = np.poly1d(z)
+        plt.plot(countList, p(countList), 'r--', alpha=0.7, label='Linear Regression')
     else:
-        # Make all normal against long blinks plot
+        # Make ~ Normal against Long blinks plot
+        blink_type = "NormVsLong"
+        mySecondsArray = np.array(arrayForNormalBlinksSeconds)
+        my_normalList = np.array(hampel_filter(mySecondsArray))
         myLongSecondsArray = np.array(arrayForLongBlinkSeconds)
-        my_Longlist = []
-        for value in range(0, int(myLongSecondsArray.max())):
-            count = 0
-            testneg = max(value - 7.5, 0)
-            testpos = min(value + 7.5, myLongSecondsArray.max())
-            for v in myLongSecondsArray:
-                if v >= testneg and v <= testpos:
-                    # print "For point: ", value, " value: ", v, "found in range: ", testneg, testpos
-                    count += 1
-                elif v > testpos:
-                    # print "Skipping bigger num: " , testpos
-                    break
-            count = (count / (testpos - testneg)) * 60
-            my_Longlist.append(count)
-
-        for value in range(0, int(mySecondsArray.max())):
-            count = 0
-            testneg = max(value - 7.5, 0)
-            testpos = min(value + 7.5, mySecondsArray.max())
-            for v in mySecondsArray:
-                if v >= testneg and v <= testpos:
-                    # print "For point: ", value, " value: ", v, "found in range: ", testneg, testpos
-                    count += 1
-                elif v > testpos:
-                    # print "Skipping bigger num: " , testpos
-                    break
-            count = (count / (testpos - testneg)) * 60
-            my_list.append(count)
-
-        # print my_list, len(my_list)
-        my_list = np.array(my_list)
-        my_Longlist = np.array(my_Longlist)
-        # plt.plot(my_list, alpha=0.2, label='Raw')
+        my_longList = np.array(hampel_filter(myLongSecondsArray))
 
         # take EWMA in both directions with a smaller span term
-        fwd = ewma(my_list, span=15)  # take EWMA in fwd direction
-        bwd = ewma(my_list[::-1], span=15)  # take EWMA in bwd direction
-        c = np.vstack((fwd, bwd[::-1]))  # lump fwd and bwd together
-        c = np.mean(c, axis=0)  # average
-
-        # take EWMA in both directions with a smaller span term
-        fwdlong = ewma(my_Longlist, span=15)  # take EWMA in fwd direction
-        bwdlong = ewma(my_Longlist[::-1], span=15)  # take EWMA in bwd direction
-        clong = np.vstack((fwdlong, bwdlong[::-1]))  # lump fwd and bwd together
-        clong = np.mean(clong, axis=0)  # average
-
+        c = calculate_ewma(my_normalList)
+        clong = calculate_ewma(my_longList)
         # regular EWMA, with bias against trend
         # plt.plot(fwd, 'b', label='EWMA, span=15')
-
         # "corrected" (?) EWMA
         plt.plot(c, 'r', label='Recombined EWMA Normal')
         plt.plot(clong, 'b', label='Recombined EWMA Long')
 
-        plt.xlabel('Seconds')
-        plt.ylabel('Blinks per minute')
-        # plt.legend(loc=1)
-        # Put a legend to the right of the current axis
-        plt.legend(loc='lower center', bbox_to_anchor=(0.5, 0.97))
-        plt.savefig(path + 'ewma_' + inputfile + ' ' + 'NormVsLong' + '.png', fmt='png', dpi=100)  # correctionOverTime
-        plt.show()
+        # Calculate linear regression
+        countList = count_list(my_normalList)
+        z = np.polyfit(countList, my_normalList, 1)
+        p = np.poly1d(z)
+        plt.plot(countList, p(countList), 'r--', alpha=0.7, label='Linear Regression Normal')
+
+        countList = count_list(my_longList)
+        z = np.polyfit(countList, my_longList, 1)
+        p = np.poly1d(z)
+        plt.plot(countList, p(countList), 'b--', alpha=0.7, label='Linear Regression Long')
+
+    plt.xlabel('Seconds')
+    plt.ylabel('Blinks per minute')
+    # plt.legend(loc=1)
+    # Put a legend to the right of the current axis
+    plt.legend(loc='lower left', bbox_to_anchor=(0.55, 0.85))
+    plt.savefig(path + 'ewma_' + inputfile[:-4] + ' ' + blink_type + '.png', fmt='png', dpi=100)  # correctionOverTime
+    plt.show()
 
 
-def plotNormalAgainstLong(inputfile):
-    file1 = open(path + inputfile, 'rb')
+def normal_against_long(input_file):
+    file1 = open(path + input_file, 'rb')
     reader = csv.DictReader(file1)
     onceN = True
     onceL = True
@@ -214,11 +199,11 @@ def plotNormalAgainstLong(inputfile):
     file1.close()
 
     if len(list_of_datetimesL) > 0:
-        weighted_moving_average(list_of_datetimesN, inputfile[:-4], list_of_datetimesL)
+        weighted_moving_average(input_file, list_of_datetimesN, list_of_datetimesL)
 
 
-def main(inputfile):
-    file1 = open(path + inputfile, 'rb')
+def all_blinks(input_file):
+    file1 = open(path + input_file, 'rb')
     reader = csv.DictReader(file1)
     once = True
 
@@ -226,31 +211,30 @@ def main(inputfile):
     list_of_datetimes = []
     for row in reader:
         # print row['BlinkType']
-        if row['BlinkType'] == type or type == "AllBlinks":
-            timeminutes = (row['TimeTracker'][11:]).split('.')[0]
-            timemiliseconds = (row['TimeTracker'][11:]).split('.')[1]
-            timemiliseconds = float(timemiliseconds) / 1000
-            x = time.strptime(timeminutes, '%H:%M:%S')
-            if once:
-                starttime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
-                starttime += timemiliseconds
-                list_of_datetimes.append(0)
-                once = False
-                continue
+        timeminutes = (row['TimeTracker'][11:]).split('.')[0]
+        timemiliseconds = (row['TimeTracker'][11:]).split('.')[1]
+        timemiliseconds = float(timemiliseconds) / 1000
+        x = time.strptime(timeminutes, '%H:%M:%S')
+        if once:
+            starttime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
+            starttime += timemiliseconds
+            list_of_datetimes.append(0)
+            once = False
+            continue
 
-            newtime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
-            newtime -= starttime
-            newtime += timemiliseconds
-            list_of_datetimes.append(newtime)
+        newtime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
+        newtime -= starttime
+        newtime += timemiliseconds
+        list_of_datetimes.append(newtime)
 
     file1.close()
     # print list_of_datetimes
     # wma_jaggy_notused(list_of_datetimes)
 
     if len(list_of_datetimes) > 0:
-        weighted_moving_average(list_of_datetimes, inputfile)
+        weighted_moving_average(input_file, list_of_datetimes)
 
 
-for tmpfile in input_files:
-    main(tmpfile)
-    plotNormalAgainstLong(tmpfile)
+for tmp_file in input_files:
+    all_blinks(tmp_file)
+    normal_against_long(tmp_file)
