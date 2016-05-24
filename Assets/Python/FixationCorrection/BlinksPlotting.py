@@ -21,46 +21,6 @@ input_files = {"Blinks For LoadSavedLevel1.csv", "Blinks For scene2.csv"}
 path = "2016.04.21/Panos/"
 
 
-# def wma_jaggy_notused(secondsArray):
-#     mySecondsArray = np.array(secondsArray)
-#
-#     my_list = []
-#
-#     for value in mySecondsArray:
-#         count = 0
-#         testneg = max(value - 7.5, 0)
-#         testpos = min(value + 7.5, mySecondsArray.max())
-#         for v in mySecondsArray:
-#             if v >= testneg and v <= testpos:
-#                 # print "For point: ", value, " value: ", v, "found in range: ", testneg, testpos
-#                 count += 1
-#             elif v > testpos:
-#                 # print "Skipping bigger num: " , testpos
-#                 break
-#         count = (count / (testpos - testneg)) * 60
-#         my_list.append(count)
-#
-#     plt.plot(mySecondsArray, my_list, alpha=0.4, label='Raw')
-#
-#     # take EWMA in both directions with a smaller span term
-#     fwd = ewma(mySecondsArray, span=15)  # take EWMA in fwd direction
-#     bwd = ewma(mySecondsArray[::-1], span=15)  # take EWMA in bwd direction
-#     c = np.vstack((fwd, bwd[::-1]))  # lump fwd and bwd together
-#     c = np.mean(c, axis=0)  # average
-#
-#     # regular EWMA, with bias against trend
-#     plt.plot(fwd, my_list, 'b', label='EWMA, span=15')
-#
-#     # "corrected" (?) EWMA
-#     plt.plot(c, my_list, 'r', label='Reversed-Recombined')
-#
-#     # plt.legend(loc=1)
-#     # Put a legend to the right of the current axis
-#     plt.legend(loc='lower center', bbox_to_anchor=(0.5, 1))
-#     plt.savefig('test.png', fmt='png', dpi=100)
-#     plt.show()
-
-
 def hampel_filter(secondsArray):
     # hampel filter algorithm
     my_list = []
@@ -81,13 +41,13 @@ def hampel_filter(secondsArray):
     return my_list
 
 
-def count_list(a_list):
+def create_count_list(a_list):
     count = 0
-    countList = []
+    count_list = []
     for i in a_list:
         count += 1
-        countList.append(count)
-    return countList
+        count_list.append(count)
+    return count_list
 
 
 def calculate_ewma(a_list):
@@ -114,7 +74,7 @@ def weighted_moving_average(inputfile, arrayForNormalBlinksSeconds, arrayForLong
         plt.plot(c, 'r', label='Reversed-Recombined')
 
         # Calculate linear regression
-        countList = count_list(my_normalList)
+        countList = create_count_list(my_normalList)
         z = np.polyfit(countList, my_normalList, 1)
         p = np.poly1d(z)
         plt.plot(countList, p(countList), 'r--', alpha=0.7, label='Linear Regression')
@@ -136,15 +96,15 @@ def weighted_moving_average(inputfile, arrayForNormalBlinksSeconds, arrayForLong
         plt.plot(clong, 'b', label='Recombined EWMA Long')
 
         # Calculate linear regression
-        countList = count_list(my_normalList)
-        z = np.polyfit(countList, my_normalList, 1)
+        cnt_list = create_count_list(my_normalList)
+        z = np.polyfit(cnt_list, my_normalList, 1)
         p = np.poly1d(z)
-        plt.plot(countList, p(countList), 'r--', alpha=0.7, label='Linear Regression Normal')
+        plt.plot(cnt_list, p(cnt_list), 'r--', alpha=0.7, label='Linear Regression Normal')
 
-        countList = count_list(my_longList)
-        z = np.polyfit(countList, my_longList, 1)
+        cnt_list = create_count_list(my_longList)
+        z = np.polyfit(cnt_list, my_longList, 1)
         p = np.poly1d(z)
-        plt.plot(countList, p(countList), 'b--', alpha=0.7, label='Linear Regression Long')
+        plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.7, label='Linear Regression Long')
 
     plt.xlabel('Seconds')
     plt.ylabel('Blinks per minute')
@@ -158,8 +118,8 @@ def weighted_moving_average(inputfile, arrayForNormalBlinksSeconds, arrayForLong
 def normal_against_long(input_file):
     file1 = open(path + input_file, 'rb')
     reader = csv.DictReader(file1)
-    onceN = True
-    onceL = True
+    once_normal = True
+    once_long = True
 
     starttime = 0.0
     list_of_datetimesN = []
@@ -172,11 +132,11 @@ def normal_against_long(input_file):
         x = time.strptime(timeminutes, '%H:%M:%S')
 
         if row['BlinkType'] == "NormalBlink":
-            if onceN:
+            if once_normal:
                 starttime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
                 starttime += timemiliseconds
                 list_of_datetimesN.append(0)
-                onceN = False
+                once_normal = False
                 continue
 
             newtime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
@@ -184,11 +144,11 @@ def normal_against_long(input_file):
             newtime += timemiliseconds
             list_of_datetimesN.append(newtime)
         elif row['BlinkType'] == "LongBlink":
-            if onceL:
+            if once_long:
                 starttime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
                 starttime += timemiliseconds
                 list_of_datetimesN.append(0)
-                onceL = False
+                once_long = False
                 continue
 
             newtime = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
