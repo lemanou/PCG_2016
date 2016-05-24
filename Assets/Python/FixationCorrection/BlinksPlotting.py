@@ -68,6 +68,7 @@ def weighted_moving_average(secondsArray, inputfile, arrayForLongBlinkSeconds=No
 
     if arrayForLongBlinkSeconds is None:
         # Make all blinks plot
+        # Hampel filter algorithm
         for value in range(0, int(mySecondsArray.max())):
             count = 0
             testneg = max(value - 7.5, 0)
@@ -79,7 +80,7 @@ def weighted_moving_average(secondsArray, inputfile, arrayForLongBlinkSeconds=No
                 elif v > testpos:
                     # print "Skipping bigger num: " , testpos
                     break
-            count = (count / (testpos - testneg)) * 60
+            count = (count / (testpos - testneg)) * 60 # dividing by current interval and * 60 seconds to get blinks per minute
             my_list.append(count)
 
         # print my_list, len(my_list)
