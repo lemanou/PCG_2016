@@ -3,7 +3,6 @@ __author__ = 'Eleftherios'
 """
 Created on Mar 27 2016
 PCG Thesis - Data Clustering
-Main program.
 ---------------------------------------------------------
 """
 
@@ -11,11 +10,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import random
+from matplotlib.font_manager import FontProperties
 import csv
 import matplotlib.animation as animation
 from matplotlib.collections import LineCollection
 import time
+import datetime
+import pandas
 
+ewma = pandas.stats.moments.ewma
 # outfilename = "DataCluster"
 # fixationradius = ""
 # inputfile = "Data - ResultRaw" + str(fixationradius) + ".csv"
@@ -140,8 +143,8 @@ import time
 # testthree()
 # testAnimated()
 
-input_files = {"Gazes For LoadSavedLevel1.csv", "Gazes For scene2.csv"}
-path = "2016.04.28/Girl2/"
+input_files = {"Gazes For LoadSavedLevel2.csv", "Gazes For scene1.csv"}
+path = "2016.05.21/Girl1/"
 # ================= region DBSCAN testing ============================== #
 # Configurable values
 min_fix = 0.100
@@ -150,6 +153,67 @@ frame_res = 60.0
 
 # Derived value(s)
 min_fix_pts = round(min_fix * frame_res)
+
+
+def hampel_filter_with_value(times_array, length_array):
+    # hampel filter algorithm
+    window = 7.5
+    my_list = []
+    max_in_array = times_array[-1]
+    for value in times_array:
+        duration = 0
+        counter = 0
+        # print value[1], max_in_array[1]
+        test_neg = max(value[1] - window, 0)
+        test_pos = min(value[1] + window, max_in_array[1])
+        for i in range(0, len(times_array)):
+            # print times_array[i][1]
+            if test_neg <= times_array[i][1] <= test_pos:
+                # print "For point: ", value, " value: ", v, "found in range: ", test_neg, test_pos
+                # print 'Adding: ' + str(length_array[i])
+                duration += length_array[i]
+                counter += 1
+            elif times_array[i][1] > test_pos:
+                # print "Skipping bigger num: " , test_pos
+                break
+        # average duration per fixation
+        duration /= counter
+        # dividing by current interval and multiplying by 60 seconds to get blinks per minute
+        duration = (duration / (test_pos - test_neg)) * 60
+        my_list.append(duration)
+    # print my_list
+    return my_list
+
+
+def hampel_filter(seconds_array):
+    # hampel filter algorithm
+    window = 7.5
+    my_list = []
+    max_in_array = seconds_array[-1]
+    for value in seconds_array:
+        count = 0
+        # print value[1], max_in_array[1]
+        test_neg = max(value[1] - window, 0)
+        test_pos = min(value[1] + window, max_in_array[1])
+        for v in seconds_array:
+            if test_neg <= v[1] <= test_pos:
+                # print "For point: ", value, " value: ", v, "found in range: ", test_neg, test_pos
+                count += 1
+            elif v[1] > test_pos:
+                # print "Skipping bigger num: " , test_pos
+                break
+        # dividing by current interval and multiplying by 60 seconds to get blinks per minute
+        count = (count / (test_pos - test_neg)) * 60
+        my_list.append(count)
+    # print my_list
+    return my_list
+
+
+def create_count_list(a_list):
+    count_list = []
+    for i in range(1, len(a_list) + 1):
+        count_list.append(i)
+    return count_list
 
 
 def generate_color(r, g, b):
@@ -163,7 +227,7 @@ def generate_color(r, g, b):
     if b > 240:
         b = 0
 
-    color = '#{:02x}{:02x}{:02x}'.format(r, g, b)
+    # color = '#{:02x}{:02x}{:02x}'.format(r, g, b)
     color = '#{:02x}{:02x}{:02x}'.format(*map(lambda x: random.randint(0, 255), range(3)))
     return color, r, g, b
 
@@ -262,16 +326,24 @@ def cluster_frames_DBSCAN(npeyeframes):
             cluster_centers[l] = np.concatenate((cmean, cmin, cmax, cstd))
             # print  "LA:", "\n", cluster_centers[l], "\n", len(np.concatenate((cmean, cmin, cmax, cstd)))
 
-    return (labels, cluster_centers)
+    return labels, cluster_centers
 
 
-def myFloat(myList):
-    return map(float, myList)
+def map_float_list(a_list):
+    return map(float, a_list)
 
 
-def main(inputfile):
-    data = np.genfromtxt(path + inputfile, delimiter=',', skip_header=1, names=['CRX', 'CRY'])
-    data = np.array(map(myFloat, data))  # refactor double string array to double float array
+def calculate_ewma(a_list):
+    fwd = ewma(a_list, span=15)  # take EWMA in fwd direction
+    bwd = ewma(a_list[::-1], span=15)  # take EWMA in bwd direction
+    c = np.vstack((fwd, bwd[::-1]))  # lump fwd and bwd together
+    c = np.mean(c, axis=0)  # average
+    return c
+
+
+def main(input_file):
+    data = np.genfromtxt(path + input_file, delimiter=',', skip_header=1, names=['CRX', 'CRY'])
+    data = np.array(map(map_float_list, data))  # refactor double string array to double float array
 
     # Cluster the data into and centers and labels
     labels, cluster_centers = cluster_frames_DBSCAN(data)
@@ -284,63 +356,117 @@ def main(inputfile):
 
     fixations_list = []
     for k in labels_unique:
-        my_members = labels == k
+        my_members = labels == k  # if k==labels, then we have a member
         fixations_list.append(data[my_members])
 
     fig = plt.figure()
-    myplot = fig.add_subplot(111)
+    my_plot = fig.add_subplot(111)
 
-    myplot.set_title("Raw Clustered")  # + str(fixationradius) +
-    myplot.set_xlabel('Pixels')
-    myplot.set_ylabel('Pixels')
-    myplot.axis([0, 1600, 0, 900])
+    my_plot.set_title("Raw Clustered")  # + str(fixationradius) +
+    my_plot.set_xlabel('Pixels')
+    my_plot.set_ylabel('Pixels')
+    my_plot.axis([0, 1600, 0, 900])
 
     myr = 0
     myg = 80
     myb = 160
+    length_of_fixations = []
+    list_with_first_cluster_member = []
     for members in fixations_list:
-        memmbers_color, myr, myg, myb = generate_color(myr, myg, myb)
+        list_with_first_cluster_member.append(members[0])  # get first element of a fixation/cluster
+        members_color, myr, myg, myb = generate_color(myr, myg, myb)
+        count_points = 0
         for points in members:
-            myplot.scatter(points[0], points[1], s=5, color=memmbers_color, label='Fixations', zorder=10)
+            my_plot.scatter(points[0], points[1], s=5, color=members_color, label='Fixations', zorder=10)
+            count_points += 1
+        length_of_fixations.append(count_points)  # count all points in a fixation/cluster
 
-    new_data = np.genfromtxt(path + inputfile, delimiter=',', skip_header=1, skip_footer=0, names=['CRX', 'CRY'])
-
-    myplot.plot(new_data['CRX'], new_data['CRY'], color='black', label='All data', zorder=1)
-    plt.savefig(path + 'RawClustered' + inputfile + '.png')
+    # plot saccades in Gazes plot
+    new_data = np.genfromtxt(path + input_file, delimiter=',', skip_header=1, skip_footer=0, names=['CRX', 'CRY'])
+    my_plot.plot(new_data['CRX'], new_data['CRY'], color='black', label='All data', zorder=1)
+    plt.savefig(path + 'RawClustered' + input_file + '.png')
     plt.show()
 
-    # plot total number of fixations and sacades
-    n_groups = 1
+    # Get fixations over time
+    fixations_over_time = get_all_fixations_with_seconds(input_file, list_with_first_cluster_member)
+    result_hampel_list = hampel_filter(np.array(fixations_over_time))
+    result_ewma_list = calculate_ewma(np.array(result_hampel_list))
+    cnt_list = create_count_list(result_ewma_list)
+    plt.plot(cnt_list, result_hampel_list, 'b--', alpha=0.7, label='Fixations Raw')
+    plt.plot(cnt_list, result_ewma_list, 'b', label='Fixations per minute')
+    plt.xlabel('Seconds')
+    plt.ylabel('Fixations')
+    font_p = FontProperties()
+    font_p.set_size('small')
+    plt.legend(loc='lower right', bbox_to_anchor=(1.1, 0.9), shadow=True, title="Fixations per minute", prop=font_p)
+    plt.savefig(path + 'Fixations_Per_Minute_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + '.png', fmt='png',
+                dpi=100)
+    plt.show()
 
-    fig, ax = plt.subplots()
-
-    index = np.arange(n_groups)
-    bar_width = 0.35
-
-    opacity = 0.4
-    error_config = {'ecolor': '0.3'}
-
-    # remove one fixation, for the Zero cluster
-    rects1 = plt.bar(index,
-                     len(fixations_list) - 1,
-                     bar_width,
-                     alpha=opacity,
-                     color='b',
-                     error_kw=error_config,
-                     label='Men')
-
-    plt.xlabel('Group')
-    plt.ylabel('Sums')
-    plt.title('Sum of fixations')
-    plt.xticks(index + bar_width, ('F', 'S'))
-    plt.legend()
-
-    plt.tight_layout()
-    # plt.savefig(path + 'FixationsSum' + inputfile + '.png')
-    # plt.show()
+    # Get duration of fixations over time
+    lof = []
+    for value in length_of_fixations:
+        value *= 0.016  # 60 frames per second
+        lof.append(value)
+    result_hampel_list = hampel_filter_with_value(np.array(fixations_over_time), np.array(lof))
+    result_ewma_list = calculate_ewma(np.array(result_hampel_list))
+    cnt_list = create_count_list(result_ewma_list)
+    plt.plot(cnt_list, result_hampel_list, 'b--', alpha=0.7, label='Fixations Raw')
+    plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
+    plt.xlabel('Seconds')
+    plt.ylabel('Duration (seconds)')
+    font_p = FontProperties()
+    font_p.set_size('small')
+    plt.legend(loc='lower right', bbox_to_anchor=(1.1, 0.9), shadow=True, title="Duration of fixations", prop=font_p)
+    plt.savefig(path + 'Duration_Of_Fixations_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + '.png',
+                fmt='png',
+                dpi=100)
+    plt.show()
 
 
 # ================= endregion DBSCAN testing ======================== #
+def check_if_head_of_cluster(x_y, a_list):
+    x_y = np.array(x_y)
+    for member in a_list:
+        if (x_y == member).all():
+            # print 'Found!'
+            # print "Member: ", member, type(member)
+            # print "x_y: ", x_y, type(x_y)
+            return True
+    return False
 
-for tmpfile in input_files:
-    main(tmpfile)
+
+def get_all_fixations_with_seconds(input_file, a_list):
+    file1 = open(path + input_file, 'rb')
+    reader = csv.DictReader(file1)
+    fixations_with_timestamps = []
+    start_time = 0.0
+    once = True
+    for row in reader:
+        x_y = [float(row['CRX']), float(row['CRY'])]
+        a_bool = check_if_head_of_cluster(x_y, a_list)
+        if a_bool:
+            time_minutes = (row['TimeStamp'][11:]).split('.')[0]
+            time_milliseconds = (row['TimeStamp'][11:]).split('.')[1]
+            time_milliseconds = float(time_milliseconds) / 1000
+            x = time.strptime(time_minutes, '%H:%M:%S')
+            if once:
+                start_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
+                start_time += time_milliseconds
+                fixations_with_timestamps.append([x_y, 0])
+                once = False
+                continue
+
+            new_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
+            new_time -= start_time
+            new_time += time_milliseconds
+            fixations_with_timestamps.append([x_y, new_time])
+
+    file1.close()
+    # print "FWT"
+    # print fixations_with_timestamps
+    return fixations_with_timestamps
+
+
+for tmp_file in input_files:
+    main(tmp_file)
