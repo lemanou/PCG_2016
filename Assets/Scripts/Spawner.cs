@@ -261,10 +261,9 @@ public class Spawner : MonoBehaviour {
         _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         _canvas.worldCamera = _cam;
 
-        LookedAtFurniture mwe = FindObjectOfType<LookedAtFurniture>();
-        if (mwe != null)
-            mwe.StartFindingObjects();
-
+        LookedAtFurniture laf = FindObjectOfType<LookedAtFurniture>();
+        if (laf != null)
+            laf.StartFindingObjects();
         //Debug.Log("E.N.D.");
     }
 

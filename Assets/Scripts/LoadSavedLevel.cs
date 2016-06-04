@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityStandardAssets.Characters.FirstPerson;
+using System;
 
 public class LoadSavedLevel : MonoBehaviour {
 
@@ -19,6 +20,12 @@ public class LoadSavedLevel : MonoBehaviour {
         _canvas = Instantiate(Resources.Load("Canvas", typeof(Canvas)), new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity) as Canvas;
         ReadCsvAndSpawn();
         AssignQuests();
+
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Contains("2")) {
+            LoadStaticHeatMap lsh = FindObjectOfType<LoadStaticHeatMap>();
+            if (lsh != null)
+                lsh.StartColoring();
+        }
         StartGame();
     }
 
@@ -41,9 +48,9 @@ public class LoadSavedLevel : MonoBehaviour {
         _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         _canvas.worldCamera = _cam;
 
-        LookedAtFurniture mwe = FindObjectOfType<LookedAtFurniture>();
-        if (mwe != null)
-            mwe.StartFindingObjects();
+        LookedAtFurniture laf = FindObjectOfType<LookedAtFurniture>();
+        if (laf != null)
+            laf.StartFindingObjects();
         //Debug.Log("E.N.D.");
     }
 

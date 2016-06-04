@@ -20457,6 +20457,7 @@ GameObject:
   - 114: {fileID: 200570613}
   - 114: {fileID: 200570617}
   - 114: {fileID: 200570616}
+  - 114: {fileID: 200570615}
   m_Layer: 0
   m_Name: GameManagerFake
   m_TagString: Untagged
@@ -20488,6 +20489,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 11
+--- !u!114 &200570615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 200570612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a2b5548ab25594da97576dbc3499a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &200570616
 MonoBehaviour:
   m_ObjectHideFlags: 0

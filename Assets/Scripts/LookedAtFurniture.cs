@@ -15,7 +15,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
 
     private FirstPersonController _fpc;
     //private bool _dontTrace = true, 
-    private bool _dontWork = false;
+    private bool _dontWork = true;
     private float _endTime = 0.0f,
         _startTime = 0.0f,
         _tmpTime = 0.0f;
@@ -48,12 +48,15 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         _rectTrans = transform.GetComponent<RectTransform>();
         _fpc = FindObjectOfType<FirstPersonController>();
         // The canvas is spawned before all the objects in the PCG level, so that function will be called when all has been placed.
-        if (SceneManager.GetActiveScene().name == "scene") {
+        if (SceneManager.GetActiveScene().name.Contains("scene")) {
             StartFindingObjects();
         }
     }
 
     private void Update() {
+        if (_dontWork)
+            return;
+
         Vector3 tmpTarget = GazeDataValidator.Instance.GetLastValidSmoothedUnityGazeCoordinate();
         float d = Vector3.Distance(_rectTrans.position, tmpTarget);
         _rectTrans.position = Vector3.MoveTowards(_rectTrans.position, tmpTarget, d * 2f);
@@ -151,6 +154,8 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
     }
 
     public void StartFindingObjects() {
+        _dontWork = false;
+
         _dhmdA = new DynamicHeatMapData();
         _dhmdA.SetSwapper(true);
         _dhmdB = new DynamicHeatMapData();
@@ -196,6 +201,7 @@ public class LookedAtFurniture : MonoBehaviour, IGazeListener {
         //Add frame to GazeData cache handler
         GazeDataValidator.Instance.Update(gazeData);
         _trackerTime = gazeData.TimeStampString;
+        Debug.Log(gazeData);
     }
 
 

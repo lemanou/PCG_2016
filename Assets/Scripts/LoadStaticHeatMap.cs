@@ -1,25 +1,32 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LoadStaticHeatMap : MonoBehaviour {
 
-    public TextAsset csvFile; // Reference of CSV file
-
+    private string[] _csvFile; // Reference of CSV file
     private Shader _shader;
     private GameObject[] _objectsList;
     private bool _found;
-    private char lineSeperater = '\n'; // It defines line seperate character
+    private char lineSeperator = '\n'; // It defines line seperate character
     private char fieldSeperator = ','; // It defines field seperate character
 
     void Start() {
-        if (SceneManager.GetActiveScene().name == "scene") {
+        if (SceneManager.GetActiveScene().name.Contains("scene")) {
             StartColoring();
         }
     }
 
     public void StartColoring() {
-        if (csvFile == null)
+
+        string filePath = Application.persistentDataPath + "/SavedFiles/LookedAtFurniture For "
+            + SceneManager.GetActiveScene().name + ".csv";
+        _csvFile = File.ReadAllText(filePath).Split(lineSeperator);
+
+        if (_csvFile == null) {
+            Debug.LogWarning("Missing HeatMap CSV file. Should be named as: LookedAtFurniture For {SCENENAME} 2.csv  ~ Without the spaces and {}");
             return;
+        }
 
         _shader = Shader.Find("Unlit/Color");
 
@@ -35,7 +42,7 @@ public class LoadStaticHeatMap : MonoBehaviour {
     private void ReadCsvAndColor() {
         float avgTime = 0;
         int counter = 0;
-        string[] records = csvFile.text.Split(lineSeperater);
+        string[] records = _csvFile;
 
         foreach (string record in records) {
             string[] columns = record.Split(fieldSeperator);
@@ -106,7 +113,7 @@ public class LoadStaticHeatMap : MonoBehaviour {
                             greeness = 1 - (objTime - 0.75f) * 4;
                             blueness = 0;
                         }
-                        
+
                         Color c = new Color(redness, greeness, blueness);
                         ColorAll(obj, c);
                         //Debug.Log("Average:" + avgTime + " objColor: " + c + " name: " + obj.name);
