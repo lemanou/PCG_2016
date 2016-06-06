@@ -145,8 +145,8 @@ ewma = pandas.stats.moments.ewma
 # testthree()
 # testAnimated()
 
-input_files = {"Gazes For LoadSavedLevel1.csv", "Gazes For scene2.csv"}
-path = "2016.04.28/Girl2/"
+input_files = {"Gazes For LoadSavedLevel1.csv", "Gazes For LoadSavedLevel2.csv", "Gazes For scene3.csv"}
+path = "2016.04.21/Guy1/"
 # ================= region DBSCAN testing ============================== #
 # Configurable values
 min_fix = 0.100
@@ -280,13 +280,24 @@ def hampel_filter_with_value(times_array, length_array):
     window = 7.5
     my_list = []
     max_in_array = times_array[-1]
+    limit = len(times_array)
+    if len(times_array) > len(length_array):
+        print "Arrays not equal size, weird... Needs rechecking. " + str(len(times_array)) + ' > ' + str(
+            len(length_array))
+        print "Resetting limit"
+        limit = len(length_array) - 1
+    elif len(times_array) < len(length_array):
+        print "Arrays not equal size, super weird... Needs rechecking. " + str(len(times_array)) + ' < ' \
+              + str(len(length_array))
+        print "No change."
+
     for second in range(0, int(max_in_array[1])):  # loop through the array for each second and not for each member
         duration = 0
         counter = 0
         # print value[1], max_in_array[1]
         test_neg = max(second - window, 0)
         test_pos = min(second + window, max_in_array[1])
-        for i in range(0, len(times_array)):
+        for i in range(0, limit):
             # print times_array[i][1]
             if test_neg <= times_array[i][1] <= test_pos:
                 # print "For point: ", value, " value: ", v, "found in range: ", test_neg, test_pos
@@ -296,7 +307,8 @@ def hampel_filter_with_value(times_array, length_array):
                 # print "Skipping bigger num: " , test_pos
                 break
         # average duration per fixation
-        duration /= counter
+        if counter > 10:
+            duration /= counter
         # dividing by current interval and multiplying by 60 seconds to get fixations per minute
         duration = (duration / (test_pos - test_neg)) * 60
         my_list.append(duration)
@@ -307,6 +319,7 @@ def hampel_filter(seconds_array):
     # hampel filter algorithm
     window = 7.5
     my_list = []
+
     max_in_array = seconds_array[-1]
     for second in range(0, int(max_in_array[1])):  # loop through the array for each second and not for each member
         count = 0
