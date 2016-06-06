@@ -12,13 +12,15 @@ import math
 import random
 from matplotlib.font_manager import FontProperties
 import csv
-import matplotlib.animation as animation
-from matplotlib.collections import LineCollection
 import time
 import datetime
 import pandas
 
 ewma = pandas.stats.moments.ewma
+
+# import matplotlib.animation as animation
+# from matplotlib.collections import LineCollection
+
 # outfilename = "DataCluster"
 # fixationradius = ""
 # inputfile = "Data - ResultRaw" + str(fixationradius) + ".csv"
@@ -143,93 +145,17 @@ ewma = pandas.stats.moments.ewma
 # testthree()
 # testAnimated()
 
-input_files = {"Gazes For LoadSavedLevel2.csv", "Gazes For scene1.csv"}
-path = "2016.05.21/Girl1/"
+input_files = {"Gazes For LoadSavedLevel1.csv", "Gazes For scene2.csv"}
+path = "2016.04.28/Girl2/"
 # ================= region DBSCAN testing ============================== #
 # Configurable values
 min_fix = 0.100
 min_cluster_size = 50.0
 frame_res = 60.0
+polynomial_degree = 1
 
 # Derived value(s)
 min_fix_pts = round(min_fix * frame_res)
-
-
-def hampel_filter_with_value(times_array, length_array):
-    # hampel filter algorithm
-    window = 7.5
-    my_list = []
-    max_in_array = times_array[-1]
-    for value in times_array:
-        duration = 0
-        counter = 0
-        # print value[1], max_in_array[1]
-        test_neg = max(value[1] - window, 0)
-        test_pos = min(value[1] + window, max_in_array[1])
-        for i in range(0, len(times_array)):
-            # print times_array[i][1]
-            if test_neg <= times_array[i][1] <= test_pos:
-                # print "For point: ", value, " value: ", v, "found in range: ", test_neg, test_pos
-                # print 'Adding: ' + str(length_array[i])
-                duration += length_array[i]
-                counter += 1
-            elif times_array[i][1] > test_pos:
-                # print "Skipping bigger num: " , test_pos
-                break
-        # average duration per fixation
-        duration /= counter
-        # dividing by current interval and multiplying by 60 seconds to get blinks per minute
-        duration = (duration / (test_pos - test_neg)) * 60
-        my_list.append(duration)
-    # print my_list
-    return my_list
-
-
-def hampel_filter(seconds_array):
-    # hampel filter algorithm
-    window = 7.5
-    my_list = []
-    max_in_array = seconds_array[-1]
-    for value in seconds_array:
-        count = 0
-        # print value[1], max_in_array[1]
-        test_neg = max(value[1] - window, 0)
-        test_pos = min(value[1] + window, max_in_array[1])
-        for v in seconds_array:
-            if test_neg <= v[1] <= test_pos:
-                # print "For point: ", value, " value: ", v, "found in range: ", test_neg, test_pos
-                count += 1
-            elif v[1] > test_pos:
-                # print "Skipping bigger num: " , test_pos
-                break
-        # dividing by current interval and multiplying by 60 seconds to get blinks per minute
-        count = (count / (test_pos - test_neg)) * 60
-        my_list.append(count)
-    # print my_list
-    return my_list
-
-
-def create_count_list(a_list):
-    count_list = []
-    for i in range(1, len(a_list) + 1):
-        count_list.append(i)
-    return count_list
-
-
-def generate_color(r, g, b):
-    r += 80
-    if r > 240:
-        r = 0
-        g += 80
-    if g > 240:
-        g = 0
-        b += 80
-    if b > 240:
-        b = 0
-
-    # color = '#{:02x}{:02x}{:02x}'.format(r, g, b)
-    color = '#{:02x}{:02x}{:02x}'.format(*map(lambda x: random.randint(0, 255), range(3)))
-    return color, r, g, b
 
 
 def spat_dist(p1, p2):
@@ -333,12 +259,139 @@ def map_float_list(a_list):
     return map(float, a_list)
 
 
+def generate_color(r, g, b):
+    r += 80
+    if r > 240:
+        r = 0
+        g += 80
+    if g > 240:
+        g = 0
+        b += 80
+    if b > 240:
+        b = 0
+
+    # color = '#{:02x}{:02x}{:02x}'.format(r, g, b)
+    color = '#{:02x}{:02x}{:02x}'.format(*map(lambda x: random.randint(0, 255), range(3)))
+    return color, r, g, b
+
+
+def hampel_filter_with_value(times_array, length_array):
+    # hampel filter algorithm
+    window = 7.5
+    my_list = []
+    max_in_array = times_array[-1]
+    for second in range(0, int(max_in_array[1])):  # loop through the array for each second and not for each member
+        duration = 0
+        counter = 0
+        # print value[1], max_in_array[1]
+        test_neg = max(second - window, 0)
+        test_pos = min(second + window, max_in_array[1])
+        for i in range(0, len(times_array)):
+            # print times_array[i][1]
+            if test_neg <= times_array[i][1] <= test_pos:
+                # print "For point: ", value, " value: ", v, "found in range: ", test_neg, test_pos
+                duration += length_array[i]
+                counter += 1
+            elif times_array[i][1] > test_pos:
+                # print "Skipping bigger num: " , test_pos
+                break
+        # average duration per fixation
+        duration /= counter
+        # dividing by current interval and multiplying by 60 seconds to get fixations per minute
+        duration = (duration / (test_pos - test_neg)) * 60
+        my_list.append(duration)
+    return my_list
+
+
+def hampel_filter(seconds_array):
+    # hampel filter algorithm
+    window = 7.5
+    my_list = []
+    max_in_array = seconds_array[-1]
+    for second in range(0, int(max_in_array[1])):  # loop through the array for each second and not for each member
+        count = 0
+        test_neg = max(second - window, 0)  # value[1] = seconds
+        test_pos = min(second + window, max_in_array[1])  # max_in_array[1] = max seconds
+        for v in seconds_array:
+            if test_neg <= v[1] <= test_pos:
+                # print "For point: ", value, " value: ", v, "found in range: ", test_neg, test_pos
+                count += 1
+            elif v[1] > test_pos:
+                # print "Skipping bigger num: " , test_pos
+                break
+        # dividing by current interval and multiplying by 60 seconds to get fixations per minute
+        count = (count / (test_pos - test_neg)) * 60
+        my_list.append(count)
+    return my_list
+
+
+def create_count_list(a_list):
+    count_list = []
+    for i in range(1, len(a_list) + 1):
+        count_list.append(i)
+    return count_list
+
+
 def calculate_ewma(a_list):
     fwd = ewma(a_list, span=15)  # take EWMA in fwd direction
     bwd = ewma(a_list[::-1], span=15)  # take EWMA in bwd direction
     c = np.vstack((fwd, bwd[::-1]))  # lump fwd and bwd together
     c = np.mean(c, axis=0)  # average
     return c
+
+
+def calculate_needed_stuff(a_list, polynomial_degree):
+    # take EWMA in both directions with a smaller span term
+    a_list_np_array = np.array(a_list)
+    c = calculate_ewma(a_list_np_array)
+    cnt_list = create_count_list(a_list_np_array)
+    # Calculate linear regression / polynomial
+    z = np.polyfit(cnt_list, a_list_np_array, polynomial_degree)
+    p = np.poly1d(z)
+    return c, cnt_list, p
+
+
+def check_if_head_of_cluster(x_y, a_list):
+    x_y = np.array(x_y)
+    for member in a_list:
+        if (x_y == member).all():
+            # print 'Found!'
+            # print "Member: ", member, type(member)
+            # print "x_y: ", x_y, type(x_y)
+            return True
+    return False
+
+
+def get_all_fixations_with_seconds(input_file, a_list):
+    file1 = open(path + input_file, 'rb')
+    reader = csv.DictReader(file1)
+    fixations_with_timestamps = []
+    start_time = 0.0
+    once = True
+    for row in reader:
+        x_y = [float(row['CRX']), float(row['CRY'])]
+        a_bool = check_if_head_of_cluster(x_y, a_list)
+        if a_bool:
+            time_minutes = (row['TimeStamp'][11:]).split('.')[0]
+            time_milliseconds = (row['TimeStamp'][11:]).split('.')[1]
+            time_milliseconds = float(time_milliseconds) / 1000
+            x = time.strptime(time_minutes, '%H:%M:%S')
+            if once:
+                start_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
+                start_time += time_milliseconds
+                fixations_with_timestamps.append([x_y, 0])
+                once = False
+                continue
+
+            new_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
+            new_time -= start_time
+            new_time += time_milliseconds
+            fixations_with_timestamps.append([x_y, new_time])
+
+    file1.close()
+    # print "FWT"
+    # print fixations_with_timestamps
+    return fixations_with_timestamps
 
 
 def main(input_file):
@@ -390,10 +443,10 @@ def main(input_file):
     # Get fixations over time
     fixations_over_time = get_all_fixations_with_seconds(input_file, list_with_first_cluster_member)
     result_hampel_list = hampel_filter(np.array(fixations_over_time))
-    result_ewma_list = calculate_ewma(np.array(result_hampel_list))
-    cnt_list = create_count_list(result_ewma_list)
-    plt.plot(cnt_list, result_hampel_list, 'b--', alpha=0.7, label='Fixations Raw')
-    plt.plot(cnt_list, result_ewma_list, 'b', label='Fixations per minute')
+    result_ewma_list, cnt_list, p = calculate_needed_stuff(result_hampel_list, polynomial_degree)
+    plt.plot(cnt_list, result_hampel_list, 'c--', alpha=0.9, label='Fixations Raw')
+    plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
+    plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.6, label='Linear Regression')
     plt.xlabel('Seconds')
     plt.ylabel('Fixations')
     font_p = FontProperties()
@@ -409,10 +462,10 @@ def main(input_file):
         value *= 0.016  # 60 frames per second
         lof.append(value)
     result_hampel_list = hampel_filter_with_value(np.array(fixations_over_time), np.array(lof))
-    result_ewma_list = calculate_ewma(np.array(result_hampel_list))
-    cnt_list = create_count_list(result_ewma_list)
-    plt.plot(cnt_list, result_hampel_list, 'b--', alpha=0.7, label='Fixations Raw')
+    result_ewma_list, cnt_list, p = calculate_needed_stuff(result_hampel_list, polynomial_degree)
+    plt.plot(cnt_list, result_hampel_list, 'c--', alpha=0.9, label='Fixations Raw')
     plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
+    plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.6, label='Linear Regression')
     plt.xlabel('Seconds')
     plt.ylabel('Duration (seconds)')
     font_p = FontProperties()
@@ -425,47 +478,6 @@ def main(input_file):
 
 
 # ================= endregion DBSCAN testing ======================== #
-def check_if_head_of_cluster(x_y, a_list):
-    x_y = np.array(x_y)
-    for member in a_list:
-        if (x_y == member).all():
-            # print 'Found!'
-            # print "Member: ", member, type(member)
-            # print "x_y: ", x_y, type(x_y)
-            return True
-    return False
-
-
-def get_all_fixations_with_seconds(input_file, a_list):
-    file1 = open(path + input_file, 'rb')
-    reader = csv.DictReader(file1)
-    fixations_with_timestamps = []
-    start_time = 0.0
-    once = True
-    for row in reader:
-        x_y = [float(row['CRX']), float(row['CRY'])]
-        a_bool = check_if_head_of_cluster(x_y, a_list)
-        if a_bool:
-            time_minutes = (row['TimeStamp'][11:]).split('.')[0]
-            time_milliseconds = (row['TimeStamp'][11:]).split('.')[1]
-            time_milliseconds = float(time_milliseconds) / 1000
-            x = time.strptime(time_minutes, '%H:%M:%S')
-            if once:
-                start_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
-                start_time += time_milliseconds
-                fixations_with_timestamps.append([x_y, 0])
-                once = False
-                continue
-
-            new_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
-            new_time -= start_time
-            new_time += time_milliseconds
-            fixations_with_timestamps.append([x_y, new_time])
-
-    file1.close()
-    # print "FWT"
-    # print fixations_with_timestamps
-    return fixations_with_timestamps
 
 
 for tmp_file in input_files:

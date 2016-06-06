@@ -18,16 +18,16 @@ from matplotlib.font_manager import FontProperties
 
 ewma = pandas.stats.moments.ewma
 input_files = {"Blinks For LoadSavedLevel1.csv", "Blinks For scene2.csv"}
-path = "2016.05.21/Malene/"
+path = "2016.04.21/Panos/"
 polynomial_degree = 2
 
 
 def hampel_filter(seconds_array):
     # hampel filter algorithm
-    # print seconds_array
+    print 'hfe: ', len(seconds_array)
     window = 7.5
     my_list = []
-    for value in range(0, int(seconds_array.max())):
+    for value in range(0, int(seconds_array.max())):  # loop through the array for each second and not for each member
         count = 0
         test_neg = max(value - window, 0)
         test_pos = min(value + window, seconds_array.max())
@@ -41,7 +41,7 @@ def hampel_filter(seconds_array):
         # dividing by current interval and multiplying by 60 seconds to get blinks per minute
         count = (count / (test_pos - test_neg)) * 60
         my_list.append(count)
-    # print my_list
+    print 'hfr: ', len(my_list)
     return my_list
 
 
@@ -251,24 +251,28 @@ def all_blinks(input_file):
     list_of_datetimes = []
     for row in reader:
         # print row['BlinkType']
-        time_minutes = (row['TimeTracker'][11:]).split('.')[0]
+        total_time = (row['TimeTracker'][11:]).split('.')[0]
         time_milliseconds = (row['TimeTracker'][11:]).split('.')[1]
         time_milliseconds = float(time_milliseconds) / 1000
-        x = time.strptime(time_minutes, '%H:%M:%S')
+        x = time.strptime(total_time, '%H:%M:%S')
         if once:
             start_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
             start_time += time_milliseconds
             list_of_datetimes.append(0)
             once = False
+            print 'start time in seconds: ' + str(start_time) + ' new_time: ' + '0.000' + ' total_time: ' + str(
+                total_time) + ' time_milliseconds: ' + str(time_milliseconds), x
             continue
 
         new_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
         new_time -= start_time
         new_time += time_milliseconds
         list_of_datetimes.append(new_time)
+        print 'start time in seconds: ' + str(start_time) + ' new_time: ' + str(new_time) + ' total_time: ' + str(
+            total_time) + ' time_milliseconds: ' + str(time_milliseconds), x
 
     file1.close()
-
+    print 'len of list: ' + str(len(list_of_datetimes))
     if len(list_of_datetimes) > 0:
         weighted_moving_average(input_file, list_of_datetimes)
         calculate_ev_and_save_to_csv(input_file, list_of_datetimes)
@@ -276,4 +280,4 @@ def all_blinks(input_file):
 
 for tmp_file in input_files:
     all_blinks(tmp_file)
-    normal_against_long(tmp_file)
+    # normal_against_long(tmp_file)
