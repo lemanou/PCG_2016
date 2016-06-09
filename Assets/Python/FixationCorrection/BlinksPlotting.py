@@ -17,14 +17,14 @@ from scipy import stats
 from matplotlib.font_manager import FontProperties
 
 ewma = pandas.stats.moments.ewma
-input_files = {"Blinks For LoadSavedLevel1.csv", "Blinks For scene2.csv"}
-path = "2016.04.21/Panos/"
+input_files = {"Blinks For scene1.csv", "Blinks For LoadSavedLevel2.csv"}
+path = "2016.05.21/Guy1/"
 polynomial_degree = 2
 
 
 def hampel_filter(seconds_array):
     # hampel filter algorithm
-    print 'hfe: ', len(seconds_array)
+    # print 'hfe: ', len(seconds_array)
     window = 7.5
     my_list = []
     for value in range(0, int(seconds_array.max())):  # loop through the array for each second and not for each member
@@ -41,13 +41,13 @@ def hampel_filter(seconds_array):
         # dividing by current interval and multiplying by 60 seconds to get blinks per minute
         count = (count / (test_pos - test_neg)) * 60
         my_list.append(count)
-    print 'hfr: ', len(my_list)
+    # print 'hfr: ', len(my_list)
     return my_list
 
 
 def create_count_list(a_list):
     count_list = []
-    for i in range(1, len(a_list) + 1):
+    for i in range(1, len(a_list) + 1):  # need to start the list contents from 1 to len +1
         count_list.append(i)
     return count_list
 
@@ -60,7 +60,7 @@ def calculate_ewma(a_list):
     return c
 
 
-def calculate_needed_stuff(array_blinks_seconds, polynomial_degree):
+def calculate_needed_stuff(array_blinks_seconds):
     np_array_blinks = np.array(array_blinks_seconds)
     list_blinks = np.array(hampel_filter(np_array_blinks))
     # take EWMA in both directions with a smaller span term
@@ -144,7 +144,7 @@ def calculate_ev(distance_considered, a_list):
 
 
 def calculate_ev_and_save_to_csv(input_file, array_normal_blinks_seconds):
-    list_normal_blinks, c, cnt_list, p = calculate_needed_stuff(array_normal_blinks_seconds, polynomial_degree)
+    list_normal_blinks, c, cnt_list, p = calculate_needed_stuff(array_normal_blinks_seconds)
 
     ev_list = calculate_ev(cnt_list, list_normal_blinks)
     # calculate_ev_two(cnt_list, list_normal_blinks) # different way, same result
@@ -163,7 +163,7 @@ def calculate_ev_and_save_to_csv(input_file, array_normal_blinks_seconds):
 
 def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_blinks_seconds=None):
     blink_type = "AllBlinks"
-    list_normal_blinks, c, cnt_list, p = calculate_needed_stuff(array_normal_blinks_seconds, polynomial_degree)
+    list_normal_blinks, c, cnt_list, p = calculate_needed_stuff(array_normal_blinks_seconds)
 
     # regular EWMA, with bias against trend
     # plt.plot(fwd, 'b', label='EWMA, span=15')
@@ -177,8 +177,7 @@ def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_
     else:
         # Make ~ Normal against Long blinks plot
         blink_type = "NormVsLong"
-        list_long_blinks, c_long, cnt_list_long, pl = calculate_needed_stuff(array_long_blinks_seconds,
-                                                                             polynomial_degree)
+        list_long_blinks, c_long, cnt_list_long, pl = calculate_needed_stuff(array_long_blinks_seconds)
         # regular EWMA, with bias against trend
         # plt.plot(fwd, 'b', label='EWMA, span=15')
         # "corrected" (?) EWMA
@@ -190,7 +189,8 @@ def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_
     # plt.legend(loc=1)
     # Put a legend to the right of the current axis
     plt.legend(loc='lower left', bbox_to_anchor=(0.55, 0.85))
-    plt.savefig(path + 'ewma_p' + str(polynomial_degree) + ' ' + input_file[:-4] + ' ' + blink_type + '.png', fmt='png',
+    plt.savefig(path + 'ewma_p' + str(polynomial_degree) + ' ' + input_file[:-4] + ' ' + blink_type + '2.png',
+                fmt='png',
                 dpi=100)  # correctionOverTime
     plt.show()
 
@@ -198,8 +198,7 @@ def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_
 def normal_against_long(input_file):
     file1 = open(path + input_file, 'rb')
     reader = csv.DictReader(file1)
-    once_normal = True
-    once_long = True
+    once = True  # starting time set to 0 only once for one of the two lists
 
     start_time = 0.0
     list_datetimes_normal = []
@@ -212,11 +211,11 @@ def normal_against_long(input_file):
         x = time.strptime(time_minutes, '%H:%M:%S')
 
         if row['BlinkType'] == "NormalBlink":
-            if once_normal:
+            if once:
                 start_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
                 start_time += time_milliseconds
                 list_datetimes_normal.append(0)
-                once_normal = False
+                once = False
                 continue
 
             new_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
@@ -224,11 +223,11 @@ def normal_against_long(input_file):
             new_time += time_milliseconds
             list_datetimes_normal.append(new_time)
         elif row['BlinkType'] == "LongBlink":
-            if once_long:
+            if once:
                 start_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
                 start_time += time_milliseconds
-                list_datetimes_normal.append(0)
-                once_long = False
+                list_datetimes_long.append(0)
+                once = False
                 continue
 
             new_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
@@ -238,7 +237,7 @@ def normal_against_long(input_file):
 
     file1.close()
 
-    if len(list_datetimes_long) > 0:
+    if len(list_datetimes_long) > 1:  # don't calculate if you have less than 1 blinks
         weighted_moving_average(input_file, list_datetimes_normal, list_datetimes_long)
 
 
@@ -260,24 +259,24 @@ def all_blinks(input_file):
             start_time += time_milliseconds
             list_of_datetimes.append(0)
             once = False
-            print 'start time in seconds: ' + str(start_time) + ' new_time: ' + '0.000' + ' total_time: ' + str(
-                total_time) + ' time_milliseconds: ' + str(time_milliseconds), x
+            # print 'start time in seconds: ' + str(start_time) + ' new_time: ' + '0.000' + ' total_time: ' + str(
+            #    total_time) + ' time_milliseconds: ' + str(time_milliseconds), x
             continue
 
         new_time = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
         new_time -= start_time
         new_time += time_milliseconds
         list_of_datetimes.append(new_time)
-        print 'start time in seconds: ' + str(start_time) + ' new_time: ' + str(new_time) + ' total_time: ' + str(
-            total_time) + ' time_milliseconds: ' + str(time_milliseconds), x
+        # print 'start time in seconds: ' + str(start_time) + ' new_time: ' + str(new_time) + ' total_time: ' + str(
+        #    total_time) + ' time_milliseconds: ' + str(time_milliseconds), x
 
     file1.close()
-    print 'len of list: ' + str(len(list_of_datetimes))
+    # print 'len of list: ' + str(len(list_of_datetimes))
     if len(list_of_datetimes) > 0:
         weighted_moving_average(input_file, list_of_datetimes)
-        calculate_ev_and_save_to_csv(input_file, list_of_datetimes)
+        # calculate_ev_and_save_to_csv(input_file, list_of_datetimes)
 
 
 for tmp_file in input_files:
     all_blinks(tmp_file)
-    # normal_against_long(tmp_file)
+    normal_against_long(tmp_file)

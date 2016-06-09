@@ -145,8 +145,8 @@ ewma = pandas.stats.moments.ewma
 # testthree()
 # testAnimated()
 
-input_files = {"Gazes For LoadSavedLevel1.csv", "Gazes For LoadSavedLevel2.csv", "Gazes For scene3.csv"}
-path = "2016.04.21/Guy1/"
+input_files = {"Gazes For LoadSavedLevel1.csv", "Gazes For scene2.csv"}
+path = "2016.05.21/Malene/"
 # ================= region DBSCAN testing ============================== #
 # Configurable values
 min_fix = 0.100
@@ -340,7 +340,7 @@ def hampel_filter(seconds_array):
 
 def create_count_list(a_list):
     count_list = []
-    for i in range(1, len(a_list) + 1):
+    for i in range(1, len(a_list) + 1):  # need to start the list contents from 1 to len +1
         count_list.append(i)
     return count_list
 
