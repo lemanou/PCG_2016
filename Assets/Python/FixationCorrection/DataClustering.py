@@ -145,14 +145,15 @@ ewma = pandas.stats.moments.ewma
 # testthree()
 # testAnimated()
 
-input_files = {"Gazes For LoadSavedLevel1.csv", "Gazes For scene2.csv"}
-path = "2016.05.21/Malene/"
+input_files = {"Gazes For scene2.csv", "Gazes For LoadSavedLevel1.csv"}
+path = "2016.04.21/Panos/"
 # ================= region DBSCAN testing ============================== #
 # Configurable values
 min_fix = 0.100
 min_cluster_size = 50.0
 frame_res = 60.0
-polynomial_degree = 1
+polynomial_degree = 2
+window_span = 60
 
 # Derived value(s)
 min_fix_pts = round(min_fix * frame_res)
@@ -277,7 +278,7 @@ def generate_color(r, g, b):
 
 def hampel_filter_with_value(times_array, length_array):
     # hampel filter algorithm
-    window = 7.5
+    window = window_span / 2.0
     my_list = []
     max_in_array = times_array[-1]
     limit = len(times_array)
@@ -317,7 +318,7 @@ def hampel_filter_with_value(times_array, length_array):
 
 def hampel_filter(seconds_array):
     # hampel filter algorithm
-    window = 7.5
+    window = window_span / 2.0
     my_list = []
 
     max_in_array = seconds_array[-1]
@@ -346,14 +347,14 @@ def create_count_list(a_list):
 
 
 def calculate_ewma(a_list):
-    fwd = ewma(a_list, span=15)  # take EWMA in fwd direction
-    bwd = ewma(a_list[::-1], span=15)  # take EWMA in bwd direction
+    fwd = ewma(a_list, span=window_span)  # take EWMA in fwd direction
+    bwd = ewma(a_list[::-1], span=window_span)  # take EWMA in bwd direction
     c = np.vstack((fwd, bwd[::-1]))  # lump fwd and bwd together
     c = np.mean(c, axis=0)  # average
     return c
 
 
-def calculate_needed_stuff(a_list, polynomial_degree):
+def calculate_needed_stuff(a_list):
     # take EWMA in both directions with a smaller span term
     a_list_np_array = np.array(a_list)
     c = calculate_ewma(a_list_np_array)
@@ -456,17 +457,17 @@ def main(input_file):
     # Get fixations over time
     fixations_over_time = get_all_fixations_with_seconds(input_file, list_with_first_cluster_member)
     result_hampel_list = hampel_filter(np.array(fixations_over_time))
-    result_ewma_list, cnt_list, p = calculate_needed_stuff(result_hampel_list, polynomial_degree)
+    result_ewma_list, cnt_list, p = calculate_needed_stuff(result_hampel_list)
     plt.plot(cnt_list, result_hampel_list, 'c--', alpha=0.9, label='Fixations Raw')
     plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
-    plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.6, label='Linear Regression')
+    plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.6, label='Polynomial degree ' + str(polynomial_degree))
     plt.xlabel('Seconds')
     plt.ylabel('Fixations')
     font_p = FontProperties()
     font_p.set_size('small')
     plt.legend(loc='lower right', bbox_to_anchor=(1.1, 0.9), shadow=True, title="Fixations per minute", prop=font_p)
-    plt.savefig(path + 'Fixations_Per_Minute_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + '.png', fmt='png',
-                dpi=100)
+    plt.savefig(path + 'Fixations_Per_Minute_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + '_p' + str(
+        polynomial_degree) + '_ws' + str(window_span) + '.png', fmt='png', dpi=100)
     plt.show()
 
     # Get duration of fixations over time
@@ -475,22 +476,19 @@ def main(input_file):
         value *= 0.016  # 60 frames per second
         lof.append(value)
     result_hampel_list = hampel_filter_with_value(np.array(fixations_over_time), np.array(lof))
-    result_ewma_list, cnt_list, p = calculate_needed_stuff(result_hampel_list, polynomial_degree)
+    result_ewma_list, cnt_list, p = calculate_needed_stuff(result_hampel_list)
     plt.plot(cnt_list, result_hampel_list, 'c--', alpha=0.9, label='Fixations Raw')
     plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
-    plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.6, label='Linear Regression')
+    plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.6, label='Polynomial degree ' + str(polynomial_degree))
     plt.xlabel('Seconds')
     plt.ylabel('Duration (seconds)')
     font_p = FontProperties()
     font_p.set_size('small')
     plt.legend(loc='lower right', bbox_to_anchor=(1.1, 0.9), shadow=True, title="Duration of fixations", prop=font_p)
-    plt.savefig(path + 'Duration_Of_Fixations_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + '.png',
-                fmt='png',
-                dpi=100)
+    plt.savefig(path + 'Duration_Of_Fixations_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + '_p' + str(
+        polynomial_degree) + '_ws' + str(window_span) + '.png', fmt='png', dpi=100)
     plt.show()
-
-
-# ================= endregion DBSCAN testing ======================== #
+    # ================= endregion DBSCAN testing ======================== #
 
 
 for tmp_file in input_files:

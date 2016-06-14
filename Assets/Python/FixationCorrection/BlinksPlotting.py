@@ -17,15 +17,16 @@ from scipy import stats
 from matplotlib.font_manager import FontProperties
 
 ewma = pandas.stats.moments.ewma
-input_files = {"Blinks For scene1.csv", "Blinks For LoadSavedLevel2.csv"}
-path = "2016.05.21/Guy1/"
+input_files = {"Blinks For scene2.csv", "Blinks For LoadSavedLevel1.csv"}
+path = "2016.04.21/Panos/"
 polynomial_degree = 2
+window_span = 60
 
 
 def hampel_filter(seconds_array):
     # hampel filter algorithm
     # print 'hfe: ', len(seconds_array)
-    window = 7.5
+    window = window_span / 2.0
     my_list = []
     for value in range(0, int(seconds_array.max())):  # loop through the array for each second and not for each member
         count = 0
@@ -53,8 +54,8 @@ def create_count_list(a_list):
 
 
 def calculate_ewma(a_list):
-    fwd = ewma(a_list, span=15)  # take EWMA in fwd direction
-    bwd = ewma(a_list[::-1], span=15)  # take EWMA in bwd direction
+    fwd = ewma(a_list, span=window_span)  # take EWMA in fwd direction
+    bwd = ewma(a_list[::-1], span=window_span)  # take EWMA in bwd direction
     c = np.vstack((fwd, bwd[::-1]))  # lump fwd and bwd together
     c = np.mean(c, axis=0)  # average
     return c
@@ -169,7 +170,7 @@ def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_
     # plt.plot(fwd, 'b', label='EWMA, span=15')
     # "corrected" (?) EWMA
     plt.plot(c, 'r', label='Reversed-Recombined')
-    plt.plot(cnt_list, p(cnt_list), 'r--', alpha=0.7, label='Linear Regression')
+    plt.plot(cnt_list, p(cnt_list), 'r--', alpha=0.7, label='Polynomial degree ' + str(polynomial_degree))
 
     if array_long_blinks_seconds is None:
         # Make ~ All blinks plot
@@ -182,16 +183,16 @@ def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_
         # plt.plot(fwd, 'b', label='EWMA, span=15')
         # "corrected" (?) EWMA
         plt.plot(c_long, 'b', label='Recombined EWMA Long')
-        plt.plot(cnt_list_long, pl(cnt_list_long), 'b--', alpha=0.7, label='Linear Regression Long')
+        plt.plot(cnt_list_long, pl(cnt_list_long), 'b--', alpha=0.7,
+                 label='Polynomial degree Long ' + str(polynomial_degree))
 
     plt.xlabel('Seconds')
     plt.ylabel('Blinks per minute')
     # plt.legend(loc=1)
     # Put a legend to the right of the current axis
     plt.legend(loc='lower left', bbox_to_anchor=(0.55, 0.85))
-    plt.savefig(path + 'ewma_p' + str(polynomial_degree) + ' ' + input_file[:-4] + ' ' + blink_type + '2.png',
-                fmt='png',
-                dpi=100)  # correctionOverTime
+    plt.savefig(path + 'ewma_p' + str(polynomial_degree) + ' ' + input_file[:-4] + ' ' + blink_type + '_ws' + str(
+        window_span) + '.png', fmt='png', dpi=100)  # correctionOverTime
     plt.show()
 
 
