@@ -145,8 +145,6 @@ ewma = pandas.stats.moments.ewma
 # testthree()
 # testAnimated()
 
-input_files = {"Gazes For scene2.csv", "Gazes For LoadSavedLevel1.csv"}
-path = "2016.04.21/Panos/"
 # ================= region DBSCAN testing ============================== #
 # Configurable values
 min_fix = 0.100
@@ -276,10 +274,16 @@ def generate_color(r, g, b):
     return color, r, g, b
 
 
+def reject_outliers(data, m=3):
+    # if the deviation of each data point from the mean is less than the 3 standard deviations of the data, then keep it
+    # ddof = 1 since we are using a values sample and not values of the whole session we use Bessel's correction
+    return data[abs(data - np.mean(data)) < m * np.std(data, ddof=1)]
+
+
 def hampel_filter_with_value(times_array, length_array):
     # hampel filter algorithm
     window = window_span / 2.0
-    my_list = []
+    data_per_minute = []
     max_in_array = times_array[-1]
     limit = len(times_array)
     if len(times_array) > len(length_array):
@@ -312,14 +316,24 @@ def hampel_filter_with_value(times_array, length_array):
             duration /= counter
         # dividing by current interval and multiplying by 60 seconds to get fixations per minute
         duration = (duration / (test_pos - test_neg)) * 60
-        my_list.append(duration)
-    return my_list
+        data_per_minute.append(duration)
+
+    result_data = reject_outliers(np.array(data_per_minute))
+
+    # a = create_count_list(result_data)
+    # b = create_count_list(data_per_minute)
+    # plt.plot(b, data_per_minute, label='Raw')
+    # plt.plot(a, result_data, label='After outliers')
+    # plt.legend(loc='center right', bbox_to_anchor=(1.1, 0.0), shadow=True, title="Hampel effect")
+    # plt.show()
+
+    return result_data
 
 
 def hampel_filter(seconds_array):
     # hampel filter algorithm
     window = window_span / 2.0
-    my_list = []
+    data_per_minute = []
 
     max_in_array = seconds_array[-1]
     for second in range(0, int(max_in_array[1])):  # loop through the array for each second and not for each member
@@ -335,8 +349,18 @@ def hampel_filter(seconds_array):
                 break
         # dividing by current interval and multiplying by 60 seconds to get fixations per minute
         count = (count / (test_pos - test_neg)) * 60
-        my_list.append(count)
-    return my_list
+        data_per_minute.append(count)
+
+    result_data = reject_outliers(np.array(data_per_minute))
+
+    # a = create_count_list(result_data)
+    # b = create_count_list(data_per_minute)
+    # plt.plot(b, data_per_minute, label='Raw')
+    # plt.plot(a, result_data, label='After outliers')
+    # plt.legend(loc='center right', bbox_to_anchor=(1.1, 0.0), shadow=True, title="Hampel effect")
+    # plt.show()
+
+    return result_data
 
 
 def create_count_list(a_list):
@@ -360,9 +384,14 @@ def calculate_needed_stuff(a_list):
     c = calculate_ewma(a_list_np_array)
     cnt_list = create_count_list(a_list_np_array)
     # Calculate linear regression / polynomial
-    z = np.polyfit(cnt_list, a_list_np_array, polynomial_degree)
-    p = np.poly1d(z)
-    return c, cnt_list, p
+    if cnt_list ==[]:
+        print 'Empty data!'
+        return c, cnt_list, None, None
+    z2 = np.polyfit(cnt_list, a_list_np_array, polynomial_degree)
+    p2 = np.poly1d(z2)
+    z1 = np.polyfit(cnt_list, a_list_np_array, 1)
+    p1 = np.poly1d(z1)
+    return c, cnt_list, p2, p1
 
 
 def check_if_head_of_cluster(x_y, a_list):
@@ -376,7 +405,7 @@ def check_if_head_of_cluster(x_y, a_list):
     return False
 
 
-def get_all_fixations_with_seconds(input_file, a_list):
+def get_all_fixations_with_seconds(input_file, path, a_list):
     file1 = open(path + input_file, 'rb')
     reader = csv.DictReader(file1)
     fixations_with_timestamps = []
@@ -408,7 +437,7 @@ def get_all_fixations_with_seconds(input_file, a_list):
     return fixations_with_timestamps
 
 
-def main(input_file):
+def start(input_file, path):
     data = np.genfromtxt(path + input_file, delimiter=',', skip_header=1, names=['CRX', 'CRY'])
     data = np.array(map(map_float_list, data))  # refactor double string array to double float array
 
@@ -455,9 +484,10 @@ def main(input_file):
     plt.show()
 
     # Get fixations over time
-    fixations_over_time = get_all_fixations_with_seconds(input_file, list_with_first_cluster_member)
+    fixations_over_time = get_all_fixations_with_seconds(input_file, path, list_with_first_cluster_member)
     result_hampel_list = hampel_filter(np.array(fixations_over_time))
-    result_ewma_list, cnt_list, p = calculate_needed_stuff(result_hampel_list)
+    result_ewma_list, cnt_list, p, p1 = calculate_needed_stuff(result_hampel_list)
+    # Plot polynomial level
     plt.plot(cnt_list, result_hampel_list, 'c--', alpha=0.9, label='Fixations Raw')
     plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
     plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.6, label='Polynomial degree ' + str(polynomial_degree))
@@ -469,6 +499,18 @@ def main(input_file):
     plt.savefig(path + 'Fixations_Per_Minute_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + '_p' + str(
         polynomial_degree) + '_ws' + str(window_span) + '.png', fmt='png', dpi=100)
     plt.show()
+    # Plot linear regression
+    plt.plot(cnt_list, result_hampel_list, 'c--', alpha=0.9, label='Fixations Raw')
+    plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
+    plt.plot(cnt_list, p1(cnt_list), 'b--', alpha=0.6, label='Linear regression')
+    plt.xlabel('Seconds')
+    plt.ylabel('Fixations')
+    font_p = FontProperties()
+    font_p.set_size('small')
+    plt.legend(loc='lower right', bbox_to_anchor=(1.1, 0.9), shadow=True, title="Fixations per minute", prop=font_p)
+    plt.savefig(path + 'Fixations_Per_Minute_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + 'linear_ws' + str(
+        window_span) + '.png', fmt='png', dpi=100)
+    plt.show()
 
     # Get duration of fixations over time
     lof = []
@@ -476,7 +518,8 @@ def main(input_file):
         value *= 0.016  # 60 frames per second
         lof.append(value)
     result_hampel_list = hampel_filter_with_value(np.array(fixations_over_time), np.array(lof))
-    result_ewma_list, cnt_list, p = calculate_needed_stuff(result_hampel_list)
+    result_ewma_list, cnt_list, p, p1 = calculate_needed_stuff(result_hampel_list)
+    # Plot polynomial level
     plt.plot(cnt_list, result_hampel_list, 'c--', alpha=0.9, label='Fixations Raw')
     plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
     plt.plot(cnt_list, p(cnt_list), 'b--', alpha=0.6, label='Polynomial degree ' + str(polynomial_degree))
@@ -488,8 +531,18 @@ def main(input_file):
     plt.savefig(path + 'Duration_Of_Fixations_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + '_p' + str(
         polynomial_degree) + '_ws' + str(window_span) + '.png', fmt='png', dpi=100)
     plt.show()
+    # Plot linear regression
+    plt.plot(cnt_list, result_hampel_list, 'c--', alpha=0.9, label='Fixations Raw')
+    plt.plot(cnt_list, result_ewma_list, 'b', label='Duration per fixation')
+    plt.plot(cnt_list, p1(cnt_list), 'b--', alpha=0.6, label='Linear regression')
+    plt.xlabel('Seconds')
+    plt.ylabel('Duration (seconds)')
+    font_p = FontProperties()
+    font_p.set_size('small')
+    plt.legend(loc='lower right', bbox_to_anchor=(1.1, 0.9), shadow=True, title="Duration of fixations", prop=font_p)
+    plt.savefig(
+        path + 'Duration_Of_Fixations_' + input_file[:-4] + '_' + str(len(result_ewma_list)) + 'linear_ws' + str(
+            window_span) + '.png', fmt='png', dpi=100)
+    plt.show()
+
     # ================= endregion DBSCAN testing ======================== #
-
-
-for tmp_file in input_files:
-    main(tmp_file)

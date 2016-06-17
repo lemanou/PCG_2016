@@ -14,6 +14,7 @@ def create_count_list(a_list):
 
 
 def aic():
+    # Akaike information criterion
     # data = stats.gamma.rvs(2, loc=1.5, scale=2, size=100000)
     fitted_params = sp.stats.gamma.fit(ev_list)
     k = len(fitted_params)
@@ -40,7 +41,7 @@ with open('data.csv') as csv_file:
             plt.plot(create_count_list(ev_list), ev_list, label=user_count)
             user_count += 1
             count = 0
-            aic()
+            # aic() # skipped
             del ev_list[:]
 
     plt.xlabel('Polynomial degrees')
@@ -48,6 +49,7 @@ with open('data.csv') as csv_file:
     font_p = FontProperties()
     font_p.set_size('small')
     plt.legend(loc='center right', bbox_to_anchor=(1.1, 0.5), shadow=True, title="Testers", prop=font_p, ncol=2)
+    plt.axis([0, 16, 0, 1])
     plt.savefig('PlottinEV' + str(user_count - 1) + '.png', fmt='png', dpi=100)
     plt.show()
 
@@ -56,5 +58,6 @@ with open('data.csv') as csv_file:
     plt.plot(create_count_list(totals), totals)
     plt.xlabel('Polynomial degrees')
     plt.ylabel('Explained Variance score totals')
+    plt.axis([0, 16, 0, 1])
     plt.savefig('Plottin_Totals_' + str(user_count - 1) + '.png', fmt='png', dpi=100)
     plt.show()

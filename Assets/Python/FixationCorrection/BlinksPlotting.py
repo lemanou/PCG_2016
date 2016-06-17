@@ -17,33 +17,48 @@ from scipy import stats
 from matplotlib.font_manager import FontProperties
 
 ewma = pandas.stats.moments.ewma
-input_files = {"Blinks For scene2.csv", "Blinks For LoadSavedLevel1.csv"}
-path = "2016.04.21/Panos/"
 polynomial_degree = 2
 window_span = 60
 
 
+def reject_outliers(data, m=3):
+    # if the deviation of each data point from the mean is less than the 3 standard deviations of the data, then keep it
+    # ddof = 1 since we are using a values sample and not values of the whole session we use Bessel's correction
+    return data[abs(data - np.mean(data)) < m * np.std(data, ddof=1)]
+
+
 def hampel_filter(seconds_array):
     # hampel filter algorithm
-    # print 'hfe: ', len(seconds_array)
     window = window_span / 2.0
-    my_list = []
-    for value in range(0, int(seconds_array.max())):  # loop through the array for each second and not for each member
+    data_per_minute = []
+
+    max_in_array = int(seconds_array.max())
+
+    for second in range(0, max_in_array):  # loop through the array for each second and not for each member
         count = 0
-        test_neg = max(value - window, 0)
-        test_pos = min(value + window, seconds_array.max())
-        for v in seconds_array:
-            if test_neg <= v <= test_pos:
+        test_neg = max(second - window, 0)
+        test_pos = min(second + window, max_in_array)
+        for s in seconds_array:
+            if test_neg <= s <= test_pos:
                 # print "For point: ", value, " value: ", v, "found in range: ", test_neg, test_pos
                 count += 1
-            elif v > test_pos:
+            elif s > test_pos:
                 # print "Skipping bigger num: " , test_pos
                 break
         # dividing by current interval and multiplying by 60 seconds to get blinks per minute
         count = (count / (test_pos - test_neg)) * 60
-        my_list.append(count)
-    # print 'hfr: ', len(my_list)
-    return my_list
+        data_per_minute.append(count)
+
+    result_data = reject_outliers(np.array(data_per_minute))
+
+    # a = create_count_list(result_data)
+    # b = create_count_list(data_per_minute)
+    # plt.plot(b, data_per_minute, label='Raw')
+    # plt.plot(a, result_data, label='After outliers')
+    # plt.legend(loc='center right', bbox_to_anchor=(1.1, 0.0), shadow=True, title="Hampel effect")
+    # plt.show()
+
+    return result_data
 
 
 def create_count_list(a_list):
@@ -69,9 +84,11 @@ def calculate_needed_stuff(array_blinks_seconds):
     # Calculate linear regression
     cnt_list = create_count_list(list_blinks)
     # calculate polynomial
-    z = np.polyfit(cnt_list, list_blinks, polynomial_degree)
-    p = np.poly1d(z)
-    return list_blinks, c, cnt_list, p
+    z2 = np.polyfit(cnt_list, list_blinks, polynomial_degree)
+    p2 = np.poly1d(z2)
+    z1 = np.polyfit(cnt_list, list_blinks, 1)
+    p1 = np.poly1d(z1)
+    return list_blinks, c, cnt_list, p2, p1
 
 
 def calculate_ev_two(distance_considered, a_list):
@@ -105,7 +122,7 @@ def calculate_ev_two(distance_considered, a_list):
     plt.show()
 
 
-def calculate_ev(distance_considered, a_list):
+def calculate_ev(path, distance_considered, a_list):
     ev_list = []
     d_list = np.array(distance_considered)
     x = d_list  # .flatten().reshape(-1, 1)
@@ -132,22 +149,22 @@ def calculate_ev(distance_considered, a_list):
     font_p = FontProperties()
     font_p.set_size('small')
     plt.legend(loc='lower right', bbox_to_anchor=(1.1, 0.0), shadow=True, title="Polynomial degree", prop=font_p)
-    plt.savefig(path + 'pd_p' + str(polynomial_degree) + ' ' + ev + '.png', fmt='png', dpi=100)
+    plt.savefig(path + 'pd_p' + str(polynomial_degree) + ' ' + str(ev) + '.png', fmt='png', dpi=100)
     plt.show()
 
     plt.plot(create_count_list(ev_list), ev_list, label='Explained variance')
     plt.legend(loc='lower right', bbox_to_anchor=(1.1, 0.0), shadow=True, title="Explained variance", prop=font_p)
     plt.axis([0, 16, 0, 1])
-    plt.savefig(path + 'ev_p' + str(polynomial_degree) + ' ' + ev + '.png', fmt='png', dpi=100)
+    plt.savefig(path + 'ev_p' + str(polynomial_degree) + ' ' + str(ev) + '.png', fmt='png', dpi=100)
     plt.show()
 
     return ev_list
 
 
-def calculate_ev_and_save_to_csv(input_file, array_normal_blinks_seconds):
-    list_normal_blinks, c, cnt_list, p = calculate_needed_stuff(array_normal_blinks_seconds)
+def calculate_ev_and_save_to_csv(input_file, path, array_normal_blinks_seconds):
+    list_normal_blinks, c, cnt_list, p, p1 = calculate_needed_stuff(array_normal_blinks_seconds)
 
-    ev_list = calculate_ev(cnt_list, list_normal_blinks)
+    ev_list = calculate_ev(path, cnt_list, list_normal_blinks)
     # calculate_ev_two(cnt_list, list_normal_blinks) # different way, same result
 
     import csv
@@ -162,9 +179,9 @@ def calculate_ev_and_save_to_csv(input_file, array_normal_blinks_seconds):
             writer.writerow({'ev': val, 'user': path + input_file[:-4]})
 
 
-def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_blinks_seconds=None):
+def weighted_moving_average(input_file, path, array_normal_blinks_seconds, array_long_blinks_seconds=None):
     blink_type = "AllBlinks"
-    list_normal_blinks, c, cnt_list, p = calculate_needed_stuff(array_normal_blinks_seconds)
+    list_normal_blinks, c, cnt_list, p, p1 = calculate_needed_stuff(array_normal_blinks_seconds)
 
     # regular EWMA, with bias against trend
     # plt.plot(fwd, 'b', label='EWMA, span=15')
@@ -178,7 +195,7 @@ def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_
     else:
         # Make ~ Normal against Long blinks plot
         blink_type = "NormVsLong"
-        list_long_blinks, c_long, cnt_list_long, pl = calculate_needed_stuff(array_long_blinks_seconds)
+        list_long_blinks, c_long, cnt_list_long, pl, pl1 = calculate_needed_stuff(array_long_blinks_seconds)
         # regular EWMA, with bias against trend
         # plt.plot(fwd, 'b', label='EWMA, span=15')
         # "corrected" (?) EWMA
@@ -195,8 +212,34 @@ def weighted_moving_average(input_file, array_normal_blinks_seconds, array_long_
         window_span) + '.png', fmt='png', dpi=100)  # correctionOverTime
     plt.show()
 
+    # Same for linear this time
+    plt.plot(c, 'r', label='Reversed-Recombined')
+    plt.plot(cnt_list, p1(cnt_list), 'r--', alpha=0.7, label='Linear regression')
 
-def normal_against_long(input_file):
+    if array_long_blinks_seconds is None:
+        # Make ~ All blinks plot
+        plt.plot(list_normal_blinks, alpha=0.2, label='Raw')
+    else:
+        # Make ~ Normal against Long blinks plot
+        blink_type = "NormVsLong"
+        list_long_blinks, c_long, cnt_list_long, pl, pl1 = calculate_needed_stuff(array_long_blinks_seconds)
+        # regular EWMA, with bias against trend
+        # plt.plot(fwd, 'b', label='EWMA, span=15')
+        # "corrected" (?) EWMA
+        plt.plot(c_long, 'b', label='Recombined EWMA Long')
+        plt.plot(cnt_list_long, pl1(cnt_list_long), 'b--', alpha=0.7, label='Linear regression')
+
+    plt.xlabel('Seconds')
+    plt.ylabel('Blinks per minute')
+    # plt.legend(loc=1)
+    # Put a legend to the right of the current axis
+    plt.legend(loc='lower left', bbox_to_anchor=(0.55, 0.85))
+    plt.savefig(path + 'ewma_linear' + input_file[:-4] + ' ' + blink_type + '_ws' + str(
+        window_span) + '.png', fmt='png', dpi=100)  # correctionOverTime
+    plt.show()
+
+
+def normal_against_long(input_file, path):
     file1 = open(path + input_file, 'rb')
     reader = csv.DictReader(file1)
     once = True  # starting time set to 0 only once for one of the two lists
@@ -239,10 +282,10 @@ def normal_against_long(input_file):
     file1.close()
 
     if len(list_datetimes_long) > 1:  # don't calculate if you have less than 1 blinks
-        weighted_moving_average(input_file, list_datetimes_normal, list_datetimes_long)
+        weighted_moving_average(input_file, path, list_datetimes_normal, list_datetimes_long)
 
 
-def all_blinks(input_file):
+def all_blinks(input_file, plot_EVs, path):
     file1 = open(path + input_file, 'rb')
     reader = csv.DictReader(file1)
     once = True
@@ -274,10 +317,7 @@ def all_blinks(input_file):
     file1.close()
     # print 'len of list: ' + str(len(list_of_datetimes))
     if len(list_of_datetimes) > 0:
-        weighted_moving_average(input_file, list_of_datetimes)
-        # calculate_ev_and_save_to_csv(input_file, list_of_datetimes)
-
-
-for tmp_file in input_files:
-    all_blinks(tmp_file)
-    normal_against_long(tmp_file)
+        if plot_EVs:
+            calculate_ev_and_save_to_csv(input_file, path, list_of_datetimes)
+        else:
+            weighted_moving_average(input_file, path, list_of_datetimes)
